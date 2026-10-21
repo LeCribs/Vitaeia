@@ -146,16 +146,16 @@ ol.how li{margin:8px 0}
 /* Visuels */
 .card.dish{padding:0;overflow:hidden;display:flex;align-items:stretch}
 .thumb{background:radial-gradient(circle at 30% 25%,#2d433a,#1a2722);display:flex;align-items:center;justify-content:center;flex:none}
-.card.dish .thumb{width:108px;min-height:108px}
-.card.dish .thumb svg{width:96px;height:96px}
+.card.dish .thumb{width:112px;min-height:112px}
 .card.dish .cb{padding:12px 14px;flex:1;min-width:0}
 .card.dish.big{flex-direction:column}
 .card.dish.big .thumb{width:100%;height:180px}
-.card.dish.big .thumb svg{width:164px;height:164px}
 .thumb img.ph{width:100%;height:100%;object-fit:cover;display:block}
 .hero{margin:14px -18px 0;height:250px;overflow:hidden}
-.hero svg{width:230px;height:230px}
 .hero img.ph{width:100%;height:100%;object-fit:cover}
+.ph-empty{color:var(--muted);font-size:12px;text-align:center;padding:6px}
+.credit{font-size:12px;color:var(--muted);margin-top:6px}
+.credit a{color:var(--muted)}
 .photo-actions{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:6px}
 .sb{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 5px;border-radius:6px;background:var(--sb);color:#10201a;font:800 11px/1 var(--display);letter-spacing:.03em;margin-right:7px;vertical-align:middle;flex:none}
 .sb.lg{height:32px;min-width:44px;font-size:14px;border-radius:9px;margin-right:10px}
@@ -516,154 +516,40 @@ function guessLink(name){
 const searchTerm = id => ING[id][0].replace(/\(.*?\)/g,"").trim();
 
 /* =========================================================
-   ILLUSTRATIONS DES PLATS
-   Chaque recette est dessinée à partir de ses ingrédients :
-   type de forme + couleurs. Rendu déterministe (même recette,
-   même dessin), 100 % local.
+   PHOTOS DES PLATS (Pexels, banque d’images gratuite)
+   La clé est saisie dans l’app et reste sur le téléphone :
+   elle n’apparaît jamais dans le dépôt GitHub.
+   Limite gratuite : 200 requêtes par heure.
    ========================================================= */
-const VIS = {
-  avoine:["flakes","#dcc89c"], lait:["liquid","#efece2"], skyr:["liquid","#f5f4ef"], fb0:["liquid","#f6f5f0"], ygrec:["liquid","#f3eee2"], cottage:["liquid","#efebe0"],
-  oeuf:["egg"], blanc:["eggwhite","#f6f2e4"], banane:["slice","#f4e6a8","#e2c766"], pomme:["cube","#f2e8c6","#c9473a"], frouges:["berry","#b3304b","#5a3b8f"],
-  compote:["liquid","#e6cd8a"], dattes:["chunk","#7a4a2a"], avocat:["slice","#b7d27a","#5f7f2f"], pbutter:["drizzle","#b9824a"], amandes:["nut","#c99a6b"],
-  noix:["nut","#a8774b"], chia:["seed","#2f2f2f"], miel:["drizzle","#e3a92e"], choco:["chunk","#4a2c1d"], cacao:["dust","#6b4430"], whey:["none"],
-  pain:["bread","#a8733f","#e6c999"], painburger:["bun","#c98a43"], tortilla:["wrap","#ead6a6"], galette:["bread","#d9c6a0","#f3ead6"],
-  riz:["grain","#f7f4ec"], pates:["pasta","#efd38a"], patesc:["pasta","#c9a066"], quinoa:["grain","#e6d9b6"], semoule:["grain","#efd99c"], nouilles:["noodle","#f1ebdc"],
-  pdt:["cube","#ecd38c","#c9a95a"], pdouce:["cube","#e98a3c","#c4661c"], lentilles:["legume","#7a5c3a"], pchiches:["legume","#dfbf86"], hrouges:["legume","#8a2f2f"],
-  poulet:["fillet","#eecb98","#b97a3e"], dinde:["fillet","#f1d9b0","#c2915a"], boeuf5:["patty","#6e3424"], rumsteck:["strips","#8a3a2a","#5e2418"], jambon:["ham","#f0a7a2","#e0807a"],
-  saumon:["fillet","#f2956a","#fbd0b4"], saumonf:["ham","#f2875e","#f7b394"], cabillaud:["fillet","#f5f0e7","#d6cdbf"], thon:["flake","#c9a58a"], sardines:["fish","#8f9aa3","#c9d1d6"],
-  crevettes:["shrimp","#f2865c"], tofu:["cube","#efe6cf","#cdbf9b"], mozza:["melt","#faf8f0"], feta:["cube","#f8f6ef","#ddd7c6"], parmesan:["dust","#f1e3b0"],
-  emmental:["shred","#f3d978"], creme:["liquid","#f7f3ea"], beurre:["none"], huile:["none"], laitcoco:["liquid","#f4efe2"], pesto:["drizzle","#5f8a2e"],
-  houmous:["mound","#d9b77e"], soja:["drizzle","#4a2a18"], tomate:["slice","#e2463b","#f39a88"], tconc:["sauce","#c13b2c"], concombre:["slice","#d6e8ae","#4f7f3a"],
-  courgette:["slice","#e8eed2","#4e7a32"], brocoli:["floret","#3f7f3a","#5f9f4b"], epinards:["leaf","#2f6b35"], poivron:["strip","#e04a34","#f0b23a"],
-  oignon:["ring","#e7d3e6"], champi:["mushroom","#dcc6a6"], hverts:["bean","#4f8f3f"], carotte:["slice","#ee8a2e","#f8b15e"], salade:["leaf","#86bb59"],
-  mais:["corn","#f2c94c"], ppois:["pea","#6fae4a"]
-};
-function rng(seed){ let a = seed>>>0; return ()=>{ a = a+0x6D2B79F5|0; let t = Math.imul(a^a>>>15,1|a); t = t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-const f1 = n => Math.round(n*10)/10;
-function blobPath(r, R, irr=0.18, n=9){
-  const pts = [];
-  for(let i=0;i<n;i++){ const a = i/n*Math.PI*2, rr = r*(1-irr/2+R()*irr); pts.push([Math.cos(a)*rr, Math.sin(a)*rr]); }
-  const mid = (p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
-  let m = mid(pts[n-1],pts[0]), d = `M${f1(m[0])} ${f1(m[1])}`;
-  for(let i=0;i<n;i++){ const p = pts[i], q = mid(p, pts[(i+1)%n]); d += `Q${f1(p[0])} ${f1(p[1])} ${f1(q[0])} ${f1(q[1])}`; }
-  return d+"Z";
-}
-/* Formes dessinées autour de (0,0) */
-const SHAPE = {
-  grain:(v)=>`<ellipse rx="2.7" ry="1.35" fill="${v[1]}" stroke="#0000001f" stroke-width=".4"/>`,
-  flakes:(v)=>`<ellipse rx="3.6" ry="2.5" fill="${v[1]}" stroke="#00000024" stroke-width=".5"/>`,
-  pasta:(v)=>`<path d="M-6 1q6-7 12 0" stroke="#00000022" stroke-width="4.6" fill="none" stroke-linecap="round"/><path d="M-6 1q6-7 12 0" stroke="${v[1]}" stroke-width="3.4" fill="none" stroke-linecap="round"/>`,
-  noodle:(v)=>`<path d="M-20 0q5-6 10 0t10 0t10 0t10 0" stroke="${v[1]}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
-  legume:(v)=>`<circle r="3.4" fill="${v[1]}"/><circle cx="-1" cy="-1" r="1" fill="#ffffff40"/>`,
-  pea:(v)=>`<circle r="2.9" fill="${v[1]}"/><circle cx="-.9" cy="-.9" r=".9" fill="#ffffff55"/>`,
-  corn:(v)=>`<rect x="-2.2" y="-2.2" width="4.4" height="4.4" rx="1.3" fill="${v[1]}"/>`,
-  berry:(v,R)=>`<circle r="4.3" fill="${R()<.6?v[1]:v[2]}"/><circle cx="-1.4" cy="-1.4" r="1.2" fill="#ffffff40"/>`,
-  nut:(v)=>`<ellipse rx="4.6" ry="3" fill="${v[1]}" stroke="#00000030" stroke-width=".6"/>`,
-  chunk:(v)=>`<rect x="-3.5" y="-3" width="7" height="6" rx="1.6" fill="${v[1]}"/>`,
-  slice:(v,R,id)=>`<circle r="${id==="banane"?7.5:9}" fill="${v[1]}" stroke="${v[2]}" stroke-width="2.2"/>`+
-    (id==="tomate"?`<circle cx="-3" cy="1" r="1.1" fill="#f6d27a"/><circle cx="3" cy="1" r="1.1" fill="#f6d27a"/><circle cy="-3" r="1.1" fill="#f6d27a"/>`
-    : id==="concombre"||id==="courgette"?`<circle r="3.6" fill="#ffffff30"/>` : `<circle r="2.6" fill="${v[2]}" opacity=".35"/>`),
-  cube:(v)=>`<rect x="-5" y="-5" width="10" height="10" rx="2.6" fill="${v[1]}" stroke="${v[2]}" stroke-width="1.1"/>`,
-  floret:(v)=>`<path d="M0 2v7" stroke="#9cc27a" stroke-width="3" stroke-linecap="round"/><circle cx="-4" cy="-1" r="4.6" fill="${v[1]}"/><circle cx="4" cy="-1" r="4.6" fill="${v[1]}"/><circle cy="-5" r="5" fill="${v[2]}"/><circle cy="1" r="3.8" fill="${v[2]}"/>`,
-  leaf:(v)=>`<path d="M0-11C8-6 8 6 0 11C-8 6-8-6 0-11Z" fill="${v[1]}"/><path d="M0-9V9" stroke="#ffffff35" stroke-width="1"/>`,
-  strip:(v,R)=>`<rect x="-8" y="-2.2" width="16" height="4.4" rx="2.2" fill="${R()<.55?v[1]:v[2]}"/>`,
-  ring:(v)=>`<circle r="6" fill="none" stroke="${v[1]}" stroke-width="1.8"/>`,
-  mushroom:(v)=>`<path d="M-6 0A6 6 0 0 1 6 0H3V4H-3V0Z" fill="${v[1]}" stroke="#00000030" stroke-width=".6"/>`,
-  bean:(v)=>`<rect x="-9" y="-1.8" width="18" height="3.6" rx="1.8" fill="${v[1]}"/>`,
-  flake:(v,R)=>`<path d="${blobPath(4.2,R,.45,6)}" fill="${v[1]}"/>`,
-  shrimp:(v)=>`<path d="M-6 3A6.5 6.5 0 1 1 6 3" stroke="${v[1]}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-2-3.5l1 2M2-3.5l-1 2" stroke="#ffffff60" stroke-width="1"/>`,
-  melt:(v,R)=>`<path d="${blobPath(9,R,.35)}" fill="${v[1]}" stroke="#00000014"/>`,
-  ham:(v,R)=>`<path d="${blobPath(13,R,.3)}" fill="${v[1]}"/><path d="M-8 2q4-5 8 0t8 0" stroke="${v[2]}" stroke-width="1.6" fill="none"/>`,
-  strips:(v)=>`<rect x="-10" y="-3.2" width="20" height="6.4" rx="3" fill="${v[1]}" stroke="${v[2]}" stroke-width="1"/>`,
-  egg:(v,R)=>`<path d="${blobPath(15,R,.3)}" fill="#fbfaf5" stroke="#00000014"/><circle cx="1.5" cy="-1" r="6.2" fill="#f2b51c"/><circle cx="-.5" cy="-3" r="1.8" fill="#ffffff70"/>`,
-  eggwhite:(v,R)=>`<path d="${blobPath(9,R,.45,7)}" fill="${v[1]}" stroke="#00000012"/>`,
-  fish:(v)=>`<ellipse rx="16" ry="5" fill="${v[1]}"/><path d="M15 0l7-5v10Z" fill="${v[1]}"/><path d="M-13 0H12" stroke="${v[2]}" stroke-width="1.6"/>`,
-  fillet:(v,R)=>`<path d="${blobPath(1,R,.2,8)}" fill="${v[1]}" transform="scale(31 20)" stroke="#00000020" stroke-width=".04"/><path d="M-16-10l-8 18M-4-14l-9 26M8-14l-9 26M19-9l-7 16" stroke="${v[2]}" stroke-width="2.8" stroke-linecap="round" opacity=".75"/>`,
-  patty:(v,R)=>{ let s = `<circle r="22" fill="${v[1]}"/><circle r="22" fill="none" stroke="#00000035" stroke-width="2"/>`; for(let i=0;i<14;i++){ const a=R()*6.28, d=R()*17; s += `<circle cx="${f1(Math.cos(a)*d)}" cy="${f1(Math.sin(a)*d)}" r="${f1(.8+R()*1.4)}" fill="${R()<.5?"#8e4a34":"#4f2116"}"/>`; } return s; },
-  bread:(v)=>`<rect x="-22" y="-17" width="44" height="34" rx="9" fill="${v[2]}" stroke="${v[1]}" stroke-width="4"/>`,
-  bun:(v,R)=>{ let s = `<circle r="27" fill="${v[1]}"/><circle cx="-6" cy="-7" r="14" fill="#ffffff18"/>`; for(let i=0;i<12;i++){ const a=R()*6.28, d=R()*19; s += `<ellipse cx="${f1(Math.cos(a)*d)}" cy="${f1(Math.sin(a)*d)}" rx="1.6" ry=".9" fill="#f6ebcc" transform="rotate(${Math.round(R()*180)} ${f1(Math.cos(a)*d)} ${f1(Math.sin(a)*d)})"/>`; } return s; },
-  wrap:(v)=>`<rect x="-26" y="-10" width="52" height="20" rx="10" fill="${v[1]}" stroke="#c9ae74" stroke-width="1.5"/><path d="M-12-10q4 10 0 20" stroke="#c9ae74" stroke-width="1.5" fill="none"/>`,
-  mound:(v,R)=>`<path d="${blobPath(21,R,.15)}" fill="${v[1]}"/><path d="M0 0m-12 0a12 12 0 1 0 24 0a8 8 0 1 0-16 0a4 4 0 1 0 8 0" stroke="#00000022" stroke-width="1.6" fill="none"/><circle cx="2" cy="-2" r="3" fill="#c9a21c" opacity=".7"/>`
-};
-const COUNT = {grain:g=>g*.6, flakes:g=>g*.9, pasta:g=>g*.2, noodle:g=>g*.07, legume:g=>g*.35, pea:g=>g*.45, corn:g=>g*.45, berry:g=>g*.2, nut:g=>g*.5,
-  chunk:g=>g*.3, slice:g=>g/18, cube:g=>g/13, floret:g=>g/20, leaf:g=>g/6, strip:g=>g/7, ring:g=>g/12, mushroom:g=>g/12, bean:g=>g/6, flake:g=>g/4,
-  shrimp:g=>g/11, melt:g=>g/12, ham:g=>g/25, strips:g=>g/14, egg:g=>g/50, eggwhite:g=>g/20, fish:g=>g/35, fillet:()=>1, patty:()=>1, bread:g=>g/40, bun:()=>1, wrap:g=>g/60, mound:()=>1};
-const CAP = {grain:150, flakes:90, pasta:48, noodle:14, legume:75, pea:40, corn:30, berry:28, nut:14, chunk:12, slice:12, cube:20, floret:10, leaf:16, strip:18, ring:6,
-  mushroom:12, bean:22, flake:26, shrimp:14, melt:6, ham:4, strips:12, egg:4, eggwhite:8, fish:4, fillet:1, patty:1, bread:3, bun:1, wrap:2, mound:1};
-const BIG = new Set(["fillet","patty","bread","bun","wrap","mound","egg","fish","ham"]);
-const OVER = new Set(["drizzle","dust","seed","shred"]);
-const BOWLRX = /bowl|porridge|soupe|velouté|dahl|curry|chili|pudding|overnight|skyr|fromage blanc|cottage|yaourt|shake/i;
-const DISH = {};
-function mixHex(a,b,t){ const h = x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)); const A = h(a), B = h(b); return "#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
-function dishSVG(r){
-  if(DISH[r.id]) return DISH[r.id];
-  const R = rng(r.id*9973+17), rnd = (a,b)=>a+R()*(b-a);
-  const items = r.i.map(([id,g])=>({id,g,v:VIS[id]||["none"]}));
-  const fluids = items.filter(x=>x.v[0]==="liquid"||x.v[0]==="sauce").sort((a,b)=>b.g-a.g);
-  const fluidG = fluids.reduce((s,x)=>s+x.g,0);
-  const bowl = fluidG>=100 || BOWLRX.test(r.n);
-  const shake = /shake/i.test(r.n);
-  let base = null;
-  if(bowl) base = fluids[0] || [...items].filter(x=>!OVER.has(x.v[0])&&x.v[0]!=="none").sort((a,b)=>b.g-a.g)[0];
-  let baseCol = base ? base.v[1] : "#c7d3ca";
-  if(bowl && base && ["liquid"].includes(base.v[0])){
-    const oats = items.find(x=>x.v[0]==="flakes" && x.g>=30), cocoa = items.find(x=>x.id==="cacao"), fruit = items.find(x=>x.id==="banane"&&shake);
-    if(oats) baseCol = mixHex(baseCol, "#d2b98a", .55);
-    if(cocoa) baseCol = mixHex(baseCol, "#6b4430", .6);
-    if(fruit && !cocoa) baseCol = mixHex(baseCol, "#efe0a0", .45);
+const PEXELS_Q = ["porridge banana peanut butter", "overnight oats berries jar", "spinach feta omelette", "protein pancakes berries", "skyr bowl granola berries", "avocado toast egg", "yogurt apple walnuts", "banana peanut butter smoothie", "scrambled eggs ham toast", "chocolate oatmeal banana", "breakfast burrito eggs", "cottage cheese berries", "chia pudding berries", "egg muffins vegetables", "rice cakes peanut butter banana", "oat crepes", "smoked salmon toast", "oatmeal dates banana", "chicken rice broccoli", "teriyaki chicken bowl", "salmon sweet potato green beans", "spaghetti bolognese", "chili con carne rice", "chickpea coconut curry", "turkey stir fry noodles", "baked cod zucchini", "lentil salad boiled eggs", "tofu buddha bowl", "steak potatoes salad", "chicken wraps", "tuna pasta salad", "spanish tortilla", "chicken curry rice", "shrimp fried rice", "pesto pasta chicken", "shepherds pie", "salmon poke bowl", "chicken couscous vegetables", "zucchini gratin", "crustless quiche spinach", "homemade burger", "chicken caesar salad", "lentil dal rice", "egg fried rice", "cod mashed potatoes", "vegetarian chili beans", "roasted chicken sweet potato", "salmon pasta spinach", "hummus chicken plate", "tuna avocado rice bowl", "beef stir fry peppers", "sardines potatoes salad", "lentil soup bread", "mushroom omelette", "zucchini soup", "quinoa salad feta chickpeas", "chicken peppers tomato stew", "tortilla pizza", "croque monsieur", "tofu noodles broccoli", "creamy mushroom pasta", "salmon lentils", "shrimp quinoa avocado bowl", "tuna tomato pasta", "skyr berries", "banana protein shake", "rice cakes peanut butter", "apple almonds", "boiled eggs cherry tomatoes", "cottage cheese cucumber", "energy balls dates", "chocolate yogurt bowl", "ham roll ups", "banana dark chocolate", "hummus carrot sticks", "tuna toast", "greek yogurt honey walnuts", "homemade protein bars", "yogurt chia parfait", "peanut butter honey toast"];
+const Pics = {
+  key:(()=>{ try{ return localStorage.getItem("assiette.pexels")||""; }catch(e){ return ""; } })(),
+  cache:(()=>{ try{ return JSON.parse(localStorage.getItem("assiette.pics")||"{}"); }catch(e){ return {}; } })(),
+  queue:[], busy:0, pending:new Set(), blocked:false, err:"", warm:false,
+  save(){ try{ localStorage.setItem("assiette.pics", JSON.stringify(this.cache)); }catch(e){} },
+  setKey(k){ this.key = k.trim(); this.blocked = false; this.err = ""; try{ this.key ? localStorage.setItem("assiette.pexels", this.key) : localStorage.removeItem("assiette.pexels"); }catch(e){} },
+  count(){ return Object.values(this.cache).filter(c=>c.list.length).length; },
+  get(id){ const c = this.cache[id]; return c && c.list.length ? c.list[c.i % c.list.length] : null; },
+  want(id){ if(!this.key || this.blocked || this.cache[id] || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
+  pump(){
+    while(this.busy<2 && this.queue.length){ const id = this.queue.shift(); this.busy++; this.fetch(id).finally(()=>{ this.busy--; this.pending.delete(id); this.pump(); }); }
+    if(!this.busy && !this.queue.length && this.warm){ this.warm = false; toast(this.blocked ? this.err : `Photos prêtes : ${this.count()} sur ${RECIPES.length}.`); if(UI.view==="profile") render(); }
+  },
+  async fetch(id){
+    try{
+      const r = await fetch(`https://api.pexels.com/v1/search?${new URLSearchParams({query:PEXELS_Q[id], per_page:8, orientation:"landscape"})}`, {headers:{Authorization:this.key}});
+      if(r.status===401 || r.status===403){ this.blocked = true; this.err = "Clé Pexels refusée : vérifie-la dans Profil."; this.queue = []; return; }
+      if(r.status===429){ this.blocked = true; this.err = "Limite Pexels atteinte (200 photos par heure). Les suivantes arriveront plus tard."; this.queue = []; return; }
+      if(!r.ok) return;
+      const j = await r.json();
+      this.cache[id] = {i:0, list:(j.photos||[]).map(p=>({s:p.src.tiny, m:p.src.medium, l:p.src.landscape, ph:p.photographer, pu:p.photographer_url, u:p.url, c:p.avg_color}))};
+      this.save(); refreshPic(id);
+      if(UI.sheet && UI.sheet.kind==="recipe" && UI.sheet.id===id) renderSheet();
+      if(this.warm){ const p = this.get(id); if(p) [p.s,p.m].forEach(u=>fetch(u,{mode:"no-cors"}).catch(()=>{})); }
+    }catch(e){}
   }
-  const FR = bowl ? 74 : 70, cid = `dc${r.id}`;
-  let s = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : ${r.n.replace(/"/g,"")}">`;
-  s += `<defs><clipPath id="${cid}"><circle cx="100" cy="100" r="${bowl?76:79}"/></clipPath><radialGradient id="g${cid}" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs>`;
-  s += `<ellipse cx="104" cy="108" rx="91" ry="90" fill="#06100d" opacity=".5"/>`;
-  if(bowl) s += `<circle cx="100" cy="100" r="90" fill="#dde6df"/><circle cx="100" cy="100" r="81" fill="#a9b8ae"/><circle cx="100" cy="100" r="76" fill="${baseCol}"/>`;
-  else s += `<circle cx="100" cy="100" r="92" fill="#dde6df"/><circle cx="100" cy="100" r="79" fill="#bfcdc3"/><circle cx="100" cy="100" r="79" fill="none" stroke="#a9b8ae" stroke-width="1.4"/>`;
-  s += `<g clip-path="url(#${cid})">`;
-  if(shake){ s += `<circle cx="100" cy="100" r="60" fill="#00000010"/>`; }
-  /* sauces sous les aliments */
-  if(!bowl) fluids.filter(x=>x.g>=40).forEach(x=>{ s += `<path d="${blobPath(rnd(40,52),R,.25)}" transform="translate(${f1(100+rnd(-8,8))} ${f1(100+rnd(-8,8))})" fill="${x.v[1]}" opacity=".95"/>`; });
-  if(bowl && fluids.length>1) fluids.slice(1).filter(x=>x.g>=40).forEach(x=>{ s += `<path d="${blobPath(rnd(26,36),R,.35)}" transform="translate(${f1(100+rnd(-14,14))} ${f1(100+rnd(-14,14))})" fill="${x.v[1]}" opacity=".85"/>`; });
-  const main = items.filter(x=>x!==base && !OVER.has(x.v[0]) && !["none","liquid","sauce"].includes(x.v[0]));
-  const small = [], big = [];
-  const tot = main.reduce((t,x)=>t+Math.max(4,Math.sqrt(x.g)),0);
-  let a = rnd(0,Math.PI*2);
-  main.forEach(x=>{
-    const span = main.length===1 ? Math.PI*2 : Math.max(4,Math.sqrt(x.g))/tot*Math.PI*2, a0 = a, a1 = a+span; a = a1;
-    const type = x.v[0], n = Math.max(1, Math.min(CAP[type]||10, Math.round((COUNT[type]||(()=>3))(x.g))));
-    for(let k=0;k<n;k++){
-      let ang, rad;
-      if(BIG.has(type)){
-        ang = n===1 ? (a0+a1)/2 : a0+(k+.5)/n*span;
-        rad = main.length===1 && n===1 ? 0 : span>Math.PI*1.2 ? FR*.32 : FR*.48;
-        if(n>1 && main.length===1) rad = FR*.4;
-      } else {
-        const pad = Math.min(.12, span*.15);
-        ang = rnd(a0+pad, a1-pad);
-        rad = Math.sqrt(rnd(.02,1))*(FR-6);
-      }
-      const x0 = 100+Math.cos(ang)*rad, y0 = 100+Math.sin(ang)*rad, rot = Math.round(rnd(0,360));
-      const g = `<g transform="translate(${f1(x0)} ${f1(y0)}) rotate(${rot})${BIG.has(type)?"":" scale(1.2)"}">${SHAPE[type](x.v,R,x.id)}</g>`;
-      (BIG.has(type)?big:small).push(g);
-    }
-  });
-  s += small.join("") + big.join("");
-  /* garnitures par-dessus */
-  items.filter(x=>OVER.has(x.v[0])).forEach(x=>{
-    const t = x.v[0];
-    if(t==="drizzle"){
-      const n = x.g>14 ? 2 : 1;
-      for(let k=0;k<n;k++){ const y = 100+rnd(-30,30), w = rnd(36,58);
-        s += `<path d="M${f1(100-w)} ${f1(y)}q${f1(w/4)} -10 ${f1(w/2)} 0t${f1(w/2)} 0t${f1(w/2)} 0t${f1(w/2)} 0" transform="rotate(${Math.round(rnd(0,180))} 100 100)" stroke="${x.v[1]}" stroke-width="${x.id==="soja"?2.2:3}" fill="none" stroke-linecap="round" opacity=".92"/>`; }
-    } else {
-      const n = Math.min(90, Math.round(x.g*(t==="seed"?2.5:t==="dust"?3:1.6)));
-      for(let k=0;k<n;k++){ const ang = rnd(0,6.283), rad = Math.sqrt(R())*(FR-8), px = f1(100+Math.cos(ang)*rad), py = f1(100+Math.sin(ang)*rad);
-        s += t==="shred" ? `<path d="M${px} ${py}l${f1(rnd(-3,3))} ${f1(rnd(2,5))}" stroke="${x.v[1]}" stroke-width="1.5" stroke-linecap="round"/>`
-          : `<circle cx="${px}" cy="${py}" r="${t==="seed"?.9:.8}" fill="${x.v[1]}" opacity="${t==="dust"?.75:1}"/>`; }
-    }
-  });
-  s += `</g><circle cx="100" cy="100" r="${bowl?90:92}" fill="url(#g${cid})"/></svg>`;
-  return DISH[r.id] = s;
-}
+};
+function refreshPic(id){ document.querySelectorAll(`[data-pic="${id}"]`).forEach(el=>{ el.innerHTML = visual(RECIPES[id], el.dataset.size); }); }
 
 /* =========================================================
    PHOTOS PERSONNELLES (IndexedDB, sur le téléphone)
@@ -695,7 +581,14 @@ async function resizeImage(file){
   c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
   return new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(new Error("jpeg")),"image/jpeg",.82));
 }
-function visual(r){ const u = Photos.urls[r.id]; return u ? `<img class="ph" src="${u}" alt="Ta photo : ${esc(r.n)}">` : dishSVG(r); }
+function visual(r, size="s"){
+  const own = Photos.urls[r.id];
+  if(own) return `<img class="ph" src="${own}" alt="Ta photo : ${esc(r.n)}">`;
+  const p = Pics.get(r.id);
+  if(p) return `<img class="ph" src="${esc(p[size]||p.m)}" alt="${esc(r.n)}" loading="lazy" style="background:${esc(p.c||"transparent")}">`;
+  Pics.want(r.id);
+  return `<span class="ph-empty">${MEALS[r.t[0]].l}</span>`;
+}
 
 /* =========================================================
    PASTILLES MAGASINS (design original, pas les logos officiels)
@@ -783,7 +676,7 @@ function macroLine(p,g,l){
 }
 function card(r, f, big){
   const m = mac(r), own = r.i.some(([id])=>linked(id));
-  return `<button class="card dish${big?" big":""}" data-a="open" data-id="${r.id}" data-fac="${f}"><div class="thumb">${visual(r)}</div><div class="cb">
+  return `<button class="card dish${big?" big":""}" data-a="open" data-id="${r.id}" data-fac="${f}"><div class="thumb" data-pic="${r.id}" data-size="${big?"m":"s"}">${visual(r, big?"m":"s")}</div><div class="cb">
     <h3>${r.n}</h3>
     <div class="meta"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span><span class="pill hl">${nf(m.k*f)} kcal</span>${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}${own?`<span class="pill">tes produits</span>`:""}${S.favs.includes(r.id)?`<span class="pill">♥</span>`:""}</div>
     ${macroLine(m.p*f,m.g*f,m.l*f)}</div></button>`;
@@ -821,6 +714,7 @@ function vHome(){
       <li>Glucides : le reste des calories ÷ 4 = <b>${n.gluc} g</b></li>
       <li class="muted">Ces repères conviennent à un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
     </ul></details>
+    ${Pics.key?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Pexels gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
     ${meals}
     <div class="total"><b>Total de cette journée : ${nf(sum.k)} kcal</b><div style="margin-top:6px">${macroLine(sum.p,sum.g,sum.l)}</div>
       <p class="small muted" style="margin-top:6px">Objectif : ${nf(n.kcal)} kcal, ${n.prot} g de protéines.</p></div>
@@ -849,7 +743,8 @@ function vRecipes(){
     <div class="scroller" style="margin-top:8px">${chip("time",0,"Tout temps")}${chip("time",10,"10 min max")}${chip("time",20,"20 min max")}${chip("time",30,"30 min max")}</div>
     <div class="scroller" style="margin-top:8px">${chip("budget",0,"Tout budget")}${chip("budget",1,"€")}${chip("budget",2,"€€ max")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
     <p class="muted small" style="margin:16px 0 10px" id="count">${countTxt(list)}</p>
-    <div class="list" id="rlist">${listHTML(list)}</div>`;
+    <div class="list" id="rlist">${listHTML(list)}</div>
+    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://www.pexels.com" target="_blank" rel="noopener" style="color:inherit">Pexels</a>, à titre d’illustration : le plat peut différer de la recette.</p>`;
 }
 
 /* ---- Produits ---- */
@@ -926,11 +821,19 @@ function vProfile(){
     <div class="section"><h2>Magasins</h2>${fStores(d)}</div>
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
     <button class="btn wide" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
+    <div class="section"><h2>Photos des plats</h2>
+      <p class="small muted" style="margin-bottom:12px">Les photos viennent de Pexels, une banque d’images gratuite. Il faut une clé personnelle, gratuite, à créer sur <a href="https://www.pexels.com/api/" target="_blank" rel="noopener" style="color:var(--accent)">pexels.com/api</a>. Elle reste sur ce téléphone.</p>
+      <label class="f" for="pkey">Clé Pexels</label>
+      <input id="pkey" type="password" autocomplete="off" spellcheck="false" placeholder="Colle ta clé ici" value="${esc(Pics.key)}">
+      <div class="row" style="margin-top:10px"><button class="btn" data-a="savekey">Enregistrer la clé</button><button class="btn ghost" data-a="preload" ${Pics.key?"":"disabled"}>Précharger tout</button></div>
+      <p class="small muted" style="margin-top:8px">Photos en mémoire : ${Pics.count()} sur ${RECIPES.length}.</p>
+      ${Pics.err?`<p class="err small" style="margin-top:6px">${Pics.err}</p>`:""}
+      <button class="link" data-a="clearpics">Recharger toutes les photos</button></div>
     <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur ce téléphone. Exporte-les de temps en temps : vider les données du navigateur les efface. Tes photos de plats ne sont pas incluses dans l’export.</p>
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger, qui utilisent les valeurs Open Food Facts ou celles que tu as saisies. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 2.1</p>`;
+    <p class="small muted" style="margin-top:16px">Version 2.2</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -944,8 +847,9 @@ function renderSheet(){
 function sRecipe(sh){
   const r = RECIPES[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
   return `<div class="sheet-top"><h1 style="font-size:25px">${r.n}</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
-    <div class="hero thumb">${visual(r)}</div>
-    <div class="photo-actions">${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à l’illustration</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
+    <div class="hero thumb" data-pic="${r.id}" data-size="l">${visual(r,"l")}</div>
+    ${!Photos.urls[r.id] && Pics.get(r.id) ? (p=>`<p class="credit">Photo : <a href="${esc(p.pu)}" target="_blank" rel="noopener">${esc(p.ph)}</a> sur <a href="${esc(p.u)}" target="_blank" rel="noopener">Pexels</a></p>`)(Pics.get(r.id)) : ""}
+    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.cache[r.id]?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Pexels</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
     <div class="meta" style="margin-top:10px"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
     <button class="link" data-a="fav" data-id="${r.id}">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
@@ -1151,8 +1055,12 @@ document.addEventListener("click", e=>{
       const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = `assiette-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
       document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000); toast("Sauvegarde exportée."); break; }
     case "import": $("#importfile").click(); break;
+    case "savekey": Pics.setKey($("#pkey").value); toast(Pics.key ? "Clé enregistrée." : "Clé supprimée."); render(); break;
+    case "preload": Pics.blocked = false; Pics.err = ""; Pics.warm = true; RECIPES.forEach(r=>{ const p = Pics.get(r.id); if(p) [p.s,p.m].forEach(u=>fetch(u,{mode:"no-cors"}).catch(()=>{})); else Pics.want(r.id); }); Pics.pump(); toast("Préchargement lancé, garde l’app ouverte."); break;
+    case "clearpics": if(confirm("Effacer les photos en mémoire et les recharger ?")){ Pics.cache = {}; Pics.save(); Pics.blocked = false; Pics.err = ""; toast("Les photos vont se recharger."); render(); } break;
+    case "nextpic": { const c = Pics.cache[UI.sheet.id]; if(c){ c.i = (c.i+1) % c.list.length; Pics.save(); renderSheet(); refreshPic(UI.sheet.id); } break; }
     case "photo": UI.photoFor = UI.sheet.id; $(b.dataset.src==="cam"?"#photocam":"#photogal").click(); break;
-    case "unphoto": if(confirm("Supprimer ta photo et revenir à l’illustration ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); const y = scrollY; render(); scrollTo(0,y); }); } break;
+    case "unphoto": if(confirm("Supprimer ta photo ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); const y = scrollY; render(); scrollTo(0,y); }); } break;
   }
 });
 document.addEventListener("input", e=>{
