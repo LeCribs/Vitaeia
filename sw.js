@@ -1,7 +1,7 @@
 /* Assiette : service worker (fonctionnement hors ligne)
    Change CACHE à chaque nouvelle version pour forcer la mise à jour.
    Les photos Pexels sont gardées dans un cache séparé, conservé entre versions. */
-const CACHE = "assiette-v3.2.0";
+const CACHE = "assiette-v4.0.0";
 const IMG = "assiette-img";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 

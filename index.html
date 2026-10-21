@@ -103,6 +103,8 @@ details li{margin:4px 0}
 .tile .ov p{font-size:12px;opacity:.92;margin-top:3px;font-weight:500}
 .tile .tag{position:absolute;top:8px;left:8px;font-size:11.5px;font-weight:800;background:rgba(255,255,255,.94);color:#111;border-radius:99px;padding:2px 8px}
 .tile .tag.over{color:var(--warn)}
+.tile .sz{display:inline-block;font-size:11px;font-weight:800;background:var(--ok);color:#fff;border-radius:99px;padding:1px 8px;margin-bottom:5px}
+.pill.season{background:#e9f7ef;color:var(--ok)}
 .tile .fav{position:absolute;top:6px;right:8px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 
 /* Formulaires */
@@ -231,195 +233,397 @@ ol.how li{margin:8px 0}
    1. DONNÉES NUTRITIONNELLES
    Valeurs pour 100 g, issues de la table Ciqual (ANSES), arrondies.
    Format : [nom, kcal, protéines, glucides, lipides, "tags"]
-   La whey n’est pas dans Ciqual : valeur moyenne fabricant.
    Si un produit du garde-manger est associé à un ingrédient,
    ses valeurs remplacent celles de Ciqual (voir ingVals).
    ========================================================= */
 const ING = {
   avoine:["Flocons d’avoine",370,13.5,58.7,7,"gluten"],
   lait:["Lait demi-écrémé",46,3.3,4.8,1.6,"lait"],
+  laitveg:["Boisson au soja nature",33,3.3,0.6,1.8,"soja"],
   skyr:["Skyr nature",62,10.5,3.9,0.2,"lait"],
   fb0:["Fromage blanc 0 %",46,7.4,4,0.1,"lait"],
+  yaourt:["Yaourt nature",56,4.2,5.4,1.8,"lait"],
   ygrec:["Yaourt à la grecque",125,5,4,10,"lait"],
   cottage:["Cottage cheese",98,11,3,4.3,"lait"],
-  oeuf:["Œufs",140,12.7,0.3,9.8,"oeuf"],
-  blanc:["Blancs d’œufs",45,10.3,0.7,0.2,"oeuf"],
-  banane:["Banane",90,1.1,20,0.3,""],
-  pomme:["Pomme",53,0.3,11.6,0.2,""],
-  frouges:["Fruits rouges (surgelés)",45,1,8.5,0.4,""],
-  compote:["Compote sans sucre ajouté",60,0.3,13,0.1,""],
-  dattes:["Dattes sèches",290,2.4,66,0.3,""],
-  avocat:["Avocat",165,1.8,1.8,16,""],
-  pbutter:["Beurre de cacahuète",610,25,13,50,"coque"],
-  amandes:["Amandes",620,21,8,53,"coque"],
-  noix:["Cerneaux de noix",700,15,7,65,"coque"],
-  chia:["Graines de chia",490,17,8,31,""],
-  miel:["Miel",327,0.4,81,0,""],
-  choco:["Chocolat noir 70 %",580,8,30,43,""],
-  cacao:["Cacao en poudre non sucré",380,20,12,21,""],
-  whey:["Protéine en poudre (whey)",380,78,8,5,"lait"],
-  pain:["Pain complet",245,9,41,3,"gluten"],
-  painburger:["Pain à burger",280,9,50,4.5,"gluten"],
-  tortilla:["Tortilla de blé",300,8,50,7,"gluten"],
-  galette:["Galettes de riz soufflé",380,8,80,3,""],
-  riz:["Riz basmati (cuit)",140,2.8,30.5,0.3,""],
-  pates:["Pâtes (cuites)",155,5.3,30,0.9,"gluten"],
-  patesc:["Pâtes complètes (cuites)",150,5.6,27,1.4,"gluten"],
-  quinoa:["Quinoa (cuit)",120,4.4,19.5,1.9,""],
-  semoule:["Semoule (cuite)",112,3.8,23,0.2,"gluten"],
-  nouilles:["Nouilles de riz (cuites)",108,1.8,24,0.2,""],
-  pdt:["Pommes de terre",80,2,17,0.1,""],
-  pdouce:["Patate douce",90,1.6,18.5,0.2,""],
-  lentilles:["Lentilles (cuites)",120,9.5,17,0.6,""],
-  pchiches:["Pois chiches (cuits)",135,7.5,18,2.4,""],
-  hrouges:["Haricots rouges (cuits)",115,8,15,0.5,""],
-  poulet:["Filet de poulet (cru)",110,23.5,0,1.8,"volaille"],
-  dinde:["Escalope de dinde (crue)",105,24,0,1,"volaille"],
-  boeuf5:["Steak haché 5 % (cru)",125,21,0,5,"boeuf"],
-  rumsteck:["Rumsteck (cru)",125,22.5,0,3.8,"boeuf"],
-  jambon:["Jambon blanc découenné",110,20.5,0.8,3,"porc"],
-  saumon:["Pavé de saumon (cru)",200,20,0,13,"poisson"],
-  saumonf:["Saumon fumé",180,22.5,0.5,10,"poisson"],
-  cabillaud:["Dos de cabillaud (cru)",78,18,0,0.6,"poisson"],
-  thon:["Thon au naturel (égoutté)",115,26,0,1,"poisson"],
-  sardines:["Sardines à l’huile (égouttées)",220,24,0,13.5,"poisson"],
-  crevettes:["Crevettes cuites décortiquées",95,21,0,1.2,"mer"],
-  tofu:["Tofu ferme",130,13,1.5,8,"soja"],
+  ricotta:["Ricotta",140,9.5,3,10,"lait"],
+  chevre:["Fromage de chèvre",290,19,1,23,"lait"],
+  comte:["Comté",410,27,0.5,33,"lait"],
   mozza:["Mozzarella",250,18,1,19.5,"lait"],
   feta:["Feta",265,14,1,22,"lait"],
   parmesan:["Parmesan",400,33,0,29.5,"lait"],
   emmental:["Emmental râpé",380,28,0,30,"lait"],
   creme:["Crème légère 15 %",165,2.8,4,15,"lait"],
   beurre:["Beurre",745,0.7,0.5,82,"lait"],
+  oeuf:["Œufs",140,12.7,0.3,9.8,"oeuf"],
+  blanc:["Blancs d’œufs",45,10.3,0.7,0.2,"oeuf"],
+  whey:["Protéine en poudre (whey)",380,78,8,5,"lait"],
+  banane:["Banane",90,1.1,20,0.3,""],
+  pomme:["Pommes",53,0.3,11.6,0.2,""],
+  poire:["Poires",55,0.4,12,0.2,""],
+  figue:["Figues fraîches",70,0.8,15,0.3,""],
+  fraises:["Fraises",35,0.7,6,0.3,""],
+  kiwi:["Kiwis",60,1,11,0.6,""],
+  clementine:["Clémentines",45,0.8,9,0.2,""],
+  mangue:["Mangue",65,0.6,14,0.4,""],
+  fruitsaison:["Fruits de saison",55,0.6,12,0.3,""],
+  frouges:["Fruits rouges (surgelés)",45,1,8.5,0.4,""],
+  compote:["Compote sans sucre ajouté",60,0.3,13,0.1,""],
+  dattes:["Dattes sèches",290,2.4,66,0.3,""],
+  raisins:["Raisins secs",300,3,70,0.5,""],
+  avocat:["Avocat",165,1.8,1.8,16,""],
+  pbutter:["Beurre de cacahuète",610,25,13,50,"coque"],
+  cacahuetes:["Cacahuètes",600,25,12,50,"coque"],
+  amandes:["Amandes",620,21,8,53,"coque"],
+  noix:["Cerneaux de noix",700,15,7,65,"coque"],
+  noisettes:["Noisettes",650,15,7,63,"coque"],
+  chia:["Graines de chia",490,17,8,31,""],
+  miel:["Miel",327,0.4,81,0,""],
+  erable:["Sirop d’érable",260,0,67,0,""],
+  sucre:["Sucre",400,0,100,0,""],
+  choco:["Chocolat noir 70 %",580,8,30,43,""],
+  cacao:["Cacao en poudre non sucré",380,20,12,21,""],
+  farine:["Farine de blé",345,10,72,1.2,"gluten"],
+  sarrasin:["Farine de sarrasin",340,12,68,3,""],
+  fecule:["Fécule de maïs",350,0.3,87,0.1,""],
+  pain:["Pain complet",245,9,41,3,"gluten"],
+  painburger:["Pain à burger",280,9,50,4.5,"gluten"],
+  pita:["Pain pita",270,9,55,1.2,"gluten"],
+  bagel:["Bagel",260,10,50,1.5,"gluten"],
+  tortilla:["Tortilla de blé",300,8,50,7,"gluten"],
+  pate:["Pâte brisée",430,6.5,48,23,"gluten lait"],
+  patepizza:["Pâte à pizza",260,8,50,3,"gluten"],
+  galette:["Galettes de riz soufflé",380,8,80,3,""],
+  cereales:["Céréales complètes (muesli)",370,10,62,7,"gluten"],
+  riz:["Riz basmati (cuit)",140,2.8,30.5,0.3,""],
+  rizrond:["Riz rond (cuit)",130,2.5,28.5,0.3,""],
+  pates:["Pâtes (cuites)",155,5.3,30,0.9,"gluten"],
+  patesc:["Pâtes complètes (cuites)",150,5.6,27,1.4,"gluten"],
+  gnocchis:["Gnocchis",150,3.5,32,0.5,"gluten"],
+  quinoa:["Quinoa (cuit)",120,4.4,19.5,1.9,""],
+  semoule:["Semoule (cuite)",112,3.8,23,0.2,"gluten"],
+  boulgour:["Boulgour (cuit)",110,3.5,21,0.5,"gluten"],
+  orge:["Orge perlé (cuit)",125,2.7,27,0.5,"gluten"],
+  nouilles:["Nouilles de riz (cuites)",108,1.8,24,0.2,""],
+  pdt:["Pommes de terre",80,2,17,0.1,""],
+  pdouce:["Patate douce",90,1.6,18.5,0.2,""],
+  lentilles:["Lentilles vertes (cuites)",120,9.5,17,0.6,""],
+  lcorail:["Lentilles corail (cuites)",115,9,17.5,0.5,""],
+  pchiches:["Pois chiches (cuits)",135,7.5,18,2.4,""],
+  pcasses:["Pois cassés (cuits)",120,8.3,20,0.4,""],
+  hrouges:["Haricots rouges (cuits)",115,8,15,0.5,""],
+  hnoirs:["Haricots noirs (cuits)",130,8.5,20,0.5,""],
+  tofu:["Tofu ferme",130,13,1.5,8,"soja"],
+  miso:["Pâte miso",200,12,26,6,"soja"],
+  poulet:["Filet de poulet (cru)",110,23.5,0,1.8,"volaille"],
+  dinde:["Escalope de dinde (crue)",105,24,0,1,"volaille"],
+  saucisse:["Saucisses de volaille",200,14,2,15,"volaille"],
+  boeuf5:["Steak haché 5 % (cru)",125,21,0,5,"boeuf"],
+  rumsteck:["Rumsteck (cru)",125,22.5,0,3.8,"boeuf"],
+  paleron:["Bœuf à braiser (cru)",135,21,0,5.5,"boeuf"],
+  veau:["Épaule de veau (crue)",120,20,0,4.5,"boeuf"],
+  jambon:["Jambon blanc découenné",110,20.5,0.8,3,"porc"],
+  lardons:["Lardons",270,16,0.5,23,"porc"],
+  petitsale:["Petit salé (porc demi-sel)",210,18,0,15,"porc"],
+  saumon:["Pavé de saumon (cru)",200,20,0,13,"poisson"],
+  saumonf:["Saumon fumé",180,22.5,0.5,10,"poisson"],
+  truite:["Filet de truite (cru)",140,20,0,6.5,"poisson"],
+  cabillaud:["Dos de cabillaud (cru)",78,18,0,0.6,"poisson"],
+  thon:["Thon au naturel (égoutté)",115,26,0,1,"poisson"],
+  sardines:["Sardines à l’huile (égouttées)",220,24,0,13.5,"poisson"],
+  sardfr:["Sardines fraîches",150,20,0,8,"poisson"],
+  crevettes:["Crevettes cuites décortiquées",95,21,0,1.2,"mer"],
+  moules:["Moules décortiquées",85,12,3,2.2,"mer"],
   huile:["Huile d’olive",900,0,0,100,""],
   laitcoco:["Lait de coco",185,1.7,3,18.5,""],
   pesto:["Pesto",450,5,4,46,"lait coque"],
   houmous:["Houmous",260,7.5,12,19.5,""],
+  olives:["Olives noires",180,1,1,18,""],
   soja:["Sauce soja",55,7,6,0.1,"soja gluten"],
   tomate:["Tomates",19,0.9,3,0.2,""],
   tconc:["Tomates concassées",25,1.3,4,0.2,""],
   concombre:["Concombre",12,0.7,2,0.1,""],
-  courgette:["Courgette",17,1.2,2,0.3,""],
+  courgette:["Courgettes",17,1.2,2,0.3,""],
+  aubergine:["Aubergines",22,1,3,0.2,""],
+  poivron:["Poivrons",27,0.9,5,0.3,""],
   brocoli:["Brocolis",30,3,2.5,0.4,""],
+  choufleur:["Chou-fleur",28,2.5,3,0.3,""],
+  chou:["Chou vert",27,1.5,4,0.2,""],
   epinards:["Épinards",25,2.8,1.1,0.5,""],
-  poivron:["Poivron",27,0.9,5,0.3,""],
-  oignon:["Oignon",35,1.2,6.5,0.2,""],
+  poireau:["Poireaux",27,1.5,4,0.3,""],
+  potiron:["Potiron ou courge",30,1,6,0.1,""],
+  celeri:["Céleri-rave",23,1.3,3,0.3,""],
+  endive:["Endives",17,1,2.5,0.1,""],
+  betterave:["Betterave cuite",43,1.6,8,0.1,""],
+  radis:["Radis",15,0.8,2,0.1,""],
+  asperges:["Asperges",25,2.3,2,0.2,""],
+  oignon:["Oignons",35,1.2,6.5,0.2,""],
   champi:["Champignons de Paris",22,2.5,1,0.3,""],
   hverts:["Haricots verts",28,1.8,3.5,0.2,""],
-  carotte:["Carotte",36,0.8,7,0.3,""],
+  carotte:["Carottes",36,0.8,7,0.3,""],
   salade:["Salade verte",15,1.3,1.5,0.2,""],
+  persil:["Persil frais",43,3,4,0.8,""],
   mais:["Maïs (conserve)",90,3,15.5,1.3,""],
-  ppois:["Petits pois",70,5,10,0.5,""]
+  ppois:["Petits pois (surgelés)",70,5,10,0.5,""],
+  ppoisfr:["Petits pois frais",81,5.4,13,0.4,""]
 };
 /* Poids d’une unité, pour afficher « ≈ 3 œufs » */
-const UNITS = {oeuf:[50,"œuf","œufs"],tortilla:[60,"tortilla","tortillas"],galette:[10,"galette","galettes"],banane:[120,"banane","bananes"],pomme:[150,"pomme","pommes"]};
-
+const UNITS = {oeuf:[50,"œuf","œufs"],tortilla:[60,"tortilla","tortillas"],galette:[10,"galette","galettes"],banane:[120,"banane","bananes"],
+  pomme:[150,"pomme","pommes"],poire:[150,"poire","poires"],kiwi:[80,"kiwi","kiwis"],clementine:[60,"clémentine","clémentines"],figue:[50,"figue","figues"],
+  avocat:[150,"avocat","avocats"],pita:[80,"pita","pitas"],bagel:[90,"bagel","bagels"]};
 const TAGS = {porc:"Porc",boeuf:"Bœuf",volaille:"Volaille",poisson:"Poisson",mer:"Fruits de mer",oeuf:"Œufs",lait:"Produits laitiers",gluten:"Gluten",coque:"Arachides et fruits à coque",soja:"Soja"};
 const MEAT = ["porc","boeuf","volaille","poisson","mer"];
-
+/* Mois de saison en France (1 = janvier). Les produits absents de cette liste
+   sont disponibles toute l’année (conserves, surgelés, stockage, cultures sous abri). */
+const SEASON = {
+  tomate:[6,7,8,9], courgette:[6,7,8,9], aubergine:[7,8,9], poivron:[7,8,9,10], concombre:[5,6,7,8,9],
+  asperges:[4,5,6], radis:[4,5,6,7], ppoisfr:[5,6,7], epinards:[3,4,5,6,9,10,11], brocoli:[6,7,8,9,10,11],
+  choufleur:[9,10,11,12,1,2,3], chou:[10,11,12,1,2,3], poireau:[9,10,11,12,1,2,3,4], potiron:[9,10,11,12,1],
+  celeri:[9,10,11,12,1,2,3], endive:[10,11,12,1,2,3,4], betterave:[9,10,11,12,1,2,3],
+  pomme:[8,9,10,11,12,1,2,3], poire:[8,9,10,11,12,1], figue:[8,9,10], fraises:[4,5,6,7], kiwi:[11,12,1,2,3],
+  clementine:[11,12,1,2], fruitsaison:[1,2,3,4,5,6,7,8,9,10,11,12]
+};
+const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+/* Prix moyens estimés en grande surface (France, 2026), en € par kg (ou par litre),
+   pour le poids indiqué dans les recettes (cuit si l’ingrédient est cuit).
+   Remplacés par le prix de ton produit si tu en associes un dans le garde-manger. */
+const PRICE = {
+  avoine:2.2, lait:1.1, laitveg:1.8, skyr:4.5, fb0:2.8, yaourt:2.4, ygrec:4.5, cottage:6, ricotta:12, chevre:14, comte:18,
+  mozza:9, feta:13, parmesan:25, emmental:11, creme:5, beurre:11, oeuf:5, blanc:6, whey:25, banane:2, pomme:2.8, poire:3,
+  figue:10, fraises:8, kiwi:4, clementine:3.5, mangue:5, fruitsaison:3.5, frouges:8, compote:3.5, dattes:8, raisins:8,
+  avocat:7, pbutter:9, cacahuetes:8, amandes:16, noix:18, noisettes:18, chia:12, miel:12, erable:15, sucre:1.3, choco:14,
+  cacao:12, farine:1, sarrasin:5, fecule:5, pain:4.5, painburger:5, pita:6, bagel:7, tortilla:5, pate:6, patepizza:5,
+  galette:9, cereales:6, riz:1, rizrond:1.3, pates:0.8, patesc:1, gnocchis:5, quinoa:2.6, semoule:0.8, boulgour:1.2,
+  orge:1.5, nouilles:2.4, pdt:1.5, pdouce:3, lentilles:1.4, lcorail:1.6, pchiches:3, pcasses:1.4, hrouges:3, hnoirs:4,
+  tofu:9, miso:15, poulet:12, dinde:12, saucisse:10, boeuf5:12, rumsteck:25, paleron:16, veau:18, jambon:15, lardons:12,
+  petitsale:11, saumon:25, saumonf:40, truite:22, cabillaud:25, thon:16, sardines:14, sardfr:9, crevettes:20, moules:12,
+  huile:9, laitcoco:5, pesto:14, houmous:10, olives:12, soja:8, tomate:3.5, tconc:2.2, concombre:2.5, courgette:2.8,
+  aubergine:3.5, poivron:4.5, brocoli:3.5, choufleur:3, chou:2, epinards:3.5, poireau:2.5, potiron:2.2, celeri:2.5,
+  endive:3.5, betterave:3, radis:5, asperges:10, oignon:2, champi:5, hverts:3.5, carotte:1.5, salade:6, persil:20,
+  mais:4, ppois:3.5, ppoisfr:8
+};
 /* =========================================================
-   2. RECETTES (1 portion de base)
-   t : p = petit-déjeuner, d = déjeuner, s = dîner, c = collation
-   m : minutes, b : budget 1 à 3, i : [ingrédient, grammes], e : étapes
+   2. RECETTES (1 portion de base) et COLLATIONS
+   id : identifiant stable (favoris, photos) ; t : p = petit-déjeuner,
+   d = déjeuner, s = dîner, c = dessert ou en-cas ; k : profil
+   (S = Sportif, E = Équilibré, L = Léger) ; m : minutes ;
+   i : [ingrédient, grammes] ; e : étapes ; q : recherche photo Unsplash ;
+   col : collation simple (catégorie séparée des recettes).
    ========================================================= */
 const RECIPES = [
-{n:"Porridge banane et beurre de cacahuète",t:"p",m:10,b:1,i:[["avoine",60],["lait",250],["banane",100],["pbutter",15]],e:["Chauffe le lait avec les flocons 4 à 5 min en remuant.","Ajoute la banane en rondelles et le beurre de cacahuète."]},
-{n:"Overnight oats aux fruits rouges",t:"p",m:5,b:1,i:[["avoine",50],["skyr",150],["lait",100],["frouges",100],["chia",10],["miel",10]],e:["La veille, mélange flocons, skyr, lait, chia et miel dans un bocal.","Ajoute les fruits rouges, ferme et laisse une nuit au frigo."]},
-{n:"Omelette épinards et feta, pain complet",t:"p",m:10,b:1,i:[["oeuf",150],["epinards",60],["feta",30],["pain",60],["huile",5]],e:["Fais tomber les épinards 1 min dans l’huile.","Verse les œufs battus, émiette la feta, cuis 3 min.","Sers avec le pain grillé."]},
-{n:"Pancakes protéinés",t:"p",m:15,b:2,i:[["avoine",50],["oeuf",100],["banane",100],["whey",25],["lait",50],["frouges",80]],e:["Mixe flocons, œufs, banane, whey et lait.","Cuis de petites louches 1 à 2 min par face dans une poêle antiadhésive.","Garnis de fruits rouges."]},
-{n:"Bowl skyr, avoine grillée et fruits rouges",t:"p",m:5,b:2,i:[["skyr",250],["avoine",40],["amandes",15],["miel",10],["frouges",80]],e:["Fais griller flocons et amandes 2 min à sec.","Verse sur le skyr avec les fruits et le miel."]},
-{n:"Tartines avocat et œuf",t:"p",m:10,b:2,i:[["pain",80],["avocat",70],["oeuf",100],["tomate",50]],e:["Cuis les œufs 6 min (mollets) ou au plat.","Écrase l’avocat sur le pain grillé, ajoute tomate et œufs."]},
-{n:"Fromage blanc, pomme, noix et cannelle",t:"p",m:5,b:1,i:[["fb0",250],["pomme",150],["noix",15],["miel",10]],e:["Coupe la pomme en dés.","Mélange au fromage blanc, ajoute noix, miel et une pincée de cannelle."]},
-{n:"Shake petit-déj prise de masse",t:"p",m:5,b:2,i:[["lait",300],["avoine",60],["banane",120],["whey",30],["pbutter",20]],e:["Mixe tout 30 secondes.","Bois tout de suite ou emporte-le."]},
-{n:"Œufs brouillés, jambon et toast",t:"p",m:10,b:1,i:[["oeuf",150],["jambon",50],["pain",60],["beurre",5]],e:["Fonds le beurre à feu doux, ajoute les œufs battus.","Remue sans arrêt 3 min, ajoute le jambon en lanières.","Sers sur le pain grillé."]},
-{n:"Porridge chocolat protéiné",t:"p",m:8,b:2,i:[["avoine",50],["lait",250],["whey",25],["cacao",10],["banane",80]],e:["Cuis flocons et lait 4 min.","Hors du feu, incorpore whey et cacao.","Ajoute la banane."]},
-{n:"Burrito du matin",t:"p",m:12,b:1,i:[["tortilla",60],["oeuf",100],["blanc",100],["poivron",50],["emmental",20]],e:["Poêle le poivron en dés 3 min.","Ajoute œufs et blancs battus, brouille 2 min.","Garnis la tortilla, parsème d’emmental et roule."]},
-{n:"Cottage cheese, fruits rouges et amandes",t:"p",m:3,b:2,i:[["cottage",200],["frouges",100],["amandes",15],["miel",10]],e:["Mets le cottage dans un bol.","Ajoute fruits, amandes concassées et miel."]},
-{n:"Pudding de chia aux fruits rouges",t:"p",m:5,b:2,i:[["chia",25],["lait",150],["skyr",100],["frouges",80],["miel",10]],e:["La veille, mélange chia, lait et miel, remue deux fois en 10 min.","Le matin, ajoute le skyr et les fruits."]},
-{n:"Muffins d’œufs aux légumes",t:"p",m:25,b:1,i:[["oeuf",150],["poivron",50],["epinards",40],["emmental",20],["pain",40]],e:["Bats les œufs avec les légumes hachés et l’emmental.","Verse dans 3 moules à muffins, 18 min à 180 °C.","Sers avec le pain. Se gardent 3 jours au frigo."]},
-{n:"Galettes de riz, beurre de cacahuète et skyr",t:"p",m:5,b:1,i:[["galette",30],["pbutter",20],["banane",100],["skyr",150]],e:["Tartine les galettes de beurre de cacahuète.","Ajoute la banane en rondelles, skyr à côté."]},
-{n:"Crêpes avoine et blancs d’œufs, compote",t:"p",m:15,b:1,i:[["avoine",50],["blanc",150],["compote",100]],e:["Mixe flocons et blancs d’œufs.","Cuis 2 crêpes épaisses à feu moyen.","Nappe de compote."]},
-{n:"Tartine nordique au saumon fumé",t:"p",m:5,b:3,i:[["pain",70],["saumonf",50],["fb0",50],["concombre",50]],e:["Tartine le pain de fromage blanc citronné.","Ajoute concombre en lamelles et saumon."]},
-{n:"Bowl énergie avant l’effort",t:"p",m:8,b:1,i:[["avoine",70],["lait",200],["dattes",30],["banane",100],["amandes",10]],e:["Cuis flocons et lait 4 min.","Ajoute dattes hachées, banane et amandes."]},
+/* ---- Petit-déjeuner ---- */
+{id:"porridge-banane",n:"Porridge banane et beurre de cacahuète",t:"p",k:"S",m:10,i:[["avoine",60],["lait",250],["banane",100],["pbutter",15]],e:["Chauffe le lait avec les flocons 4 à 5 min en remuant.","Ajoute la banane en rondelles et le beurre de cacahuète."],q:"porridge banana peanut butter"},
+{id:"overnight-oats",n:"Overnight oats aux fruits rouges",t:"p",k:"E",m:5,i:[["avoine",50],["skyr",150],["lait",100],["frouges",100],["chia",10],["miel",10]],e:["La veille, mélange flocons, skyr, lait, chia et miel dans un bocal.","Ajoute les fruits rouges, ferme et laisse une nuit au frais."],q:"overnight oats berries jar"},
+{id:"omelette-epinards-feta",n:"Omelette épinards et feta, pain complet",t:"p",k:"S",m:10,i:[["oeuf",150],["epinards",60],["feta",30],["pain",60],["huile",5]],e:["Fais tomber les épinards 1 min dans l’huile.","Verse les œufs battus, émiette la feta, cuis 3 min.","Sers avec le pain grillé."],q:"spinach feta omelette"},
+{id:"pancakes-proteines",n:"Pancakes protéinés aux myrtilles",t:"p",k:"S",m:15,i:[["avoine",50],["oeuf",100],["banane",100],["whey",25],["lait",50],["frouges",80]],e:["Mixe flocons, œufs, banane, whey et lait.","Cuis de petites louches 1 à 2 min par face dans une poêle antiadhésive.","Garnis de myrtilles."],q:"protein pancakes blueberries"},
+{id:"bowl-skyr-granola",n:"Bowl skyr, granola maison et fruits",t:"p",k:"S",m:8,i:[["skyr",250],["avoine",40],["amandes",15],["miel",10],["frouges",80]],e:["Fais griller flocons et amandes concassées 3 min à sec avec le miel.","Laisse tiédir, puis verse sur le skyr avec les fruits."],q:"skyr bowl granola berries"},
+{id:"tartines-avocat-oeuf",n:"Tartines avocat et œuf mollet",t:"p",k:"E",m:10,i:[["pain",80],["avocat",70],["oeuf",100],["tomate",50]],e:["Cuis les œufs 6 min dans l’eau bouillante, refroidis-les et écale-les.","Écrase l’avocat sur le pain grillé avec du citron, ajoute tomate et œufs."],q:"avocado toast soft boiled egg"},
+{id:"pudding-chia",n:"Pudding de chia aux fruits rouges",t:"p",k:"E",m:5,i:[["chia",25],["lait",150],["skyr",100],["frouges",80],["miel",10]],e:["La veille, mélange chia, lait et miel, remue deux fois en 10 min puis laisse au frais.","Le matin, ajoute le skyr et les fruits."],q:"chia pudding berries"},
+{id:"muffins-oeufs",n:"Muffins d’œufs aux légumes",t:"p",k:"S",m:25,i:[["oeuf",150],["poivron",50],["epinards",40],["emmental",20],["pain",40]],e:["Bats les œufs avec les légumes hachés et l’emmental.","Verse dans 3 moules à muffins, 18 min à 180 °C.","Sers avec le pain. Ils se gardent 3 jours au frais."],q:"egg muffins vegetables"},
+{id:"burrito-matin",n:"Burrito du matin",t:"p",k:"S",m:12,i:[["tortilla",60],["oeuf",100],["blanc",100],["poivron",50],["emmental",20]],e:["Poêle le poivron en dés 3 min.","Ajoute œufs et blancs battus, brouille 2 min.","Garnis la tortilla, parsème d’emmental et roule."],q:"breakfast burrito eggs"},
+{id:"tartine-nordique",n:"Tartine nordique au saumon fumé",t:"p",k:"E",m:5,i:[["pain",70],["saumonf",50],["fb0",50],["concombre",50]],e:["Tartine le pain de fromage blanc citronné et d’aneth.","Ajoute le concombre en lamelles et le saumon."],q:"smoked salmon toast cucumber"},
+{id:"granola-maison",n:"Granola maison amandes et miel",t:"p",k:"E",m:20,i:[["avoine",50],["amandes",15],["miel",15],["huile",5],["yaourt",150],["fruitsaison",100]],e:["Mélange flocons, amandes concassées, miel et huile.","Fais dorer 15 min à 170 °C en remuant à mi-cuisson, laisse refroidir.","Sers sur le yaourt avec les fruits de saison."],q:"homemade granola yogurt fruit"},
+{id:"pain-perdu-pommes",n:"Pain perdu aux pommes et cannelle",t:"p",k:"E",m:15,i:[["pain",80],["oeuf",50],["lait",100],["pomme",120],["beurre",5],["sucre",5]],e:["Bats l’œuf avec le lait et la cannelle, trempe les tranches de pain.","Dore-les 2 min par face dans le beurre.","Poêle la pomme en lamelles avec le sucre et sers dessus."],q:"french toast apples cinnamon"},
+{id:"porridge-pomme-cannelle",n:"Porridge pommes-cannelle",t:"p",k:"L",m:10,i:[["avoine",45],["lait",220],["pomme",150],["noix",10],["erable",8]],e:["Cuis flocons et lait 4 min avec la pomme râpée et la cannelle.","Sers avec les noix concassées et le sirop d’érable."],q:"apple cinnamon oatmeal"},
+{id:"porridge-poire-chocolat",n:"Porridge poire-chocolat",t:"p",k:"E",m:10,i:[["avoine",50],["lait",250],["poire",150],["choco",10]],e:["Cuis flocons et lait 4 min en remuant.","Ajoute la poire en dés et le chocolat râpé."],q:"pear chocolate oatmeal"},
+{id:"smoothie-bowl-mangue",n:"Smoothie bowl mangue-banane",t:"p",k:"L",m:5,i:[["mangue",150],["banane",100],["laitveg",150],["avoine",20],["chia",10]],e:["Mixe mangue (surgelée de préférence), banane et boisson végétale jusqu’à obtenir une texture épaisse.","Verse dans un bol, garnis de flocons et de graines de chia."],q:"mango smoothie bowl"},
+{id:"crepe-sarrasin-jambon",n:"Crêpe de sarrasin, œuf et jambon",t:"p",k:"E",m:15,i:[["sarrasin",50],["oeuf",50],["jambon",40],["emmental",20],["beurre",5]],e:["Mélange la farine de sarrasin avec 10 cl d’eau et une pincée de sel.","Cuis la crêpe dans le beurre, casse l’œuf au centre, ajoute jambon et emmental.","Replie les bords quand le blanc est pris."],q:"buckwheat crepe egg ham"},
+{id:"shakshuka",n:"Shakshuka (œufs pochés à la tomate)",t:"p",k:"E",m:20,i:[["oeuf",100],["tconc",200],["poivron",80],["oignon",40],["huile",5],["pain",50]],e:["Fais revenir oignon et poivron 5 min, ajoute les tomates et le cumin, mijote 8 min.","Creuse deux puits, casse les œufs, couvre 6 min.","Sers avec le pain."],q:"shakshuka"},
+{id:"yaourt-compotee-noix",n:"Yaourt, compotée de fruits de saison et noix",t:"p",k:"L",m:12,i:[["yaourt",170],["fruitsaison",150],["noix",15],["miel",5]],e:["Fais compoter les fruits coupés 8 min à feu doux avec un fond d’eau.","Sers tiède sur le yaourt, avec les noix et le miel."],q:"yogurt fruit compote walnuts"},
+{id:"tartines-ricotta-figues",n:"Tartines ricotta, figues et miel",t:"p",k:"E",m:5,i:[["pain",70],["ricotta",60],["figue",100],["miel",10]],e:["Fais griller le pain.","Tartine de ricotta, ajoute les figues en quartiers et un filet de miel."],q:"ricotta fig toast honey"},
+{id:"oeufs-cocotte-champignons",n:"Œufs cocotte aux champignons",t:"p",k:"L",m:20,i:[["oeuf",100],["champi",100],["creme",20],["pain",50],["beurre",5]],e:["Poêle les champignons émincés 5 min dans le beurre.","Répartis-les dans 2 ramequins, casse un œuf dans chacun, ajoute la crème.","Cuis 10 min au four à 180 °C, sers avec le pain."],q:"baked eggs mushrooms ramekin"},
+{id:"bircher-muesli",n:"Bircher muesli pomme-noisette",t:"p",k:"E",m:5,i:[["avoine",50],["yaourt",125],["lait",80],["pomme",120],["noisettes",15],["miel",5]],e:["La veille, mélange flocons, yaourt et lait.","Le matin, râpe la pomme dessus, ajoute les noisettes concassées et le miel."],q:"bircher muesli apple"},
+{id:"banana-bread",n:"Banana bread aux flocons d’avoine",t:"p",k:"E",m:55,i:[["banane",70],["avoine",25],["farine",15],["oeuf",17],["miel",8],["noix",5]],e:["Écrase 3 bananes, mélange avec 3 œufs, 150 g de flocons mixés, 90 g de farine, 50 g de miel et un sachet de levure.","Ajoute les noix, verse dans un moule à cake, 45 min à 180 °C.","Les quantités affichées correspondent à une tranche (1/6 du cake)."],q:"banana bread oats"},
+{id:"gaufres-avoine",n:"Gaufres d’avoine aux fruits rouges",t:"p",k:"E",m:15,i:[["avoine",50],["oeuf",50],["lait",80],["frouges",80],["skyr",80]],e:["Mixe flocons, œuf et lait, laisse reposer 5 min.","Cuis dans un gaufrier huilé 4 à 5 min.","Sers avec les fruits rouges et le skyr."],q:"oat waffles berries"},
+{id:"tofu-brouille",n:"Tofu brouillé aux légumes",t:"p",k:"S",m:15,i:[["tofu",150],["poivron",50],["epinards",40],["oignon",30],["huile",5],["pain",60]],e:["Émiette le tofu à la fourchette.","Poêle oignon et poivron 4 min, ajoute le tofu, le curcuma et les épinards, 4 min.","Sers avec le pain grillé."],q:"tofu scramble vegetables"},
+{id:"smoothie-vert",n:"Smoothie vert épinard, banane et kiwi",t:"p",k:"L",m:5,i:[["epinards",40],["banane",100],["kiwi",80],["laitveg",200],["avoine",20]],e:["Mixe tous les ingrédients 45 secondes.","Bois aussitôt."],q:"green smoothie spinach kiwi"},
 
-{n:"Poulet, riz basmati et brocolis",t:"ds",m:25,b:1,i:[["poulet",150],["riz",200],["brocoli",200],["huile",10]],e:["Cuis le riz et les brocolis à la vapeur.","Poêle le poulet en morceaux 8 min dans l’huile, sale et poivre.","Assemble."]},
-{n:"Bowl poulet teriyaki",t:"ds",m:25,b:2,i:[["poulet",150],["riz",180],["brocoli",100],["carotte",60],["soja",15],["miel",10],["huile",5]],e:["Poêle le poulet en dés 6 min.","Ajoute sauce soja et miel, laisse caraméliser 2 min.","Sers sur le riz avec brocolis vapeur et carotte râpée."]},
-{n:"Saumon, patate douce et haricots verts",t:"ds",m:30,b:3,i:[["saumon",150],["pdouce",250],["hverts",150],["huile",5]],e:["Rôtis la patate douce en cubes 25 min à 200 °C.","Cuis le saumon 12 min au four en même temps.","Haricots verts à la vapeur 8 min."]},
-{n:"Pâtes complètes bolognaise",t:"ds",m:30,b:1,i:[["patesc",220],["boeuf5",130],["tconc",150],["oignon",50],["huile",5],["parmesan",10]],e:["Fais revenir l’oignon, puis le bœuf 5 min.","Ajoute les tomates, mijote 15 min.","Sers sur les pâtes, parsème de parmesan."]},
-{n:"Chili con carne",t:"ds",m:35,b:1,i:[["boeuf5",130],["hrouges",120],["tconc",150],["oignon",50],["poivron",60],["riz",150],["huile",5]],e:["Fais revenir oignon et poivron, puis le bœuf.","Ajoute tomates, haricots, cumin et paprika, mijote 20 min.","Sers avec le riz."]},
-{n:"Curry de pois chiches au lait de coco",t:"ds",m:30,b:1,i:[["pchiches",200],["laitcoco",80],["epinards",80],["tconc",100],["oignon",40],["riz",150]],e:["Fais revenir l’oignon avec 1 c. à café de curry.","Ajoute tomates, lait de coco et pois chiches, mijote 15 min.","Incorpore les épinards, sers avec le riz."]},
-{n:"Wok de dinde et nouilles de riz",t:"ds",m:20,b:1,i:[["dinde",150],["nouilles",200],["poivron",80],["courgette",100],["soja",15],["huile",10]],e:["Saisis la dinde en lanières 4 min à feu vif.","Ajoute les légumes 4 min, puis nouilles et sauce soja."]},
-{n:"Cabillaud en papillote, quinoa et courgettes",t:"ds",m:30,b:2,i:[["cabillaud",180],["quinoa",180],["courgette",150],["tomate",80],["huile",10]],e:["Dispose cabillaud, courgette et tomate en papillote avec l’huile et du citron.","Four 18 min à 200 °C.","Sers avec le quinoa."]},
-{n:"Salade de lentilles et œufs",t:"ds",m:15,b:1,i:[["lentilles",200],["oeuf",100],["tomate",100],["concombre",80],["huile",10]],e:["Cuis les œufs 9 min, écale-les.","Mélange lentilles, légumes en dés, huile, vinaigre et moutarde.","Ajoute les œufs en quartiers."]},
-{n:"Buddha bowl au tofu",t:"ds",m:25,b:2,i:[["tofu",150],["quinoa",150],["avocat",60],["carotte",60],["epinards",40],["soja",10],["huile",5]],e:["Dore le tofu en cubes 8 min, déglace à la sauce soja.","Dispose quinoa, pousses d’épinards, carotte râpée, avocat et tofu."]},
-{n:"Steak haché, pommes de terre sautées et salade",t:"ds",m:25,b:1,i:[["boeuf5",150],["pdt",250],["salade",50],["huile",10]],e:["Fais sauter les pommes de terre en cubes 15 min.","Cuis le steak 2 à 3 min par face.","Sers avec la salade."]},
-{n:"Wraps poulet et crudités",t:"d",m:20,b:1,i:[["tortilla",120],["poulet",130],["salade",30],["tomate",60],["mais",40],["fb0",40]],e:["Poêle le poulet en lanières avec du paprika.","Mélange fromage blanc, citron et ciboulette pour la sauce.","Garnis les tortillas et roule."]},
-{n:"Salade de pâtes au thon",t:"d",m:15,b:1,i:[["pates",200],["thon",100],["tomate",80],["mais",50],["huile",10]],e:["Laisse refroidir les pâtes cuites.","Ajoute thon émietté, tomates, maïs, huile et vinaigre."]},
-{n:"Tortilla espagnole",t:"ds",m:30,b:1,i:[["oeuf",200],["pdt",200],["oignon",50],["huile",10],["salade",50]],e:["Cuis pommes de terre et oignon en fines tranches 12 min à couvert.","Verse les œufs battus, cuis 8 min à feu doux, retourne 2 min.","Sers avec la salade."]},
-{n:"Poulet au curry et riz",t:"ds",m:30,b:1,i:[["poulet",150],["riz",180],["laitcoco",50],["oignon",40],["courgette",100]],e:["Fais revenir l’oignon et le poulet avec le curry.","Ajoute courgette et lait de coco, mijote 12 min.","Sers avec le riz."]},
-{n:"Crevettes sautées, riz et petits pois",t:"ds",m:20,b:3,i:[["crevettes",150],["riz",180],["poivron",80],["ppois",80],["soja",10],["huile",10]],e:["Poêle poivron et petits pois 5 min.","Ajoute riz et crevettes, puis la sauce soja, 3 min à feu vif."]},
-{n:"Pâtes au pesto et poulet",t:"ds",m:20,b:2,i:[["pates",220],["poulet",130],["pesto",25],["tomate",80]],e:["Poêle le poulet en dés 7 min.","Mélange pâtes chaudes, pesto, poulet et tomates cerises."]},
-{n:"Hachis parmentier allégé",t:"ds",m:45,b:1,i:[["boeuf5",140],["pdt",250],["lait",50],["emmental",20],["carotte",60]],e:["Fais une purée avec les pommes de terre cuites et le lait.","Fais revenir le bœuf avec la carotte râpée.","Superpose viande et purée, parsème d’emmental, 20 min à 200 °C."]},
-{n:"Poke bowl au saumon",t:"d",m:20,b:3,i:[["saumon",120],["riz",180],["avocat",60],["concombre",60],["soja",10]],e:["Coupe le saumon très frais en dés, marine 10 min dans la sauce soja.","Dispose sur le riz avec avocat et concombre."]},
-{n:"Couscous de poulet aux légumes",t:"ds",m:35,b:1,i:[["poulet",150],["semoule",200],["courgette",100],["carotte",80],["pchiches",60],["huile",5]],e:["Dore le poulet avec du ras-el-hanout.","Ajoute légumes, pois chiches et 30 cl d’eau, mijote 20 min.","Sers sur la semoule."]},
-{n:"Gratin de courgettes à la dinde",t:"s",m:35,b:1,i:[["dinde",150],["courgette",250],["emmental",25],["creme",30],["riz",150]],e:["Poêle la dinde en dés et les courgettes en rondelles 6 min.","Mets dans un plat avec la crème et l’emmental, 15 min à 200 °C.","Sers avec le riz."]},
-{n:"Quiche sans pâte jambon et épinards",t:"ds",m:35,b:1,i:[["oeuf",150],["lait",100],["jambon",60],["emmental",20],["epinards",50],["salade",50]],e:["Bats œufs et lait, ajoute jambon, épinards et emmental.","Verse dans un plat huilé, 25 min à 180 °C.","Sers avec la salade."]},
-{n:"Burger maison",t:"ds",m:20,b:2,i:[["painburger",75],["boeuf5",150],["emmental",20],["salade",20],["tomate",50],["oignon",20]],e:["Cuis le steak 3 min par face, ajoute l’emmental en fin de cuisson.","Toaste le pain, monte avec salade, tomate et oignon."]},
-{n:"Salade César allégée",t:"d",m:20,b:2,i:[["poulet",150],["salade",100],["parmesan",15],["pain",30],["ygrec",40],["tomate",60]],e:["Grille le poulet, et le pain en croûtons.","Sauce : yaourt grec, citron, moutarde et un peu de parmesan.","Mélange le tout."]},
-{n:"Dahl de lentilles",t:"ds",m:30,b:1,i:[["lentilles",220],["laitcoco",50],["tconc",100],["oignon",40],["riz",120]],e:["Fais revenir l’oignon avec curry et cumin.","Ajoute lentilles, tomates et lait de coco, mijote 15 min.","Sers avec le riz."]},
-{n:"Riz cantonais protéiné",t:"ds",m:20,b:1,i:[["riz",200],["oeuf",100],["jambon",60],["ppois",70],["huile",10],["soja",10]],e:["Brouille les œufs dans l’huile, réserve.","Saute riz, petits pois et jambon 5 min.","Remets les œufs, ajoute la sauce soja."]},
-{n:"Cabillaud, purée maison et épinards",t:"s",m:30,b:2,i:[["cabillaud",180],["pdt",250],["lait",50],["beurre",5],["epinards",100]],e:["Écrase les pommes de terre cuites avec lait et beurre.","Cuis le cabillaud 4 min par face.","Fais tomber les épinards 2 min."]},
-{n:"Chili sin carne",t:"ds",m:30,b:1,i:[["hrouges",200],["mais",60],["tconc",150],["poivron",80],["oignon",40],["riz",150]],e:["Fais revenir oignon et poivron avec cumin et paprika.","Ajoute tomates, haricots et maïs, mijote 15 min.","Sers avec le riz."]},
-{n:"Poulet rôti et patates douces au four",t:"ds",m:40,b:1,i:[["poulet",160],["pdouce",250],["poivron",80],["huile",10]],e:["Mélange patates douces, poivron, poulet, huile et épices sur une plaque.","Four 30 min à 200 °C, retourne à mi-cuisson."]},
-{n:"Pâtes au saumon et épinards",t:"ds",m:25,b:2,i:[["pates",220],["saumon",100],["creme",40],["epinards",60]],e:["Poêle le saumon en dés 4 min.","Ajoute épinards et crème, 2 min.","Mélange aux pâtes."]},
-{n:"Assiette méditerranéenne",t:"d",m:20,b:2,i:[["houmous",80],["poulet",130],["semoule",150],["concombre",80],["tomate",80],["feta",20]],e:["Grille le poulet avec origan et citron.","Dispose semoule, crudités, feta, houmous et poulet."]},
-{n:"Bowl thon, avocat et riz",t:"d",m:10,b:1,i:[["thon",120],["riz",180],["avocat",50],["mais",50],["concombre",60]],e:["Dispose le riz, ajoute thon, maïs, concombre et avocat.","Assaisonne de citron."]},
-{n:"Bœuf sauté aux poivrons et riz",t:"ds",m:20,b:3,i:[["rumsteck",150],["poivron",120],["oignon",40],["riz",180],["soja",10],["huile",10]],e:["Saisis le bœuf en lanières 2 min à feu très vif, réserve.","Poêle poivron et oignon 5 min, remets le bœuf et la sauce soja.","Sers avec le riz."]},
-{n:"Sardines, pommes de terre et salade",t:"ds",m:15,b:1,i:[["sardines",100],["pdt",250],["salade",60],["tomate",80],["huile",5]],e:["Cuis les pommes de terre à l’eau 12 min.","Sers tièdes avec sardines, salade et tomates."]},
-{n:"Soupe de lentilles et tartines",t:"s",m:35,b:1,i:[["lentilles",200],["carotte",80],["tconc",100],["oignon",40],["pain",60]],e:["Fais revenir oignon et carotte, ajoute lentilles, tomates et 40 cl d’eau.","Mijote 20 min et mixe à moitié.","Sers avec le pain grillé."]},
-{n:"Omelette aux champignons et salade",t:"s",m:15,b:1,i:[["oeuf",150],["blanc",100],["champi",120],["salade",80],["huile",5]],e:["Poêle les champignons 5 min.","Verse œufs et blancs battus, cuis 3 min.","Sers avec la salade."]},
-{n:"Velouté de courgettes et tartines jambon",t:"s",m:30,b:1,i:[["courgette",300],["pdt",100],["pain",60],["jambon",60],["fb0",30]],e:["Cuis courgettes et pomme de terre 20 min dans l’eau, mixe.","Tartine le pain de fromage blanc, ajoute le jambon."]},
-{n:"Salade de quinoa, feta et pois chiches",t:"d",m:15,b:1,i:[["quinoa",150],["pchiches",100],["feta",40],["concombre",80],["tomate",80],["huile",10]],e:["Mélange quinoa froid, pois chiches et légumes en dés.","Ajoute feta, huile, citron et menthe."]},
-{n:"Poulet basquaise",t:"ds",m:35,b:1,i:[["poulet",150],["poivron",120],["tconc",100],["oignon",40],["riz",170],["huile",5]],e:["Dore le poulet, ajoute oignon et poivrons 5 min.","Ajoute les tomates, mijote 20 min.","Sers avec le riz."]},
-{n:"Pizza tortilla jambon et champignons",t:"s",m:15,b:1,i:[["tortilla",60],["tconc",60],["mozza",60],["jambon",60],["champi",50]],e:["Étale les tomates sur la tortilla.","Ajoute jambon, champignons et mozzarella.","Four 10 min à 220 °C."]},
-{n:"Croque-monsieur léger et salade",t:"s",m:15,b:1,i:[["pain",80],["jambon",60],["emmental",25],["salade",60],["tomate",60]],e:["Garnis le pain de jambon et d’emmental.","Dore 4 min par face à la poêle ou 8 min au four.","Sers avec salade et tomate."]},
-{n:"Tofu sauté aux nouilles et brocolis",t:"ds",m:20,b:2,i:[["tofu",180],["nouilles",180],["brocoli",100],["soja",15],["huile",10]],e:["Dore le tofu en cubes 8 min.","Ajoute les brocolis 4 min, puis nouilles et sauce soja."]},
-{n:"Dinde à la crème de champignons, pâtes",t:"ds",m:25,b:1,i:[["dinde",150],["champi",120],["creme",40],["pates",200]],e:["Dore la dinde en lanières 5 min.","Ajoute les champignons 5 min, puis la crème.","Sers avec les pâtes."]},
-{n:"Saumon et lentilles aux épinards",t:"s",m:20,b:3,i:[["saumon",130],["lentilles",180],["epinards",60],["huile",5]],e:["Cuis le saumon côté peau 6 min, retourne 2 min.","Réchauffe les lentilles avec les épinards.","Arrose d’un filet de citron."]},
-{n:"Bowl crevettes, quinoa et avocat",t:"d",m:15,b:3,i:[["crevettes",130],["quinoa",160],["avocat",50],["tomate",80],["salade",40]],e:["Dispose quinoa et salade.","Ajoute crevettes, avocat et tomates, assaisonne citron et huile."]},
-{n:"Pâtes complètes thon et tomate",t:"ds",m:20,b:1,i:[["patesc",220],["thon",100],["tconc",120],["oignon",30],["huile",5]],e:["Fais revenir l’oignon, ajoute les tomates 10 min.","Incorpore le thon, mélange aux pâtes."]},
+/* ---- Classiques français ---- */
+{id:"poulet-roti-legumes",n:"Poulet rôti, pommes de terre et haricots verts",t:"ds",k:"E",m:35,i:[["poulet",150],["pdt",250],["hverts",150],["huile",10]],e:["Rôtis le poulet assaisonné 25 min à 200 °C avec les pommes de terre en quartiers et l’huile.","Cuis les haricots verts 8 min à la vapeur."],q:"roast chicken potatoes green beans"},
+{id:"hachis-parmentier",n:"Hachis parmentier",t:"ds",k:"E",m:45,i:[["boeuf5",140],["pdt",250],["lait",50],["emmental",20],["carotte",60],["oignon",30]],e:["Fais une purée avec les pommes de terre cuites et le lait.","Fais revenir oignon, carotte râpée et bœuf 6 min.","Monte la viande puis la purée, parsème d’emmental, 20 min à 200 °C."],q:"shepherds pie"},
+{id:"boeuf-bourguignon",n:"Bœuf bourguignon allégé",t:"ds",k:"S",m:150,i:[["paleron",160],["carotte",100],["champi",80],["oignon",40],["pdt",200],["huile",5]],e:["Fais dorer la viande en cubes dans l’huile, ajoute oignon et carottes.","Mouille à hauteur de bouillon (et de vin rouge si tu veux), mijote 2 h à couvert.","Ajoute les champignons 20 min avant la fin, sers avec les pommes de terre vapeur."],q:"beef bourguignon"},
+{id:"blanquette-veau",n:"Blanquette de veau légère",t:"ds",k:"E",m:100,i:[["veau",150],["carotte",80],["champi",60],["creme",30],["riz",150]],e:["Couvre la viande d’eau froide, porte à frémissement, écume, puis mijote 1 h 15 avec les carottes et un bouquet garni.","Ajoute les champignons 15 min, puis lie la sauce avec la crème hors du feu.","Sers avec le riz."],q:"blanquette de veau"},
+{id:"quiche-lorraine",n:"Quiche lorraine allégée",t:"ds",k:"E",m:45,i:[["pate",50],["oeuf",75],["lait",80],["creme",20],["lardons",30],["salade",60]],e:["Étale la pâte dans un moule et pique-la.","Fais revenir les lardons, bats œufs, lait et crème, verse sur les lardons.","Cuis 30 min à 180 °C. Une part = 1/4 de quiche, servie avec la salade."],q:"quiche lorraine"},
+{id:"gratin-dauphinois",n:"Gratin dauphinois et salade verte",t:"ds",k:"E",m:75,i:[["pdt",300],["lait",120],["creme",30],["emmental",15],["salade",80]],e:["Coupe les pommes de terre en fines rondelles, frotte le plat avec de l’ail.","Couvre de lait et de crème salés, poivrés et muscadés, parsème d’emmental.","Cuis 1 h à 170 °C, sers avec la salade."],q:"gratin dauphinois"},
+{id:"ratatouille-riz",n:"Ratatouille et riz",t:"ds",k:"L",m:45,i:[["courgette",120],["aubergine",120],["poivron",80],["tomate",120],["oignon",40],["huile",10],["riz",150]],e:["Fais revenir l’oignon dans l’huile, ajoute aubergine et poivron 8 min.","Ajoute courgette, tomates, ail et herbes de Provence, mijote 25 min.","Sers avec le riz."],q:"ratatouille"},
+{id:"poelee-automnale",n:"Poêlée automnale et saucisses de volaille",t:"ds",k:"E",m:35,i:[["potiron",200],["champi",100],["saucisse",120],["oignon",30],["huile",5],["pdt",150]],e:["Dore les saucisses 10 min, réserve.","Poêle potiron en dés, pommes de terre et oignon 15 min à couvert, puis les champignons 5 min.","Remets les saucisses et assaisonne de thym."],q:"squash mushrooms sausage skillet"},
+{id:"pot-au-feu",n:"Pot-au-feu",t:"ds",k:"E",m:170,i:[["paleron",150],["carotte",120],["poireau",100],["pdt",200],["chou",80]],e:["Couvre la viande d’eau froide avec un oignon piqué de clous de girofle et un bouquet garni, mijote 2 h en écumant.","Ajoute carottes, poireaux, chou et pommes de terre pour 40 min.","Sers avec un peu de bouillon, de la moutarde et du gros sel."],q:"pot au feu"},
+{id:"croque-monsieur",n:"Croque-monsieur et salade",t:"ds",k:"E",m:15,i:[["pain",80],["jambon",60],["emmental",25],["salade",60],["tomate",60]],e:["Garnis le pain de jambon et d’emmental.","Dore 4 min par face à la poêle ou 8 min au four.","Sers avec la salade et la tomate."],q:"croque monsieur salad"},
+{id:"galette-complete",n:"Galette de sarrasin complète",t:"ds",k:"E",m:15,i:[["sarrasin",60],["oeuf",50],["jambon",50],["emmental",25],["salade",50],["beurre",5]],e:["Mélange la farine de sarrasin avec 12 cl d’eau et une pincée de sel.","Cuis la galette dans le beurre, casse l’œuf au centre, ajoute jambon et emmental.","Replie les bords et sers avec la salade."],q:"galette complete buckwheat"},
+{id:"steak-hache-puree",n:"Steak haché, purée maison et salade",t:"ds",k:"S",m:30,i:[["boeuf5",150],["pdt",250],["lait",50],["beurre",5],["salade",50]],e:["Cuis les pommes de terre 20 min, écrase-les avec le lait et le beurre.","Cuis le steak 2 à 3 min par face.","Sers avec la purée et la salade."],q:"steak mashed potatoes salad"},
+{id:"cabillaud-puree-celeri",n:"Cabillaud et purée de céleri",t:"ds",k:"L",m:30,i:[["cabillaud",180],["celeri",200],["pdt",100],["lait",50],["beurre",5],["epinards",80]],e:["Cuis céleri et pomme de terre en morceaux 20 min, mixe avec le lait et le beurre.","Cuis le cabillaud 4 min par face.","Fais tomber les épinards 2 min."],q:"cod celeriac puree"},
+{id:"endives-jambon",n:"Endives au jambon gratinées",t:"ds",k:"E",m:45,i:[["endive",250],["jambon",80],["lait",150],["farine",10],["beurre",8],["emmental",20]],e:["Cuis les endives 15 min à la vapeur et égoutte-les bien.","Prépare une béchamel : beurre et farine 1 min, puis le lait en fouettant jusqu’à épaississement.","Roule les endives dans le jambon, nappe de béchamel et d’emmental, 20 min à 200 °C."],q:"endives ham gratin"},
+{id:"tomates-farcies",n:"Tomates farcies",t:"ds",k:"E",m:55,i:[["tomate",300],["boeuf5",120],["oignon",30],["pain",15],["riz",150]],e:["Évide les tomates.","Mélange bœuf, oignon haché, mie de pain trempée, persil, sel et poivre, puis farcis les tomates.","Cuis 40 min à 180 °C, sers avec le riz."],q:"stuffed tomatoes"},
+{id:"petit-sale-lentilles",n:"Petit salé aux lentilles",t:"ds",k:"S",m:75,i:[["petitsale",120],["lentilles",220],["carotte",80],["oignon",30]],e:["Dessale la viande 1 h dans l’eau froide si besoin.","Mijote-la 1 h avec carotte, oignon et un bouquet garni.","Ajoute les lentilles cuites 10 min avant la fin."],q:"pork lentils stew"},
 
-{n:"Skyr et fruits rouges",t:"c",m:2,b:1,i:[["skyr",200],["frouges",100]],e:["Mélange, c’est prêt."]},
-{n:"Shake whey et banane",t:"c",m:2,b:2,i:[["whey",30],["lait",250],["banane",100]],e:["Mixe 20 secondes."]},
-{n:"Galettes de riz au beurre de cacahuète",t:"c",m:2,b:1,i:[["galette",20],["pbutter",15]],e:["Tartine les galettes."]},
-{n:"Pomme et amandes",t:"c",m:1,b:1,i:[["pomme",150],["amandes",20]],e:["À emporter partout."]},
-{n:"Œufs durs et tomates cerises",t:"c",m:12,b:1,i:[["oeuf",100],["tomate",100]],e:["Cuis les œufs 9 min, refroidis-les à l’eau froide.","Sers avec les tomates et une pincée de sel."]},
-{n:"Cottage cheese et concombre",t:"c",m:3,b:1,i:[["cottage",150],["concombre",100]],e:["Coupe le concombre en bâtonnets à tremper dans le cottage poivré."]},
-{n:"Energy balls dattes et avoine",t:"c",m:15,b:1,i:[["dattes",40],["avoine",30],["pbutter",15],["cacao",5]],e:["Mixe tout jusqu’à obtenir une pâte.","Forme 4 boules, 30 min au frigo."]},
-{n:"Fromage blanc chocolat protéiné",t:"c",m:3,b:1,i:[["fb0",200],["whey",15],["cacao",5]],e:["Mélange énergiquement jusqu’à ce que ce soit lisse."]},
-{n:"Roulés de jambon au fromage blanc",t:"c",m:5,b:1,i:[["jambon",60],["fb0",40],["concombre",50]],e:["Tartine les tranches de fromage blanc aux herbes.","Ajoute un bâtonnet de concombre et roule."]},
-{n:"Banane et chocolat noir",t:"c",m:1,b:1,i:[["banane",120],["choco",15]],e:["Idéal 30 à 60 min avant la séance."]},
-{n:"Houmous et bâtonnets de carotte",t:"c",m:5,b:1,i:[["houmous",60],["carotte",120]],e:["Coupe les carottes en bâtonnets et trempe."]},
-{n:"Tartine au thon",t:"c",m:5,b:1,i:[["pain",50],["thon",60],["fb0",20]],e:["Écrase le thon avec le fromage blanc, du citron et du poivre.","Tartine."]},
-{n:"Yaourt grec, miel et noix",t:"c",m:2,b:2,i:[["ygrec",150],["miel",10],["noix",15]],e:["Verse le miel sur le yaourt, ajoute les noix."]},
-{n:"Barre maison avoine et whey",t:"c",m:10,b:2,i:[["avoine",40],["whey",20],["pbutter",15],["miel",10]],e:["Mélange tout avec 1 c. à soupe d’eau.","Tasse en barre, 1 h au frigo."]},
-{n:"Skyr, compote et graines de chia",t:"c",m:2,b:1,i:[["compote",100],["skyr",150],["chia",10]],e:["Superpose dans un verre."]},
-{n:"Tartine beurre de cacahuète et miel",t:"c",m:2,b:1,i:[["pain",60],["pbutter",15],["miel",10]],e:["Tartine. Parfait avant une séance longue."]}
+/* ---- Cuisines du monde ---- */
+{id:"chili-con-carne",n:"Chili con carne",t:"ds",k:"S",m:35,i:[["boeuf5",130],["hrouges",120],["tconc",150],["oignon",50],["poivron",60],["riz",150],["huile",5]],e:["Fais revenir oignon et poivron, puis le bœuf.","Ajoute tomates, haricots, cumin et paprika, mijote 20 min.","Sers avec le riz."],q:"chili con carne rice"},
+{id:"chili-sin-carne",n:"Chili sin carne",t:"ds",k:"E",m:30,i:[["hrouges",200],["mais",60],["tconc",150],["poivron",80],["oignon",40],["riz",150]],e:["Fais revenir oignon et poivron avec cumin et paprika.","Ajoute tomates, haricots et maïs, mijote 15 min.","Sers avec le riz."],q:"vegetarian chili beans"},
+{id:"curry-pois-chiches",n:"Curry de pois chiches au lait de coco",t:"ds",k:"E",m:30,i:[["pchiches",200],["laitcoco",80],["epinards",80],["tconc",100],["oignon",40],["riz",150]],e:["Fais revenir l’oignon avec 1 c. à café de curry.","Ajoute tomates, lait de coco et pois chiches, mijote 15 min.","Incorpore les épinards, sers avec le riz."],q:"chickpea coconut curry"},
+{id:"dahl-lentilles",n:"Dahl de lentilles corail",t:"ds",k:"E",m:30,i:[["lcorail",220],["laitcoco",50],["tconc",100],["oignon",40],["riz",120]],e:["Fais revenir l’oignon avec curry, cumin et curcuma.","Ajoute lentilles, tomates et lait de coco, mijote 15 min.","Sers avec le riz."],q:"red lentil dal rice"},
+{id:"poulet-tikka",n:"Poulet tikka masala et riz basmati",t:"ds",k:"S",m:35,i:[["poulet",150],["yaourt",60],["tconc",120],["creme",20],["oignon",40],["riz",180]],e:["Fais mariner le poulet en dés dans le yaourt et les épices tikka, au moins 15 min.","Saisis-le 5 min, ajoute l’oignon puis les tomates, mijote 15 min et termine par la crème.","Sers avec le riz basmati."],q:"chicken tikka masala rice"},
+{id:"pad-thai-crevettes",n:"Pad thaï aux crevettes",t:"ds",k:"E",m:25,i:[["nouilles",200],["crevettes",120],["oeuf",50],["carotte",60],["cacahuetes",15],["soja",15],["huile",10]],e:["Fais tremper les nouilles selon le paquet.","Saisis crevettes et carotte en julienne 3 min, pousse sur le côté et brouille l’œuf.","Ajoute nouilles, sauce soja et citron vert, parsème de cacahuètes concassées."],q:"pad thai shrimp"},
+{id:"bowl-teriyaki",n:"Bowl poulet teriyaki",t:"ds",k:"S",m:25,i:[["poulet",150],["riz",180],["brocoli",100],["carotte",60],["soja",15],["miel",10],["huile",5]],e:["Poêle le poulet en dés 6 min.","Ajoute sauce soja et miel, laisse caraméliser 2 min.","Sers sur le riz avec brocolis vapeur et carotte râpée."],q:"teriyaki chicken bowl"},
+{id:"poke-saumon",n:"Poke bowl au saumon",t:"d",k:"S",m:20,i:[["saumon",120],["riz",180],["avocat",60],["concombre",60],["soja",10]],e:["Coupe le saumon très frais en dés et fais-le mariner 10 min dans la sauce soja.","Dispose sur le riz avec l’avocat et le concombre, parsème de sésame."],q:"salmon poke bowl"},
+{id:"bibimbap-boeuf",n:"Bibimbap au bœuf",t:"ds",k:"S",m:30,i:[["rumsteck",120],["riz",180],["oeuf",50],["epinards",60],["carotte",60],["soja",10],["huile",5]],e:["Saisis le bœuf en fines lanières avec la sauce soja 2 min.","Fais sauter carottes et épinards séparément, cuis l’œuf au plat.","Dispose le tout sur le riz, avec du piment coréen si tu aimes."],q:"bibimbap beef"},
+{id:"couscous-poulet",n:"Couscous de poulet aux légumes",t:"ds",k:"E",m:35,i:[["poulet",150],["semoule",200],["courgette",100],["carotte",80],["pchiches",60],["huile",5]],e:["Dore le poulet avec du ras-el-hanout.","Ajoute légumes, pois chiches et 30 cl d’eau, mijote 20 min.","Sers sur la semoule."],q:"chicken couscous vegetables"},
+{id:"tajine-poulet",n:"Tajine de poulet aux légumes",t:"ds",k:"L",m:45,i:[["poulet",140],["carotte",100],["courgette",100],["pchiches",60],["oignon",40],["semoule",100],["huile",5]],e:["Dore le poulet avec oignon, gingembre et cumin.","Ajoute carottes, courgettes, pois chiches et 20 cl d’eau, mijote 30 min à couvert.","Sers avec la semoule et un peu de coriandre."],q:"chicken tagine vegetables"},
+{id:"fajitas-poulet",n:"Fajitas de poulet aux poivrons",t:"ds",k:"S",m:25,i:[["tortilla",120],["poulet",140],["poivron",120],["oignon",50],["huile",5],["yaourt",40]],e:["Saisis le poulet en lanières avec les épices à fajitas, 5 min.","Ajoute poivrons et oignon émincés, 5 min.","Garnis les tortillas, avec une cuillère de yaourt."],q:"chicken fajitas peppers"},
+{id:"bowl-burrito",n:"Bowl burrito aux haricots noirs",t:"ds",k:"E",m:15,i:[["hnoirs",150],["riz",150],["mais",60],["tomate",80],["avocat",50],["salade",30]],e:["Réchauffe les haricots avec cumin et paprika.","Dispose riz, haricots, maïs, tomates, avocat et salade.","Ajoute du citron vert et de la sauce piquante."],q:"burrito bowl black beans"},
+{id:"moussaka",n:"Moussaka allégée",t:"ds",k:"L",m:70,i:[["aubergine",250],["boeuf5",100],["tconc",100],["oignon",30],["lait",80],["farine",8],["emmental",15],["huile",5]],e:["Rôtis les aubergines en tranches 20 min à 200 °C.","Fais revenir oignon et bœuf, ajoute tomates et cannelle, 10 min.","Alterne aubergines et viande, nappe d’une béchamel légère et d’emmental, 30 min à 180 °C."],q:"moussaka"},
+{id:"paella",n:"Paella au poulet et fruits de mer",t:"ds",k:"S",m:40,i:[["riz",180],["poulet",100],["crevettes",60],["moules",60],["poivron",60],["ppois",40],["tconc",50],["huile",10]],e:["Dore le poulet dans l’huile, ajoute poivron, tomates et une pincée de safran.","Ajoute le riz cuit et un peu de bouillon, mélange 5 min.","Incorpore crevettes, moules et petits pois, réchauffe 5 min."],q:"paella seafood chicken"},
+{id:"risotto-champignons",n:"Risotto aux champignons",t:"ds",k:"E",m:35,i:[["rizrond",200],["champi",150],["oignon",30],["parmesan",15],["beurre",5],["huile",5]],e:["Fais revenir l’oignon, puis nacre le riz (cru) 2 min.","Mouille de bouillon chaud louche par louche pendant 18 min en remuant, ajoute les champignons poêlés à mi-cuisson.","Hors du feu, ajoute parmesan et beurre."],q:"mushroom risotto"},
+{id:"gnocchis-tomate-mozza",n:"Gnocchis à la tomate et mozzarella",t:"ds",k:"E",m:20,i:[["gnocchis",250],["tconc",150],["mozza",60],["huile",5]],e:["Poêle les gnocchis 5 min dans l’huile.","Ajoute la sauce tomate et le basilic, 5 min.","Parsème de mozzarella et gratine 5 min au four."],q:"gnocchi tomato mozzarella"},
+{id:"wok-boeuf-legumes",n:"Wok de bœuf aux légumes",t:"ds",k:"S",m:25,i:[["rumsteck",140],["nouilles",180],["brocoli",100],["carotte",60],["poivron",60],["soja",15],["huile",10]],e:["Saisis le bœuf en lanières 2 min à feu vif, réserve.","Fais sauter les légumes 5 min, ajoute nouilles, bœuf et sauce soja."],q:"beef stir fry vegetables"},
+{id:"riz-cantonais",n:"Riz cantonais",t:"ds",k:"E",m:20,i:[["riz",200],["oeuf",100],["jambon",60],["ppois",70],["huile",10],["soja",10]],e:["Brouille les œufs dans l’huile, réserve.","Fais sauter riz, petits pois et jambon 5 min.","Remets les œufs et ajoute la sauce soja."],q:"egg fried rice"},
+{id:"falafels-houmous",n:"Falafels maison, houmous et taboulé",t:"ds",k:"E",m:35,i:[["pchiches",150],["oignon",30],["farine",10],["huile",15],["houmous",50],["boulgour",100],["tomate",60],["persil",20]],e:["Mixe pois chiches, oignon, ail, cumin, coriandre et farine, forme 6 galettes.","Dore-les 4 min par face dans l’huile.","Sers avec le houmous et un taboulé de boulgour, tomates et persil."],q:"falafel hummus tabbouleh"},
+
+/* ---- Pâtes, riz et céréales ---- */
+{id:"pates-bolognaise",n:"Pâtes complètes bolognaise",t:"ds",k:"S",m:30,i:[["patesc",220],["boeuf5",130],["tconc",150],["oignon",50],["huile",5],["parmesan",10]],e:["Fais revenir l’oignon, puis le bœuf 5 min.","Ajoute les tomates, mijote 15 min.","Sers sur les pâtes, parsème de parmesan."],q:"spaghetti bolognese"},
+{id:"pates-pesto-poulet",n:"Pâtes au pesto, poulet et tomates cerises",t:"ds",k:"S",m:20,i:[["pates",220],["poulet",130],["pesto",25],["tomate",80]],e:["Poêle le poulet en dés 7 min.","Mélange pâtes chaudes, pesto, poulet et tomates cerises coupées en deux."],q:"pesto pasta chicken"},
+{id:"pates-saumon",n:"Pâtes au saumon et épinards",t:"ds",k:"S",m:25,i:[["pates",220],["saumon",100],["creme",40],["epinards",60]],e:["Poêle le saumon en dés 4 min.","Ajoute épinards et crème, 2 min.","Mélange aux pâtes."],q:"salmon spinach pasta"},
+{id:"lasagnes-legumes",n:"Lasagnes aux légumes",t:"ds",k:"E",m:60,i:[["pates",120],["courgette",120],["aubergine",80],["tconc",120],["ricotta",60],["mozza",30],["epinards",50]],e:["Poêle courgettes et aubergines en dés 8 min.","Alterne feuilles de lasagne, sauce tomate, légumes, épinards et ricotta.","Termine par la mozzarella, 35 min à 180 °C."],q:"vegetable lasagna"},
+{id:"pates-courge-sauge",n:"Pâtes à la courge rôtie et sauge",t:"ds",k:"L",m:35,i:[["pates",200],["potiron",200],["parmesan",10],["huile",10],["noisettes",10]],e:["Rôtis la courge en dés 25 min à 200 °C avec l’huile.","Mélange aux pâtes avec quelques feuilles de sauge poêlées.","Parsème de parmesan et de noisettes concassées."],q:"butternut squash pasta sage"},
+{id:"one-pot-pasta",n:"One pot pasta tomate-basilic",t:"ds",k:"L",m:20,i:[["pates",200],["tomate",150],["oignon",30],["huile",5],["parmesan",10],["epinards",40]],e:["Mets les pâtes crues, les tomates cerises, l’oignon émincé, l’ail et le basilic dans une sauteuse, couvre d’eau.","Cuis 12 min en remuant jusqu’à absorption, ajoute les épinards.","Sers avec le parmesan."],q:"one pot pasta tomato basil"},
+{id:"carbonara",n:"Carbonara allégée",t:"ds",k:"E",m:20,i:[["pates",220],["lardons",35],["oeuf",50],["parmesan",12]],e:["Fais dorer les lardons sans matière grasse.","Bats l’œuf avec le parmesan et du poivre.","Hors du feu, mélange les pâtes chaudes avec les lardons puis l’œuf, avec un peu d’eau de cuisson."],q:"spaghetti carbonara"},
+{id:"risotto-orge-poireaux",n:"Risotto d’orge perlé aux poireaux",t:"ds",k:"E",m:30,i:[["orge",200],["poireau",150],["parmesan",15],["huile",5],["creme",15]],e:["Fais fondre les poireaux émincés 8 min dans l’huile.","Ajoute l’orge cuit et un peu de bouillon, 8 min.","Termine avec la crème et le parmesan."],q:"pearl barley risotto leeks"},
+{id:"risotto-asperges",n:"Risotto aux asperges et petits pois",t:"ds",k:"E",m:35,i:[["rizrond",200],["asperges",150],["ppoisfr",60],["parmesan",15],["oignon",30],["huile",5]],e:["Fais revenir l’oignon, puis nacre le riz (cru) 2 min.","Mouille de bouillon chaud louche par louche pendant 18 min, ajoute les asperges en tronçons et les petits pois à mi-cuisson.","Hors du feu, ajoute le parmesan."],q:"asparagus risotto peas"},
+{id:"boulgour-legumes-feta",n:"Boulgour aux légumes rôtis et feta",t:"ds",k:"L",m:35,i:[["boulgour",180],["courgette",100],["poivron",80],["oignon",30],["feta",40],["huile",10]],e:["Rôtis les légumes en dés 25 min à 200 °C avec l’huile.","Mélange au boulgour cuit, ajoute la feta émiettée et de la menthe."],q:"bulgur roasted vegetables feta"},
+
+/* ---- Végétarien et vegan ---- */
+{id:"buddha-bowl-tofu",n:"Buddha bowl au tofu",t:"ds",k:"E",m:25,i:[["tofu",150],["quinoa",150],["avocat",60],["carotte",60],["epinards",40],["soja",10],["huile",5]],e:["Dore le tofu en cubes 8 min, déglace à la sauce soja.","Dispose quinoa, pousses d’épinards, carotte râpée, avocat et tofu."],q:"tofu buddha bowl"},
+{id:"curry-patate-douce",n:"Curry de patate douce et épinards",t:"ds",k:"L",m:35,i:[["pdouce",200],["epinards",80],["laitcoco",60],["tconc",80],["oignon",30],["riz",120]],e:["Fais revenir l’oignon avec curry et gingembre.","Ajoute la patate douce en dés, les tomates et le lait de coco, mijote 20 min.","Incorpore les épinards, sers avec le riz."],q:"sweet potato spinach curry"},
+{id:"gratin-courgettes-chevre",n:"Gratin de courgettes au chèvre",t:"ds",k:"L",m:35,i:[["courgette",300],["chevre",40],["oeuf",50],["lait",50],["pain",40]],e:["Poêle les courgettes en rondelles 8 min.","Mets-les dans un plat, verse l’œuf battu avec le lait, ajoute le chèvre en rondelles.","Cuis 20 min à 200 °C, sers avec le pain."],q:"zucchini goat cheese gratin"},
+{id:"galettes-legumes",n:"Galettes de légumes et sauce yaourt",t:"ds",k:"L",m:25,i:[["pdouce",120],["carotte",80],["oeuf",50],["farine",20],["huile",10],["yaourt",80]],e:["Râpe patate douce et carotte, mélange avec l’œuf, la farine, le cumin et du sel.","Forme 4 galettes et dore-les 4 min par face dans l’huile.","Sers avec le yaourt citronné et de la menthe."],q:"vegetable fritters yogurt sauce"},
+{id:"choufleur-roti",n:"Chou-fleur rôti au curcuma et pois chiches",t:"ds",k:"L",m:40,i:[["choufleur",300],["pchiches",120],["huile",10],["quinoa",100]],e:["Mélange le chou-fleur en fleurettes et les pois chiches avec l’huile, le curcuma et le cumin.","Rôtis 30 min à 200 °C.","Sers sur le quinoa avec un filet de citron."],q:"roasted cauliflower chickpeas turmeric"},
+{id:"tarte-legumes-soleil",n:"Tarte fine aux légumes du soleil",t:"ds",k:"L",m:45,i:[["pate",50],["courgette",100],["tomate",100],["aubergine",60],["chevre",25],["huile",5]],e:["Étale la pâte sur une plaque.","Dispose les légumes en fines rondelles et le chèvre, arrose d’huile et d’herbes.","Cuis 30 min à 200 °C. Une part = 1/4 de tarte."],q:"vegetable tart summer"},
+{id:"omelette-champignons",n:"Omelette aux champignons et salade",t:"ds",k:"L",m:15,i:[["oeuf",150],["blanc",100],["champi",120],["salade",80],["huile",5]],e:["Poêle les champignons 5 min.","Verse œufs et blancs battus, cuis 3 min.","Sers avec la salade."],q:"mushroom omelette salad"},
+{id:"aubergines-farcies",n:"Aubergines farcies au boulgour",t:"ds",k:"L",m:50,i:[["aubergine",300],["boulgour",100],["tomate",100],["oignon",30],["pchiches",60],["huile",10]],e:["Coupe les aubergines en deux, évide-les et rôtis-les 20 min à 200 °C.","Poêle la chair hachée avec oignon, tomates et pois chiches, ajoute le boulgour cuit.","Farcis et enfourne 15 min."],q:"stuffed eggplant bulgur"},
+{id:"poelee-oeufs",n:"Poêlée de légumes et œufs au plat",t:"ds",k:"L",m:20,i:[["courgette",100],["poivron",80],["champi",80],["oignon",30],["oeuf",100],["huile",10],["pain",50]],e:["Poêle les légumes émincés 10 min dans l’huile.","Creuse deux puits, casse les œufs et couvre 4 min.","Sers avec le pain."],q:"vegetable skillet fried eggs"},
+{id:"steaks-lentilles",n:"Steaks de lentilles maison et légumes",t:"ds",k:"E",m:30,i:[["lentilles",200],["avoine",30],["oignon",30],["carotte",50],["huile",10],["salade",60],["tomate",80]],e:["Mixe grossièrement lentilles, flocons, oignon, carotte râpée et épices.","Forme 3 steaks et dore-les 4 min par face.","Sers avec la salade et les tomates."],q:"lentil patties salad"},
+{id:"potiron-farci",n:"Potiron farci au quinoa",t:"ds",k:"L",m:55,i:[["potiron",300],["quinoa",150],["champi",60],["noisettes",15],["oignon",30],["huile",5]],e:["Coupe un petit potiron en deux, épépine-le et rôtis-le 35 min à 190 °C.","Poêle oignon et champignons, mélange au quinoa et aux noisettes.","Farcis le potiron et remets 10 min au four."],q:"stuffed pumpkin quinoa"},
+{id:"tortilla-espagnole",n:"Tortilla espagnole",t:"ds",k:"E",m:30,i:[["oeuf",200],["pdt",200],["oignon",50],["huile",10],["salade",50]],e:["Cuis pommes de terre et oignon en fines tranches 12 min à couvert.","Verse les œufs battus, cuis 8 min à feu doux, retourne 2 min.","Sers avec la salade."],q:"spanish tortilla"},
+{id:"pizza-legumes",n:"Pizza maison aux légumes",t:"ds",k:"E",m:30,i:[["patepizza",120],["tconc",60],["mozza",50],["poivron",50],["champi",50],["courgette",50]],e:["Étale la pâte et nappe de tomate.","Ajoute les légumes émincés et la mozzarella.","Cuis 15 min à 230 °C."],q:"vegetable pizza homemade"},
+{id:"tofu-nouilles",n:"Tofu sauté aux nouilles et brocolis",t:"ds",k:"E",m:20,i:[["tofu",180],["nouilles",180],["brocoli",100],["soja",15],["huile",10]],e:["Dore le tofu en cubes 8 min.","Ajoute les brocolis 4 min, puis les nouilles et la sauce soja."],q:"tofu noodles broccoli"},
+
+/* ---- Viandes et poissons ---- */
+{id:"poulet-riz-brocolis",n:"Poulet, riz basmati et brocolis",t:"ds",k:"S",m:25,i:[["poulet",150],["riz",200],["brocoli",200],["huile",10]],e:["Cuis le riz et les brocolis à la vapeur.","Poêle le poulet en morceaux 8 min dans l’huile, sale et poivre.","Assemble."],q:"chicken rice broccoli"},
+{id:"saumon-patate-douce",n:"Saumon, patate douce et haricots verts",t:"ds",k:"S",m:30,i:[["saumon",150],["pdouce",250],["hverts",150],["huile",5]],e:["Rôtis la patate douce en cubes 25 min à 200 °C.","Cuis le saumon 12 min au four en même temps.","Cuis les haricots verts 8 min à la vapeur."],q:"salmon sweet potato green beans"},
+{id:"cabillaud-papillote",n:"Cabillaud en papillote, quinoa et courgettes",t:"ds",k:"L",m:30,i:[["cabillaud",180],["quinoa",180],["courgette",150],["tomate",80],["huile",10]],e:["Dispose cabillaud, courgette et tomate en papillote avec l’huile et du citron.","Cuis 18 min à 200 °C.","Sers avec le quinoa."],q:"baked cod zucchini"},
+{id:"dinde-champignons",n:"Dinde à la crème de champignons et pâtes",t:"ds",k:"E",m:25,i:[["dinde",150],["champi",120],["creme",40],["pates",200]],e:["Dore la dinde en lanières 5 min.","Ajoute les champignons 5 min, puis la crème.","Sers avec les pâtes."],q:"creamy mushroom turkey pasta"},
+{id:"poulet-basquaise",n:"Poulet basquaise",t:"ds",k:"E",m:35,i:[["poulet",150],["poivron",120],["tconc",100],["oignon",40],["riz",170],["huile",5]],e:["Dore le poulet, ajoute oignon et poivrons 5 min.","Ajoute les tomates, mijote 20 min.","Sers avec le riz."],q:"chicken peppers tomato stew"},
+{id:"papillote-poireaux",n:"Papillote de poisson blanc aux poireaux",t:"ds",k:"L",m:35,i:[["cabillaud",170],["poireau",200],["creme",20],["pdt",200]],e:["Fais fondre les poireaux émincés 8 min.","Mets-les en papillote avec le poisson, la crème et du citron, 18 min à 200 °C.","Sers avec les pommes de terre vapeur."],q:"fish papillote leeks"},
+{id:"brochettes-poulet",n:"Brochettes de poulet au citron et légumes grillés",t:"ds",k:"S",m:35,i:[["poulet",150],["courgette",100],["poivron",100],["oignon",40],["huile",10],["semoule",120]],e:["Fais mariner le poulet en cubes avec citron, huile et herbes 15 min.","Alterne poulet et légumes sur des brochettes, grille 12 min en retournant.","Sers avec la semoule."],q:"chicken skewers grilled vegetables"},
+{id:"escalope-dinde-legumes",n:"Escalope de dinde et poêlée de légumes",t:"ds",k:"L",m:20,i:[["dinde",140],["courgette",120],["carotte",80],["brocoli",100],["huile",10]],e:["Poêle l’escalope 4 min par face.","Fais sauter les légumes en dés 10 min avec ail et herbes."],q:"turkey escalope vegetables"},
+{id:"truite-asperges",n:"Truite aux amandes, asperges et pommes de terre nouvelles",t:"ds",k:"L",m:30,i:[["truite",150],["asperges",150],["pdt",200],["amandes",10],["beurre",5]],e:["Cuis les pommes de terre nouvelles 15 min et les asperges 8 min à la vapeur.","Poêle la truite 3 min par face dans le beurre, ajoute les amandes effilées 1 min."],q:"trout almonds asparagus"},
+{id:"crevettes-ail-riz",n:"Crevettes sautées à l’ail, riz et petits pois",t:"ds",k:"E",m:20,i:[["crevettes",150],["riz",180],["poivron",80],["ppois",80],["soja",10],["huile",10]],e:["Poêle poivron, ail et petits pois 5 min.","Ajoute riz et crevettes, puis la sauce soja, 3 min à feu vif."],q:"garlic shrimp rice peas"},
+{id:"boeuf-saute-poivrons",n:"Bœuf sauté aux poivrons et riz",t:"ds",k:"S",m:20,i:[["rumsteck",150],["poivron",120],["oignon",40],["riz",180],["soja",10],["huile",10]],e:["Saisis le bœuf en lanières 2 min à feu très vif, réserve.","Poêle poivron et oignon 5 min, remets le bœuf et la sauce soja.","Sers avec le riz."],q:"beef stir fry peppers"},
+{id:"sardines-grillees",n:"Sardines grillées, pommes de terre et salade",t:"ds",k:"E",m:25,i:[["sardfr",180],["pdt",250],["salade",60],["tomate",80],["huile",5]],e:["Cuis les pommes de terre à l’eau 15 min.","Grille les sardines 3 min par face, avec du gros sel.","Sers avec les pommes de terre, la salade et les tomates."],q:"grilled sardines potatoes salad"},
+
+/* ---- Salades complètes ---- */
+{id:"salade-cesar",n:"Salade César allégée",t:"d",k:"S",m:20,i:[["poulet",150],["salade",100],["parmesan",15],["pain",30],["ygrec",40],["tomate",60]],e:["Grille le poulet et le pain en croûtons.","Prépare la sauce : yaourt grec, citron, moutarde et un peu de parmesan.","Mélange le tout."],q:"chicken caesar salad"},
+{id:"salade-nicoise",n:"Salade niçoise",t:"ds",k:"E",m:25,i:[["thon",80],["oeuf",50],["hverts",80],["tomate",100],["pdt",120],["olives",15],["salade",50],["huile",10]],e:["Cuis l’œuf 9 min, les pommes de terre 15 min et les haricots verts 8 min.","Dispose salade, tomates, pommes de terre, haricots, thon, œuf et olives.","Assaisonne d’huile et de vinaigre."],q:"nicoise salad"},
+{id:"salade-lentilles-oeufs",n:"Salade de lentilles, œufs et légumes",t:"ds",k:"E",m:15,i:[["lentilles",200],["oeuf",100],["tomate",100],["concombre",80],["huile",10]],e:["Cuis les œufs 9 min et écale-les.","Mélange lentilles, légumes en dés, huile, vinaigre et moutarde.","Ajoute les œufs en quartiers."],q:"lentil salad boiled eggs"},
+{id:"salade-quinoa-feta",n:"Salade de quinoa, feta et pois chiches",t:"ds",k:"E",m:15,i:[["quinoa",150],["pchiches",100],["feta",40],["concombre",80],["tomate",80],["huile",10]],e:["Mélange le quinoa froid, les pois chiches et les légumes en dés.","Ajoute la feta, l’huile, le citron et la menthe."],q:"quinoa salad feta chickpeas"},
+{id:"taboule-libanais",n:"Taboulé libanais",t:"ds",k:"L",m:20,i:[["persil",60],["boulgour",60],["tomate",150],["concombre",80],["oignon",20],["huile",10],["pita",50]],e:["Hache finement le persil et la menthe.","Ajoute le boulgour cuit, les tomates et le concombre en petits dés, et l’oignon.","Assaisonne de citron, d’huile et de sel, laisse 15 min au frais et sers avec la pita."],q:"lebanese tabbouleh"},
+{id:"salade-pates-thon",n:"Salade de pâtes au thon",t:"ds",k:"E",m:15,i:[["pates",200],["thon",100],["tomate",80],["mais",50],["huile",10]],e:["Laisse refroidir les pâtes cuites.","Ajoute le thon émietté, les tomates, le maïs, l’huile et le vinaigre."],q:"tuna pasta salad"},
+{id:"salade-riz-poulet",n:"Salade de riz au poulet et maïs",t:"ds",k:"S",m:20,i:[["riz",180],["poulet",120],["mais",60],["tomate",80],["poivron",50],["huile",10]],e:["Poêle le poulet en dés 7 min et laisse tiédir.","Mélange avec le riz froid, le maïs, les tomates et le poivron.","Assaisonne d’huile, de vinaigre et de moutarde."],q:"chicken rice salad corn"},
+{id:"salade-chevre-chaud",n:"Salade de chèvre chaud, noix et pomme",t:"ds",k:"E",m:15,i:[["chevre",50],["pain",40],["salade",80],["pomme",100],["noix",15],["miel",5],["huile",5]],e:["Pose le chèvre sur les tranches de pain, ajoute un filet de miel et gratine 5 min.","Dispose sur la salade avec la pomme en lamelles et les noix.","Assaisonne d’une vinaigrette."],q:"warm goat cheese salad walnuts apple"},
+{id:"salade-betterave-lentilles",n:"Salade de betterave, lentilles et feta",t:"ds",k:"L",m:10,i:[["betterave",150],["lentilles",150],["feta",30],["salade",40],["noix",10],["huile",5]],e:["Coupe la betterave en dés.","Mélange avec les lentilles, la salade, la feta émiettée et les noix.","Assaisonne d’huile et de vinaigre balsamique."],q:"beetroot lentil salad feta"},
+{id:"salade-patate-douce",n:"Salade de patate douce rôtie et pois chiches",t:"ds",k:"L",m:30,i:[["pdouce",200],["pchiches",120],["epinards",40],["huile",10]],e:["Rôtis la patate douce en dés 25 min à 200 °C avec l’huile et le paprika.","Mélange avec les pois chiches et les pousses d’épinards.","Assaisonne de citron et de cumin."],q:"roasted sweet potato chickpea salad"},
+{id:"salade-printaniere",n:"Salade printanière : radis, petits pois et œuf mollet",t:"ds",k:"L",m:15,i:[["radis",80],["ppoisfr",100],["oeuf",100],["salade",60],["feta",25],["huile",10]],e:["Cuis les œufs 6 min et les petits pois 5 min.","Dispose la salade, les radis émincés, les petits pois et la feta.","Ajoute les œufs coupés en deux et une vinaigrette."],q:"spring salad radish peas egg"},
+{id:"salade-endives-poire",n:"Salade d’endives, poire et noix",t:"ds",k:"L",m:10,i:[["endive",200],["poire",120],["noix",20],["comte",30],["huile",5]],e:["Émince les endives et coupe la poire en lamelles.","Ajoute les noix et le comté en dés.","Assaisonne d’huile et de vinaigre."],q:"endive pear walnut salad"},
+
+/* ---- Soupes et veloutés ---- */
+{id:"veloute-potiron",n:"Velouté de potiron",t:"s",k:"L",m:35,i:[["potiron",350],["pdt",80],["oignon",30],["creme",15],["pain",50]],e:["Fais revenir l’oignon, ajoute le potiron et la pomme de terre en morceaux, couvre d’eau.","Cuis 20 min et mixe avec la crème.","Sers avec le pain grillé."],q:"pumpkin soup"},
+{id:"soupe-lentilles-corail",n:"Soupe de lentilles corail",t:"ds",k:"E",m:30,i:[["lcorail",200],["carotte",80],["tconc",100],["oignon",40],["laitcoco",30],["pain",50]],e:["Fais revenir oignon et carotte avec du cumin.","Ajoute lentilles, tomates, lait de coco et 40 cl d’eau, mijote 15 min.","Mixe à moitié et sers avec le pain."],q:"red lentil soup"},
+{id:"minestrone",n:"Minestrone",t:"ds",k:"L",m:35,i:[["courgette",80],["carotte",60],["hrouges",80],["tconc",100],["pates",60],["oignon",30],["huile",5]],e:["Fais revenir oignon, carotte et courgette en dés.","Ajoute tomates, haricots et 50 cl d’eau, mijote 15 min.","Ajoute les petites pâtes 8 min avant la fin."],q:"minestrone soup"},
+{id:"veloute-courgettes",n:"Velouté de courgettes au fromage frais",t:"s",k:"L",m:30,i:[["courgette",300],["pdt",100],["fb0",40],["pain",50]],e:["Cuis courgettes et pomme de terre 20 min dans l’eau salée.","Mixe avec le fromage frais.","Sers avec le pain."],q:"zucchini soup"},
+{id:"soupe-oignon",n:"Soupe à l’oignon gratinée",t:"s",k:"E",m:50,i:[["oignon",200],["beurre",10],["pain",60],["emmental",30],["farine",5]],e:["Fais fondre les oignons émincés 25 min dans le beurre jusqu’à coloration.","Saupoudre de farine, mouille de 50 cl de bouillon, mijote 15 min.","Verse en bol, couvre de pain et d’emmental, gratine 5 min."],q:"french onion soup"},
+{id:"veloute-petits-pois",n:"Velouté de petits pois à la menthe",t:"s",k:"L",m:25,i:[["ppoisfr",200],["pdt",60],["oignon",30],["creme",15],["pain",40]],e:["Fais revenir l’oignon, ajoute les petits pois et la pomme de terre, couvre d’eau.","Cuis 15 min et mixe avec la crème et quelques feuilles de menthe.","Sers avec le pain."],q:"green pea mint soup"},
+{id:"soupe-poireaux",n:"Soupe poireaux-pommes de terre",t:"s",k:"L",m:30,i:[["poireau",200],["pdt",200],["creme",15],["pain",40]],e:["Fais suer les poireaux émincés 5 min, ajoute les pommes de terre et couvre d’eau.","Cuis 20 min, mixe avec la crème.","Sers avec le pain."],q:"leek potato soup"},
+{id:"gaspacho",n:"Gaspacho",t:"ds",k:"L",m:15,i:[["tomate",300],["concombre",100],["poivron",60],["oignon",20],["huile",10],["pain",30]],e:["Mixe tomates, concombre, poivron, oignon, ail, pain rassis et huile.","Assaisonne de sel, de piment d’Espelette et de vinaigre de xérès.","Réserve 1 h au frais."],q:"gazpacho"},
+{id:"soupe-miso",n:"Soupe miso, tofu et nouilles",t:"s",k:"L",m:15,i:[["miso",20],["tofu",100],["nouilles",100],["epinards",40],["champi",40],["carotte",30]],e:["Porte à frémissement 40 cl d’eau avec les champignons et la carotte, 5 min.","Ajoute le tofu en dés, les nouilles et les épinards, 2 min.","Hors du feu, délaye le miso dans le bouillon sans le faire bouillir."],q:"miso soup tofu noodles"},
+{id:"veloute-champignons",n:"Velouté de champignons",t:"s",k:"L",m:30,i:[["champi",300],["pdt",80],["oignon",30],["creme",20],["pain",50]],e:["Fais revenir l’oignon et les champignons 5 min.","Ajoute la pomme de terre, couvre d’eau et cuis 15 min.","Mixe avec la crème, sers avec le pain."],q:"mushroom soup"},
+{id:"soupe-pois-casses",n:"Soupe de pois cassés",t:"s",k:"E",m:50,i:[["pcasses",220],["carotte",60],["oignon",30],["pain",40]],e:["Fais revenir oignon et carotte.","Ajoute les pois cassés et 50 cl d’eau, mijote 40 min.","Mixe et sers avec des croûtons."],q:"split pea soup"},
+{id:"pho-boeuf",n:"Pho au bœuf",t:"ds",k:"S",m:35,i:[["rumsteck",120],["nouilles",180],["oignon",30],["soja",10]],e:["Fais frémir 50 cl de bouillon de bœuf 20 min avec l’oignon, du gingembre, de la badiane et de la cannelle.","Dispose les nouilles et le bœuf cru en tranches très fines dans un bol.","Verse le bouillon bouillant dessus, ajoute coriandre, menthe et citron vert."],q:"beef pho"},
+
+/* ---- Wraps, sandwichs et tartes ---- */
+{id:"wraps-poulet",n:"Wraps poulet et crudités",t:"d",k:"S",m:20,i:[["tortilla",120],["poulet",130],["salade",30],["tomate",60],["mais",40],["fb0",40]],e:["Poêle le poulet en lanières avec du paprika.","Mélange fromage blanc, citron et ciboulette pour la sauce.","Garnis les tortillas et roule."],q:"chicken wraps"},
+{id:"wraps-houmous",n:"Wraps houmous et légumes grillés",t:"d",k:"L",m:20,i:[["tortilla",120],["houmous",60],["courgette",100],["poivron",80],["salade",30],["huile",5]],e:["Grille courgette et poivron en lanières 8 min.","Tartine les tortillas de houmous, ajoute les légumes et la salade, puis roule."],q:"hummus veggie wrap"},
+{id:"burger-frites",n:"Burger maison et frites au four",t:"ds",k:"S",m:40,i:[["painburger",75],["boeuf5",150],["emmental",20],["salade",20],["tomate",50],["oignon",20],["pdt",200],["huile",8]],e:["Coupe les pommes de terre en frites, mélange à l’huile et cuis 30 min à 220 °C.","Cuis le steak 3 min par face, ajoute l’emmental.","Monte le burger avec salade, tomate et oignon."],q:"homemade burger fries"},
+{id:"pizza-tortilla",n:"Pizza tortilla jambon et champignons",t:"s",k:"E",m:15,i:[["tortilla",60],["tconc",60],["mozza",60],["jambon",60],["champi",50]],e:["Étale les tomates sur la tortilla.","Ajoute jambon, champignons et mozzarella.","Cuis 10 min à 220 °C."],q:"tortilla pizza"},
+{id:"quiche-sans-pate",n:"Quiche sans pâte jambon-épinards",t:"ds",k:"S",m:35,i:[["oeuf",150],["lait",100],["jambon",60],["emmental",20],["epinards",50],["salade",50]],e:["Bats œufs et lait, ajoute jambon, épinards et emmental.","Verse dans un plat huilé, 25 min à 180 °C.","Sers avec la salade."],q:"crustless quiche spinach"},
+{id:"tartine-chevre-miel",n:"Tartine gratinée chèvre-miel et salade",t:"ds",k:"E",m:15,i:[["pain",80],["chevre",50],["miel",10],["salade",80],["noix",10]],e:["Dispose le chèvre sur le pain, ajoute le miel et du thym.","Gratine 6 min au four.","Sers avec la salade et les noix."],q:"goat cheese honey toast salad"},
+{id:"pita-kebab",n:"Pita au poulet façon kebab",t:"ds",k:"S",m:25,i:[["pita",80],["poulet",140],["yaourt",50],["tomate",60],["salade",30],["oignon",20]],e:["Fais mariner le poulet en lanières avec paprika, cumin et ail, puis saisis-le 6 min.","Prépare une sauce avec le yaourt, du citron et de la menthe.","Garnis la pita de poulet, de crudités et de sauce."],q:"chicken pita kebab"},
+{id:"bagel-saumon",n:"Bagel saumon fumé et fromage frais",t:"d",k:"E",m:5,i:[["bagel",90],["saumonf",50],["fb0",40],["concombre",40],["salade",20]],e:["Toaste le bagel.","Tartine de fromage frais, ajoute concombre, saumon, aneth et salade."],q:"smoked salmon bagel cream cheese"},
+
+/* ---- Desserts sains et en-cas cuisinés ---- */
+{id:"energy-balls",n:"Energy balls dattes et avoine",t:"c",k:"E",m:15,i:[["dattes",40],["avoine",30],["pbutter",15],["cacao",5]],e:["Mixe tout jusqu’à obtenir une pâte.","Forme 4 boules et laisse 30 min au frais."],q:"energy balls dates oats"},
+{id:"barres-cereales",n:"Barres de céréales protéinées maison",t:"c",k:"S",m:10,i:[["avoine",40],["whey",20],["pbutter",15],["miel",10]],e:["Mélange tout avec 1 c. à soupe d’eau.","Tasse en barre et laisse 1 h au frais."],q:"homemade protein bars"},
+{id:"crumble-pommes-poires",n:"Crumble pommes-poires aux flocons d’avoine",t:"c",k:"E",m:40,i:[["pomme",100],["poire",100],["avoine",25],["farine",10],["beurre",10],["sucre",8]],e:["Coupe les fruits en dés dans un plat.","Sable du bout des doigts flocons, farine, beurre et sucre, émiette sur les fruits.","Cuis 30 min à 180 °C."],q:"apple pear crumble oats"},
+{id:"muffins-banane",n:"Muffins banane-myrtilles",t:"c",k:"E",m:30,i:[["farine",30],["avoine",15],["banane",60],["oeuf",25],["frouges",30],["lait",30],["sucre",5]],e:["Mélange farine, flocons, levure, banane écrasée, œuf et lait.","Ajoute les myrtilles et verse dans des moules.","Cuis 20 min à 180 °C. Les quantités affichées font 2 muffins."],q:"banana blueberry muffins"},
+{id:"mousse-chocolat",n:"Mousse au chocolat légère",t:"c",k:"L",m:15,i:[["choco",25],["oeuf",50],["blanc",30],["sucre",5]],e:["Fais fondre le chocolat et ajoute le jaune d’œuf.","Monte les blancs en neige avec le sucre et incorpore-les délicatement.","Réserve 3 h au frais."],q:"chocolate mousse"},
+{id:"cheesecake-skyr",n:"Cheesecake au skyr",t:"c",k:"S",m:35,i:[["skyr",150],["oeuf",25],["avoine",20],["beurre",8],["miel",10],["frouges",50]],e:["Mélange flocons mixés et beurre fondu, tasse au fond de petits moules.","Fouette skyr, œuf, miel et zeste de citron, verse sur la base.","Cuis 25 min à 160 °C, laisse refroidir et sers avec les fruits rouges."],q:"skyr cheesecake berries"},
+{id:"riz-au-lait",n:"Riz au lait à la vanille",t:"c",k:"E",m:40,i:[["rizrond",100],["lait",200],["sucre",10]],e:["Cuis le riz rond dans le lait avec la vanille, à feu très doux, 35 min en remuant souvent.","Sucre en fin de cuisson et laisse tiédir."],q:"rice pudding vanilla"},
+{id:"clafoutis",n:"Clafoutis aux fruits de saison",t:"c",k:"E",m:45,i:[["fruitsaison",150],["oeuf",50],["lait",80],["farine",20],["sucre",10]],e:["Dispose les fruits de saison coupés dans un plat beurré.","Fouette œuf, sucre, farine et lait, verse sur les fruits.","Cuis 35 min à 180 °C."],q:"fruit clafoutis"},
+{id:"pommes-au-four",n:"Pommes au four, cannelle et noix",t:"c",k:"L",m:35,i:[["pomme",200],["noix",15],["erable",10]],e:["Évide les pommes, garnis de noix concassées, de sirop d’érable et de cannelle.","Cuis 30 min à 180 °C."],q:"baked apples cinnamon walnuts"},
+{id:"compote-maison",n:"Compote pomme-poire maison",t:"c",k:"L",m:20,i:[["pomme",150],["poire",100]],e:["Épluche et coupe les fruits, cuis-les 15 min à couvert avec un fond d’eau et de la cannelle.","Écrase ou mixe selon ta préférence."],q:"homemade applesauce pear"},
+{id:"brownie-haricots",n:"Brownie aux haricots rouges",t:"c",k:"E",m:30,i:[["hrouges",60],["choco",20],["oeuf",25],["cacao",5],["sucre",10],["avoine",10]],e:["Mixe les haricots rincés, le chocolat fondu, l’œuf, le cacao, le sucre et les flocons.","Verse dans un moule et cuis 20 min à 180 °C.","Les quantités affichées correspondent à une part (1/6 du moule)."],q:"bean brownies chocolate"},
+{id:"panna-cotta-fraises",n:"Panna cotta au fromage blanc et coulis de fraises",t:"c",k:"L",m:15,i:[["fb0",150],["lait",50],["sucre",8],["fraises",100]],e:["Chauffe le lait avec le sucre et 1 g d’agar-agar, 1 min à ébullition.","Mélange au fromage blanc, verse en verrine et laisse 2 h au frais.","Mixe les fraises en coulis et nappe."],q:"panna cotta strawberry coulis"},
+{id:"cookies-avoine",n:"Cookies avoine-banane",t:"c",k:"E",m:20,i:[["avoine",40],["banane",60],["choco",10]],e:["Écrase la banane et mélange avec les flocons et les pépites de chocolat.","Forme 3 cookies sur une plaque.","Cuis 15 min à 180 °C."],q:"oat banana cookies"},
+{id:"salade-fruits",n:"Salade de fruits frais à la menthe",t:"c",k:"L",m:10,i:[["fruitsaison",250]],e:["Coupe les fruits de saison en morceaux.","Arrose d’un filet de citron, ajoute la menthe ciselée et réserve au frais."],q:"fresh fruit salad mint"},
+{id:"smoothie-proteine",n:"Smoothie protéiné banane-cacao",t:"c",k:"S",m:3,i:[["banane",100],["lait",250],["whey",25],["cacao",5]],e:["Mixe tout 30 secondes avec quelques glaçons."],q:"banana chocolate protein smoothie"},
+{id:"poires-pochees",n:"Poires pochées au chocolat",t:"c",k:"L",m:25,i:[["poire",150],["choco",15],["sucre",5]],e:["Pèle les poires et poche-les 20 min dans l’eau frémissante avec le sucre et la vanille.","Nappe de chocolat fondu."],q:"poached pears chocolate"},
+{id:"tarte-pommes",n:"Tarte fine aux pommes",t:"c",k:"E",m:40,i:[["pate",40],["pomme",120],["sucre",5],["beurre",3]],e:["Étale la pâte et dispose les pommes en fines lamelles.","Saupoudre de sucre et de cannelle, ajoute quelques noisettes de beurre.","Cuis 30 min à 200 °C. Une part = 1/6 de la tarte."],q:"apple tart"},
+{id:"gateau-yaourt",n:"Gâteau au yaourt allégé",t:"c",k:"E",m:40,i:[["yaourt",30],["farine",25],["oeuf",18],["sucre",12],["huile",5]],e:["Mélange 1 pot de yaourt, 3 œufs, 2 pots de farine, 1 pot de sucre, un demi-pot d’huile et la levure.","Verse dans un moule et cuis 30 min à 180 °C.","Les quantités affichées correspondent à une part (1/8)."],q:"yogurt cake"},
+{id:"flan-leger",n:"Flan pâtissier léger",t:"c",k:"E",m:35,i:[["lait",150],["oeuf",50],["fecule",12],["sucre",12]],e:["Fouette l’œuf, le sucre et la fécule, ajoute le lait chaud vanillé.","Épaissis 2 min sur le feu en fouettant.","Verse dans un ramequin, cuis 25 min à 180 °C et laisse refroidir."],q:"custard flan"},
+{id:"houmous-betterave",n:"Houmous de betterave et crudités",t:"c",k:"L",m:10,i:[["pchiches",100],["betterave",80],["huile",10],["carotte",100],["concombre",80]],e:["Mixe pois chiches, betterave, huile, citron, ail et cumin.","Sers avec les crudités en bâtonnets."],q:"beetroot hummus crudites"},
+{id:"chips-pois-chiches",n:"Chips de pois chiches rôtis aux épices",t:"c",k:"L",m:35,i:[["pchiches",150],["huile",5]],e:["Sèche bien les pois chiches et mélange-les avec l’huile et les épices.","Rôtis 30 min à 200 °C en remuant à mi-cuisson, jusqu’à ce qu’ils soient croustillants."],q:"roasted chickpeas snack"},
+
+/* ---- Collations (catégorie séparée) ---- */
+{id:"c-skyr-fruits",n:"Skyr et fruits rouges",t:"c",k:"S",col:1,m:2,i:[["skyr",200],["frouges",100]],e:["Mélange, c’est prêt."],q:"skyr berries"},
+{id:"c-shake-whey",n:"Shake whey et banane",t:"c",k:"S",col:1,m:2,i:[["whey",30],["lait",250],["banane",100]],e:["Mixe 20 secondes."],q:"banana protein shake"},
+{id:"c-galettes-riz",n:"Galettes de riz au beurre de cacahuète",t:"c",k:"E",col:1,m:2,i:[["galette",20],["pbutter",15]],e:["Tartine les galettes."],q:"rice cakes peanut butter"},
+{id:"c-pomme-amandes",n:"Pomme et amandes",t:"c",k:"E",col:1,m:1,i:[["pomme",150],["amandes",20]],e:["À emporter partout."],q:"apple almonds"},
+{id:"c-oeufs-durs",n:"Œufs durs et tomates cerises",t:"c",k:"S",col:1,m:12,i:[["oeuf",100],["tomate",100]],e:["Cuis les œufs 9 min et refroidis-les à l’eau froide.","Sers avec les tomates et une pincée de sel."],q:"boiled eggs cherry tomatoes"},
+{id:"c-cottage-concombre",n:"Cottage cheese et concombre",t:"c",k:"S",col:1,m:3,i:[["cottage",150],["concombre",100]],e:["Coupe le concombre en bâtonnets à tremper dans le cottage poivré."],q:"cottage cheese cucumber"},
+{id:"c-fb-chocolat",n:"Fromage blanc protéiné au chocolat",t:"c",k:"S",col:1,m:3,i:[["fb0",200],["whey",15],["cacao",5]],e:["Mélange énergiquement jusqu’à ce que ce soit lisse."],q:"chocolate yogurt bowl"},
+{id:"c-roules-jambon",n:"Roulés de jambon au fromage blanc",t:"c",k:"S",col:1,m:5,i:[["jambon",60],["fb0",40],["concombre",50]],e:["Tartine les tranches de fromage blanc aux herbes.","Ajoute un bâtonnet de concombre et roule."],q:"ham roll ups"},
+{id:"c-banane-chocolat",n:"Banane et chocolat noir",t:"c",k:"E",col:1,m:1,i:[["banane",120],["choco",15]],e:["Idéal 30 à 60 min avant une séance."],q:"banana dark chocolate"},
+{id:"c-houmous-carottes",n:"Houmous et bâtonnets de carotte",t:"c",k:"L",col:1,m:5,i:[["houmous",60],["carotte",120]],e:["Coupe les carottes en bâtonnets et trempe."],q:"hummus carrot sticks"},
+{id:"c-tartine-thon",n:"Tartine au thon",t:"c",k:"S",col:1,m:5,i:[["pain",50],["thon",60],["fb0",20]],e:["Écrase le thon avec le fromage blanc, du citron et du poivre.","Tartine."],q:"tuna toast"},
+{id:"c-yaourt-grec",n:"Yaourt grec, miel et noix",t:"c",k:"E",col:1,m:2,i:[["ygrec",150],["miel",10],["noix",15]],e:["Verse le miel sur le yaourt et ajoute les noix."],q:"greek yogurt honey walnuts"},
+{id:"c-skyr-compote",n:"Skyr, compote et graines de chia",t:"c",k:"S",col:1,m:2,i:[["compote",100],["skyr",150],["chia",10]],e:["Superpose dans un verre."],q:"yogurt chia parfait"},
+{id:"c-tartine-pb",n:"Tartine beurre de cacahuète et miel",t:"c",k:"E",col:1,m:2,i:[["pain",60],["pbutter",15],["miel",10]],e:["Tartine. Parfait avant une séance longue."],q:"peanut butter honey toast"},
+{id:"c-fruits-secs",n:"Mélange de fruits secs et noix",t:"c",k:"E",col:1,m:1,i:[["amandes",15],["noisettes",10],["raisins",15]],e:["Mélange et emporte dans une petite boîte."],q:"trail mix nuts raisins"},
+{id:"c-fruit-saison",n:"Fruit de saison",t:"c",k:"L",col:1,m:1,i:[["fruitsaison",200]],e:["Choisis un fruit de saison : l’onglet Recettes indique ce qui est de saison ce mois-ci."],q:"seasonal fruit bowl"},
+{id:"c-fromage-pain",n:"Fromage et pain complet",t:"c",k:"E",col:1,m:2,i:[["comte",30],["pain",50]],e:["Coupe le fromage et sers avec le pain."],q:"cheese wholegrain bread"},
+{id:"c-lait-cereales",n:"Bol de lait et céréales complètes",t:"c",k:"E",col:1,m:2,i:[["cereales",40],["lait",200]],e:["Verse le lait sur les céréales."],q:"muesli bowl milk"},
+{id:"c-kiwi-yaourt",n:"Kiwi et yaourt nature",t:"c",k:"L",col:1,m:3,i:[["kiwi",160],["yaourt",125]],e:["Coupe les kiwis en dés et ajoute-les au yaourt."],q:"kiwi yogurt"},
+{id:"c-clementine-chocolat",n:"Clémentine et carré de chocolat noir",t:"c",k:"L",col:1,m:1,i:[["clementine",120],["choco",10]],e:["Une pause gourmande et légère."],q:"clementines dark chocolate"}
 ];
+const BYID = Object.fromEntries(RECIPES.map(r=>[r.id, r]));
 
-/* Prix moyens estimés en grande surface (France, 2026), en € par kg
-   (ou par litre), pour le poids indiqué dans les recettes (cuit si
-   l’ingrédient est cuit). Ils sont remplacés par le prix de ton
-   produit si tu en associes un dans le garde-manger. */
-const PRICE = {
-  avoine:2.2, lait:1.1, skyr:4.5, fb0:2.8, ygrec:4.5, cottage:6, oeuf:5, blanc:6, banane:2, pomme:2.8,
-  frouges:8, compote:3.5, dattes:8, avocat:7, pbutter:9, amandes:16, noix:18, chia:12, miel:12, choco:14,
-  cacao:12, whey:25, pain:4.5, painburger:5, tortilla:5, galette:9, riz:1, pates:0.8, patesc:1, quinoa:2.6,
-  semoule:0.8, nouilles:2.4, pdt:1.5, pdouce:3, lentilles:1.4, pchiches:3, hrouges:3, poulet:12, dinde:12,
-  boeuf5:12, rumsteck:25, jambon:15, saumon:25, saumonf:40, cabillaud:25, thon:16, sardines:14, crevettes:20,
-  tofu:9, mozza:9, feta:13, parmesan:25, emmental:11, creme:5, beurre:11, huile:9, laitcoco:5, pesto:14,
-  houmous:10, soja:8, tomate:3.5, tconc:2.2, concombre:2.5, courgette:2.8, brocoli:3.5, epinards:3.5,
-  poivron:4.5, oignon:2, champi:5, hverts:3.5, carotte:1.5, salade:6, mais:4, ppois:3.5
+/* Anciennes recettes (versions 1 à 3, repérées par leur position) vers les
+   nouveaux identifiants. Le second élément indique si la photo correspond
+   encore au plat (sinon seule la mise en favori est reprise). */
+const MIGRATE = {
+  0:["porridge-banane",1],1:["overnight-oats",1],2:["omelette-epinards-feta",1],3:["pancakes-proteines",1],4:["bowl-skyr-granola",1],
+  5:["tartines-avocat-oeuf",1],6:["yaourt-compotee-noix",0],7:["smoothie-proteine",0],8:["crepe-sarrasin-jambon",0],9:["porridge-poire-chocolat",0],
+  10:["burrito-matin",1],11:["c-skyr-fruits",0],12:["pudding-chia",1],13:["muffins-oeufs",1],14:["c-galettes-riz",0],15:["gaufres-avoine",0],
+  16:["tartine-nordique",1],17:["porridge-banane",0],18:["poulet-riz-brocolis",1],19:["bowl-teriyaki",1],20:["saumon-patate-douce",1],
+  21:["pates-bolognaise",1],22:["chili-con-carne",1],23:["curry-pois-chiches",1],24:["wok-boeuf-legumes",0],25:["cabillaud-papillote",1],
+  26:["salade-lentilles-oeufs",1],27:["buddha-bowl-tofu",1],28:["steak-hache-puree",1],29:["wraps-poulet",1],30:["salade-pates-thon",1],
+  31:["tortilla-espagnole",1],32:["poulet-tikka",0],33:["crevettes-ail-riz",1],34:["pates-pesto-poulet",1],35:["hachis-parmentier",1],
+  36:["poke-saumon",1],37:["couscous-poulet",1],38:["gratin-courgettes-chevre",0],39:["quiche-sans-pate",1],40:["burger-frites",1],
+  41:["salade-cesar",1],42:["dahl-lentilles",1],43:["riz-cantonais",1],44:["cabillaud-puree-celeri",0],45:["chili-sin-carne",1],
+  46:["poulet-roti-legumes",0],47:["pates-saumon",1],48:["pita-kebab",0],49:["salade-riz-poulet",0],50:["boeuf-saute-poivrons",1],
+  51:["sardines-grillees",0],52:["soupe-lentilles-corail",1],53:["omelette-champignons",1],54:["veloute-courgettes",1],55:["salade-quinoa-feta",1],
+  56:["poulet-basquaise",1],57:["pizza-tortilla",1],58:["croque-monsieur",1],59:["tofu-nouilles",1],60:["dinde-champignons",1],
+  61:["saumon-patate-douce",0],62:["pad-thai-crevettes",0],63:["salade-pates-thon",0],64:["c-skyr-fruits",1],65:["c-shake-whey",1],
+  66:["c-galettes-riz",1],67:["c-pomme-amandes",1],68:["c-oeufs-durs",1],69:["c-cottage-concombre",1],70:["energy-balls",1],
+  71:["c-fb-chocolat",1],72:["c-roules-jambon",1],73:["c-banane-chocolat",1],74:["c-houmous-carottes",1],75:["c-tartine-thon",1],
+  76:["c-yaourt-grec",1],77:["barres-cereales",1],78:["c-skyr-compote",1],79:["c-tartine-pb",1]
 };
 
 /* =========================================================
@@ -591,16 +795,18 @@ function sane(s){
   if(!s.list || typeof s.list!=="object") s.list = {};
   if(!Array.isArray(s.checked)) s.checked = [];
   if(s.profile===undefined) s.profile = null;
-  if(s.profile){ if(s.profile.budget===undefined) s.profile.budget = ""; if(!s.profile.personnes) s.profile.personnes = 1; }
+  if(s.profile){ if(s.profile.budget===undefined) s.profile.budget = ""; if(!s.profile.personnes) s.profile.personnes = 1; if(s.profile.prefSaison===undefined) s.profile.prefSaison = false; }
+  /* Version 4 : les favoris passent des positions aux identifiants stables */
+  s.favs = [...new Set(s.favs.map(f=>typeof f==="number" ? (MIGRATE[f]||[])[0] : f).filter(id=>id && BYID[id]))];
   s.pantry.forEach(x=>{ if(x.price===undefined) x.price = null; if(x.weight===undefined) x.weight = null; });
   return s;
 }
 let S = sane(load());
-const blankProfile = () => ({sexe:"h",age:30,poids:75,taille:178,activite:"modere",sport:"",objectif:"maintien",exclus:[],vege:false,eviter:"",budget:"",personnes:1,magasins:[],autreMagasin:""});
+const blankProfile = () => ({sexe:"h",age:30,poids:75,taille:178,activite:"modere",sport:"",objectif:"maintien",exclus:[],vege:false,eviter:"",budget:"",personnes:1,prefSaison:false,magasins:[],autreMagasin:""});
 const UI = {
   view:S.profile?"home":"onboard", step:0, err:"",
   draft:S.profile?JSON.parse(JSON.stringify(S.profile)):blankProfile(),
-  offsets:{p:0,d:0,s:0,c:0}, filt:{type:"all",time:0,cost:0,q:"",fav:false},
+  offsets:{p:0,d:0,s:0,c:0}, filt:{type:"all",time:0,cost:0,q:"",fav:false,prof:"",season:false},
   prod:{q:"",results:null,loading:false,err:"",mine:false,target:""},
   sheet:null, day:[]
 };
@@ -620,18 +826,32 @@ function mac(r){
   return {k,p,g,l};
 }
 const cost = r => r.i.reduce((t,[id,q])=>t+ingPrice(id)*q/1000, 0);
-RECIPES.forEach((r,idx)=>{ r.id = idx; });
+/* Saison, régimes : calculés à partir des ingrédients */
+const MONTH = new Date().getMonth()+1;
+function seasonInfo(r){
+  const prod = r.i.map(([id])=>id).filter(id=>SEASON[id]);
+  const off = prod.filter(id=>!SEASON[id].includes(MONTH));
+  return {has:prod.length>0, ok:prod.length>0 && !off.length, off};
+}
+const monthsTxt = id => { const m = SEASON[id]; if(!m || m.length===12) return "toute l’année"; return `${MONTHS[m[0]-1]} à ${MONTHS[m[m.length-1]-1]}`; };
+const isVeg = r => r.i.every(([id])=>!ING[id][5].split(" ").some(t=>MEAT.includes(t)));
+const isVegan = r => isVeg(r) && r.i.every(([id])=>!/oeuf|lait/.test(ING[id][5]) && id!=="miel");
+const PROFILES = {S:"Sportif",E:"Équilibré",L:"Léger"};
 
 function needs(p){
   const bmr = 10*p.poids + 6.25*p.taille - 5*p.age + (p.sexe==="h" ? 5 : -161);
   const a = ACT[p.activite], g = GOALS[p.objectif];
   const tdee = bmr*a.f;
   const kcal = Math.round(tdee*g.k/10)*10;
-  const prot = Math.round(g.p*p.poids);
+  /* Besoins en protéines modulés par l’activité : un sédentaire n’a pas les besoins d’un sportif */
+  const pf = {sedentaire:0.6, leger:0.75, modere:0.9, intense:1, extreme:1}[p.activite] || 1;
+  const pk = Math.round(g.p*pf*100)/100;
+  const prot = Math.round(pk*p.poids);
   const lip = Math.round(g.lip*p.poids);
   const gluc = Math.max(50, Math.round((kcal - prot*4 - lip*9)/4));
   const b = Number(p.budget)>0 ? Number(p.budget)/Math.max(1, Number(p.personnes)||1)/30.4 : 0;
-  return {bmr, tdee, kcal, prot, lip, gluc, a, g, day:b};
+  const ut = (["intense","extreme"].includes(p.activite) || ["masse","perf"].includes(p.objectif)) ? "S" : (p.activite==="sedentaire" || p.objectif==="seche") ? "L" : "E";
+  return {bmr, tdee, kcal, prot, pk, lip, gluc, a, g, day:b, ut, ps:!!p.prefSaison};
 }
 function allowed(r, p){
   const ex = new Set(p.exclus);
@@ -653,7 +873,14 @@ function fit(r, n, type){
   const c = cost(r)*f, cap = n.day ? n.day*MEALS[type].c : 0;
   let score = Math.abs(pS-tP)*2 + Math.abs(gS-tG) + Math.abs(target/(m.k*f)-1)*1.5;
   if(cap && c>cap) score += (c/cap-1)*1.5;
-  return {f, score, m, c, cap, over: cap>0 && c>cap*1.05};
+  /* Profil : un sédentaire reçoit surtout des plats équilibrés ou légers, un sportif plus de plats riches */
+  if(r.k===n.ut) score -= .25;
+  else if(r.k==="E" && n.ut==="L") score -= .12;
+  else if(n.ut==="L" && r.k==="S") score += .3;
+  else if(n.ut==="S" && r.k==="L") score += .15;
+  const si = seasonInfo(r);
+  if(n.ps){ if(si.ok) score -= .3; else if(si.off.length) score += .25; }
+  return {f, score, m, c, cap, over: cap>0 && c>cap*1.05, si};
 }
 function ranked(type, n, p, exclude){
   return RECIPES.filter(r=>r.t.includes(type) && allowed(r,p) && r.id!==exclude)
@@ -721,13 +948,19 @@ function logo(s, size){
    Limite gratuite (mode démo) : 50 requêtes par heure.
    Les fichiers images ne comptent pas dans cette limite.
    ========================================================= */
-const PHOTO_Q = ["porridge banana peanut butter", "overnight oats berries jar", "spinach feta omelette", "protein pancakes berries", "skyr bowl granola berries", "avocado toast egg", "yogurt apple walnuts", "banana peanut butter smoothie", "scrambled eggs ham toast", "chocolate oatmeal banana", "breakfast burrito eggs", "cottage cheese berries", "chia pudding berries", "egg muffins vegetables", "rice cakes peanut butter banana", "oat crepes", "smoked salmon toast", "oatmeal dates banana", "chicken rice broccoli", "teriyaki chicken bowl", "salmon sweet potato green beans", "spaghetti bolognese", "chili con carne rice", "chickpea coconut curry", "turkey stir fry noodles", "baked cod zucchini", "lentil salad boiled eggs", "tofu buddha bowl", "steak potatoes salad", "chicken wraps", "tuna pasta salad", "spanish tortilla", "chicken curry rice", "shrimp fried rice", "pesto pasta chicken", "shepherds pie", "salmon poke bowl", "chicken couscous vegetables", "zucchini gratin", "crustless quiche spinach", "homemade burger", "chicken caesar salad", "lentil dal rice", "egg fried rice", "cod mashed potatoes", "vegetarian chili beans", "roasted chicken sweet potato", "salmon pasta spinach", "hummus chicken plate", "tuna avocado rice bowl", "beef stir fry peppers", "sardines potatoes salad", "lentil soup bread", "mushroom omelette", "zucchini soup", "quinoa salad feta chickpeas", "chicken peppers tomato stew", "tortilla pizza", "croque monsieur", "tofu noodles broccoli", "creamy mushroom pasta", "salmon lentils", "shrimp quinoa avocado bowl", "tuna tomato pasta", "skyr berries", "banana protein shake", "rice cakes peanut butter", "apple almonds", "boiled eggs cherry tomatoes", "cottage cheese cucumber", "energy balls dates", "chocolate yogurt bowl", "ham roll ups", "banana dark chocolate", "hummus carrot sticks", "tuna toast", "greek yogurt honey walnuts", "homemade protein bars", "yogurt chia parfait", "peanut butter honey toast"];
+/* Anciennes photos rangées par position : reprises sous le nouvel identifiant si elles correspondent au plat */
+function migrateKeys(obj){
+  const out = {};
+  Object.entries(obj||{}).forEach(([k,v])=>{ if(BYID[k]){ out[k] = v; return; } const m = MIGRATE[k]; if(m && m[1] && !out[m[0]]) out[m[0]] = v; });
+  return out;
+}
 const Pics = {
   key:(()=>{ try{ return localStorage.getItem("assiette.unsplash")||""; }catch(e){ return ""; } })(),
-  cache:(()=>{ try{ return JSON.parse(localStorage.getItem("assiette.pics")||"{}"); }catch(e){ return {}; } })(),
+  cache:(()=>{ try{ const raw = JSON.parse(localStorage.getItem("assiette.pics")||"{}"), c = migrateKeys(raw);
+    if(Object.keys(raw).some(k=>!BYID[k])) localStorage.setItem("assiette.pics", JSON.stringify(c)); return c; }catch(e){ return {}; } })(),
   shared:{}, queue:[], busy:0, pending:new Set(), blocked:false, err:"", warm:false,
   async loadShared(){
-    try{ const r = await fetch("photos.json", {cache:"no-cache"}); if(!r.ok) return; const j = await r.json(); if(j && j.photos) this.shared = j.photos; }catch(e){}
+    try{ const r = await fetch("photos.json", {cache:"no-cache"}); if(!r.ok) return; const j = await r.json(); if(j && j.photos) this.shared = migrateKeys(j.photos); }catch(e){}
   },
   entry(id){ return this.cache[id] || this.shared[id]; },
   save(){ try{ localStorage.setItem("assiette.pics", JSON.stringify(this.cache)); }catch(e){} },
@@ -738,7 +971,7 @@ const Pics = {
   exportJSON(){
     const photos = {};
     RECIPES.forEach(r=>{ const c = this.entry(r.id); if(c && c.list.length) photos[r.id] = {i:c.i % c.list.length, list:c.list}; });
-    return {app:"assiette", source:"unsplash", date:new Date().toISOString(), count:Object.keys(photos).length, photos};
+    return {app:"assiette", version:2, source:"unsplash", date:new Date().toISOString(), count:Object.keys(photos).length, photos};
   },
   want(id){ if(!this.key || this.blocked || this.entry(id) || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
   pump(){
@@ -747,7 +980,7 @@ const Pics = {
   },
   async fetch(id){
     try{
-      const r = await fetch(`https://api.unsplash.com/search/photos?${new URLSearchParams({query:PHOTO_Q[id], per_page:8, orientation:"landscape", content_filter:"high"})}`, {headers:{Authorization:"Client-ID "+this.key, "Accept-Version":"v1"}});
+      const r = await fetch(`https://api.unsplash.com/search/photos?${new URLSearchParams({query:BYID[id].q, per_page:8, orientation:"landscape", content_filter:"high"})}`, {headers:{Authorization:"Client-ID "+this.key, "Accept-Version":"v1"}});
       if(r.status===401){ this.blocked = true; this.err = "Clé Unsplash refusée : vérifie la clé d’accès (Access Key) dans Profil."; this.queue = []; return; }
       if(r.status===403 || r.status===429){ this.blocked = true; this.err = "Limite Unsplash atteinte (50 recettes par heure). Relance « Précharger tout » dans une heure pour la suite."; this.queue = []; return; }
       if(!r.ok) return;
@@ -761,7 +994,7 @@ const Pics = {
     }catch(e){}
   }
 };
-function refreshPic(id){ document.querySelectorAll(`[data-pic="${id}"]`).forEach(el=>{ el.innerHTML = visual(RECIPES[id], el.dataset.size); }); }
+function refreshPic(id){ document.querySelectorAll(`[data-pic="${id}"]`).forEach(el=>{ el.innerHTML = visual(BYID[id], el.dataset.size); }); }
 
 /* =========================================================
    PHOTOS PERSONNELLES (IndexedDB, sur le téléphone)
@@ -779,7 +1012,12 @@ const Photos = {
     return new Promise((ok,ko)=>{ const t = db.transaction("photos",mode); fn(t.objectStore("photos")); t.oncomplete = ()=>ok(); t.onerror = ()=>ko(t.error); t.onabort = ()=>ko(t.error); });
   },
   async loadAll(){
-    try{ await this.run("readonly", st=>{ const c = st.openCursor(); c.onsuccess = ()=>{ const cur = c.result; if(cur){ this.urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } }; }); }catch(e){}
+    const old = [];
+    try{ await this.run("readonly", st=>{ const c = st.openCursor(); c.onsuccess = ()=>{ const cur = c.result; if(cur){ if(typeof cur.key==="number") old.push([cur.key, cur.value]); else this.urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } }; }); }catch(e){}
+    /* Version 4 : tes photos passent des positions aux identifiants stables */
+    for(const [k, blob] of old){
+      try{ const m = MIGRATE[k]; if(m && m[1] && !this.urls[m[0]]) await this.put(m[0], blob); await this.run("readwrite", st=>st.delete(k)); }catch(e){}
+    }
   },
   async put(id, blob){ await this.run("readwrite", st=>st.put(blob,id)); if(this.urls[id]) URL.revokeObjectURL(this.urls[id]); this.urls[id] = URL.createObjectURL(blob); },
   async del(id){ await this.run("readwrite", st=>st.delete(id)); if(this.urls[id]){ URL.revokeObjectURL(this.urls[id]); delete this.urls[id]; } },
@@ -838,7 +1076,7 @@ function fGoal(d){
 }
 function fAvoid(d){
   return `<div class="stack">
-    <div class="chips"><button class="chip" data-a="vege" ${pressed(d.vege)}>Végétarien</button></div>
+    <div class="chips"><button class="chip" data-a="vege" ${pressed(d.vege)}>Végétarien</button><button class="chip" data-a="saison" ${pressed(d.prefSaison)}>Je privilégie les produits de saison</button></div>
     <div><label class="f">Je ne mange pas</label><div class="chips">${Object.entries(TAGS).map(([k,l])=>`<button class="chip" data-a="toggle" data-f="exclus" data-v="${k}" ${pressed(d.exclus.includes(k)||(d.vege&&MEAT.includes(k)))}>${l}</button>`).join("")}</div></div>
     <div><label class="f" for="eviter">Autres aliments que je n’aime pas</label><textarea id="eviter" data-f="eviter" placeholder="Sépare par des virgules : champignons, avocat…">${esc(d.eviter)}</textarea></div></div>`;
 }
@@ -862,7 +1100,7 @@ const STEPS = [
   {t:"Faisons connaissance", s:"Ces infos servent à calculer tes besoins.", f:fIdentity},
   {t:"Ton activité", s:"Compte toutes tes séances de la semaine.", f:fActivity},
   {t:"Ton objectif", s:"Tu pourras le changer à tout moment.", f:fGoal},
-  {t:"Ce que tu évites", s:"Les recettes concernées seront masquées.", f:fAvoid},
+  {t:"Tes préférences", s:"Ce que tu évites est masqué, et tu peux privilégier les produits de saison.", f:fAvoid},
   {t:"Ton budget", s:"Pour te proposer des recettes à ta portée.", f:fBudget},
   {t:"Tes magasins", s:"Où fais-tu tes courses ?", f:fStores}
 ];
@@ -906,7 +1144,7 @@ function vHome(){
         <span class="grow"></span><button class="link" style="padding:8px" data-a="open" data-id="${r.id}" data-fac="${f}">Voir la recette</button>
       </div>
       <button class="post-body" data-a="open" data-id="${r.id}" data-fac="${f}"><h3>${r.n}</h3>
-        <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span>${costPill(x)}${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}</div>
+        <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span>${costPill(x)}${x.si.ok?`<span class="pill season">De saison</span>`:""}${isVegan(r)?`<span class="pill">Vegan</span>`:isVeg(r)?`<span class="pill">Végétarien</span>`:""}${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}</div>
         ${macroLine(m.p*f,m.g*f,m.l*f)}</button>
     </article>`;
   }).join("");
@@ -924,7 +1162,7 @@ function vHome(){
         <li>Métabolisme de base (Mifflin-St Jeor) : 10 × ${nf(p.poids,1)} + 6,25 × ${p.taille} − 5 × ${p.age} ${p.sexe==="h"?"+ 5":"− 161"} = <b>${nf(n.bmr)} kcal</b></li>
         <li>Dépense totale : ${nf(n.bmr)} × ${nf(n.a.f,3)} (activité ${n.a.l.toLowerCase()}) = <b>${nf(n.tdee)} kcal</b></li>
         <li>Objectif ${n.g.l.toLowerCase()} : × ${nf(n.g.k,2)} = <b>${nf(n.kcal)} kcal</b></li>
-        <li>Protéines : ${nf(n.g.p,1)} g × ${nf(p.poids,1)} kg = <b>${n.prot} g</b> ; lipides : ${nf(n.g.lip,1)} g × ${nf(p.poids,1)} kg = <b>${n.lip} g</b> ; glucides : le reste ÷ 4 = <b>${n.gluc} g</b></li>
+        <li>Protéines : ${nf(n.pk,2)} g × ${nf(p.poids,1)} kg = <b>${n.prot} g</b> (selon ton objectif et ton activité) ; lipides : ${nf(n.g.lip,1)} g × ${nf(p.poids,1)} kg = <b>${n.lip} g</b> ; glucides : le reste ÷ 4 = <b>${n.gluc} g</b></li>
         ${n.day?`<li>Budget : ${nf(p.budget)} € ÷ ${p.personnes} personne${p.personnes>1?"s":""} ÷ 30,4 jours = <b>${eur(n.day)}</b> par jour</li>`:""}
         <li class="muted">Repères pour un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
       </ul></details>
@@ -939,11 +1177,13 @@ function vHome(){
 function recipeList(){
   const p = S.profile, n = needs(p), F = UI.filt, q = norm(F.q);
   return RECIPES.filter(r=>allowed(r,p))
-    .filter(r=>F.type==="all"||r.t.includes(F.type))
+    .filter(r=>F.type==="col" ? r.col : !r.col && (F.type==="all" || r.t.includes(F.type)))
     .filter(r=>!F.time||r.m<=F.time)
     .filter(r=>!F.fav||S.favs.includes(r.id))
+    .filter(r=>!F.prof||r.k===F.prof)
     .filter(r=>!q||norm(r.n).includes(q)||r.i.some(([id])=>norm(ING[id][0]).includes(q)))
-    .map(r=>({r, ...fit(r,n,F.type==="all"?r.t[0]:F.type)}))
+    .map(r=>({r, ...fit(r,n,F.type==="all"?r.t[0]:F.type==="col"?"c":F.type)}))
+    .filter(x=>!F.season||x.si.ok)
     .filter(x=>F.cost===0 ? true : F.cost===-1 ? !x.over : x.c<=F.cost)
     .sort((a,b)=>a.score-b.score);
 }
@@ -951,24 +1191,31 @@ function tile(x){
   const r = x.r, fav = S.favs.includes(r.id);
   return `<button class="tile" data-a="open" data-id="${r.id}" data-fac="${x.f}"><span class="pic" data-pic="${r.id}" data-size="s">${visual(r,"s")}</span>
     <span class="tag ${x.over?"over":""}">≈ ${eur(x.c)}</span>${fav?`<span class="fav">${icon("heart",true)}</span>`:""}
-    <span class="ov"><h3>${r.n}</h3><p>${nf(x.m.k*x.f)} kcal, ${nf(x.m.p*x.f)} g prot., ${r.m} min</p></span></button>`;
+    <span class="ov">${x.si.ok?`<span class="sz">De saison</span>`:""}<h3>${r.n}</h3><p>${nf(x.m.k*x.f)} kcal, ${nf(x.m.p*x.f)} g prot., ${r.m} min</p></span></button>`;
 }
 const listHTML = list => list.length ? `<div class="grid2">${list.map(tile).join("")}</div>` : `<div class="empty">Aucune recette avec ces filtres. Retire un filtre ou change ta recherche.</div>`;
-const countTxt = list => `${list.length} recette${list.length>1?"s":""}`;
+const countTxt = list => { const w = UI.filt.type==="col" ? "collation" : "recette"; return `${list.length} ${w}${list.length>1?"s":""}`; };
 function vRecipes(){
   const F = UI.filt, list = recipeList(), p = S.profile, n = needs(p);
   const story = (k,l) => {
     let img = "";
-    if(k!=="all"){ const top = ranked(k,n,p,-1)[0]; if(top){ const u = picURL(top.r,"s"); if(u) img = `<img src="${esc(u)}" alt="">`; } }
-    const ini = {all:"✦",p:"☀︎",d:"◑",s:"☾",c:"◆"}[k];
+    if(k!=="all"){
+      const pool = RECIPES.filter(r=>allowed(r,p) && (k==="col" ? r.col : !r.col && r.t.includes(k)));
+      const top = pool.map(r=>({r, ...fit(r,n,k==="col"?"c":k)})).sort((a,b)=>a.score-b.score)[0];
+      if(top){ const u = picURL(top.r,"s"); if(u) img = `<img src="${esc(u)}" alt="">`; }
+    }
+    const ini = {all:"✦",p:"☀︎",d:"◑",s:"☾",c:"◆",col:"●"}[k];
     return `<button class="story" data-a="filt" data-k="type" data-v="${k}" ${pressed(F.type===k)}><span class="ring"><span>${img||`<span class="ini">${ini}</span>`}</span></span>${l}</button>`;
   };
   const chip = (k,v,l) => `<button class="chip" data-a="filt" data-k="${k}" data-v="${v}" ${pressed(String(F[k])===String(v))}>${l}</button>`;
+  const inSeason = Object.keys(SEASON).filter(id=>SEASON[id].includes(MONTH) && id!=="fruitsaison").map(id=>ING[id][0].toLowerCase());
   return `${topbar(`<h1>Recettes</h1>`)}
-    <div class="stories">${story("all","Tout")}${Object.entries(MEALS).map(([k,m])=>story(k,m.l.replace("Petit-déjeuner","Petit-déj"))).join("")}</div>
+    <div class="stories">${story("all","Tout")}${story("p","Petit-déj")}${story("d","Déjeuner")}${story("s","Dîner")}${story("c","Desserts")}${story("col","Collations")}</div>
     <input type="search" class="search" data-f="q" data-scope="filt" placeholder="Chercher une recette ou un ingrédient" value="${esc(F.q)}" aria-label="Rechercher une recette" style="margin-top:6px">
-    <div class="scroller" style="margin-top:12px">${n.day?chip("cost",-1,"Dans mon budget"):""}${chip("cost",0,"Tout prix")}${chip("cost",2,"Moins de 2 €")}${chip("cost",4,"Moins de 4 €")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
+    <div class="scroller" style="margin-top:12px"><button class="chip" data-a="seasonf" ${pressed(F.season)}>De saison</button>${chip("prof","","Tous profils")}${chip("prof","S","Sportif")}${chip("prof","E","Équilibré")}${chip("prof","L","Léger")}</div>
+    <div class="scroller" style="margin-top:8px">${n.day?chip("cost",-1,"Dans mon budget"):""}${chip("cost",0,"Tout prix")}${chip("cost",2,"Moins de 2 €")}${chip("cost",4,"Moins de 4 €")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
     <div class="scroller" style="margin-top:8px">${chip("time",0,"Tout temps")}${chip("time",10,"10 min max")}${chip("time",20,"20 min max")}${chip("time",30,"30 min max")}</div>
+    ${F.season?`<p class="small muted" style="margin-top:12px">De saison en ${MONTHS[MONTH-1]} : ${esc(inSeason.join(", "))}.</p>`:""}
     <p class="muted small" style="margin:14px 0 10px" id="count">${countTxt(list)}, triées selon tes besoins${n.day?" et ton budget":""}</p>
     <div id="rlist">${listHTML(list)}</div>
     <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=assiette&utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, à titre d’illustration. Coûts estimés par portion.</p>`;
@@ -1052,7 +1299,7 @@ function vProfile(){
     <div class="section"><h2>Objectif</h2>${fGoal(d)}</div>
     <div class="section"><h2>Budget</h2>${fBudget(d)}</div>
     <div class="section"><h2>Magasins</h2>${fStores(d)}</div>
-    <div class="section"><h2>Ce que tu évites</h2>${fAvoid(d)}</div>
+    <div class="section"><h2>Préférences</h2>${fAvoid(d)}</div>
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
     <button class="btn wide dark" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
     <div class="section"><h2>Photos des plats</h2>
@@ -1070,7 +1317,7 @@ function vProfile(){
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger. Prix : moyennes estimées, remplacées par tes prix ou ceux d’Open Prices. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 3.2</p>`;
+    <p class="small muted" style="margin-top:16px">Version 4.0</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -1082,7 +1329,7 @@ function renderSheet(){
   el.innerHTML = `<div class="sheet-in" role="dialog" aria-modal="true">${sh.kind==="recipe"?sRecipe(sh):sh.kind==="product"?sProduct(sh):sScan(sh)}</div>`;
 }
 function sRecipe(sh){
-  const r = RECIPES[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
+  const r = BYID[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
   const c = cost(r)*f, own = Photos.urls[r.id], pic = !own && Pics.get(r.id);
   return `<div class="hero"><span class="pic" data-pic="${r.id}" data-size="l">${visual(r,"l")}</span><button class="x" data-a="close" aria-label="Fermer">${icon("x")}</button></div>
     ${pic?`<p class="credit">Photo : <a href="${esc(pic.pu)}" target="_blank" rel="noopener">${esc(pic.ph)}</a> sur <a href="${esc(pic.u)}" target="_blank" rel="noopener">Unsplash</a></p>`:""}
@@ -1095,7 +1342,8 @@ function sRecipe(sh){
       ${own?`<button class="link" style="padding:8px" data-a="unphoto">Retirer ma photo</button>`:`<button class="link" style="padding:8px" data-a="photo" data-src="gal">Galerie</button>`}
     </div>
     <h2 style="font-size:23px;margin-top:4px">${r.n}</h2>
-    <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span><span class="pill">≈ ${eur(c)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
+    <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span><span class="pill">≈ ${eur(c)}</span><span class="pill">${r.col?"Collation":PROFILES[r.k]}</span>${isVegan(r)?`<span class="pill">Vegan</span>`:isVeg(r)?`<span class="pill">Végétarien</span>`:""}${r.col?"":r.t.split("").map(t=>`<span class="pill">${t==="c"?"Dessert ou en-cas":MEALS[t].l}</span>`).join("")}</div>
+    ${(si=>si.ok?`<p class="small" style="color:var(--ok);font-weight:700">De saison en ${MONTHS[MONTH-1]}</p>`:si.off.length?`<p class="small muted">Hors saison en ce moment : ${si.off.map(id=>`${ING[id][0].toLowerCase()} (${monthsTxt(id)})`).join(", ")}.</p>`:"")(seasonInfo(r))}
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
       <div><b>Portion ×${nf(f,2)}</b><div class="small muted">${nf(m.k*f)} kcal, soit ${nf(m.p*f/n.prot*100)} % de tes protéines du jour</div></div>
       <button data-a="portion" data-d="0.25" aria-label="Augmenter la portion">+</button></div>
@@ -1304,7 +1552,7 @@ function saveProduct(){
   render();
 }
 function addToList(id, f){
-  RECIPES[id].i.forEach(([ing,g])=>{ S.list[ing] = (S.list[ing]||0) + g*f; S.checked = S.checked.filter(x=>x!==ing); });
+  BYID[id].i.forEach(([ing,g])=>{ S.list[ing] = (S.list[ing]||0) + g*f; S.checked = S.checked.filter(x=>x!==ing); });
 }
 function validate(d){
   if(!(d.age>=14&&d.age<=90)) return "Indique un âge entre 14 et 90 ans.";
@@ -1326,6 +1574,7 @@ document.addEventListener("click", e=>{
     case "set": D[b.dataset.f] = b.dataset.v; keepScroll(render); break;
     case "toggle": { const arr = D[b.dataset.f], v = b.dataset.v, i = arr.indexOf(v); i<0?arr.push(v):arr.splice(i,1); keepScroll(render); break; }
     case "vege": D.vege = !D.vege; keepScroll(render); break;
+    case "saison": D.prefSaison = !D.prefSaison; keepScroll(render); break;
     case "next": { const er = UI.step===0 ? validate({...D, budget:"", personnes:1}) : UI.step===4 ? validate(D) : ""; UI.err = er; if(er) return render(); UI.step++; render(); scrollTo(0,0); break; }
     case "prev": UI.err=""; UI.step--; render(); scrollTo(0,0); break;
     case "finish": S.profile = JSON.parse(JSON.stringify(D)); persist(); go("home"); break;
@@ -1334,13 +1583,14 @@ document.addEventListener("click", e=>{
       S.pantry.forEach(x=>{ x.stores = x.stores.filter(s=>myStores().includes(s)); }); persist(); toast("Profil enregistré."); go("home"); break;
     case "reset": if(confirm("Effacer ton profil, tes favoris, ton garde-manger et ta liste ?")){ S = sane(null); persist(); Photos.clear(); UI.draft = blankProfile(); UI.step = 0; UI.view = "onboard"; render(); } break;
     case "reroll": UI.offsets[b.dataset.t]++; keepScroll(render); break;
-    case "filt": UI.filt[b.dataset.k] = b.dataset.k==="type" ? b.dataset.v : Number(b.dataset.v); keepScroll(render); break;
+    case "filt": UI.filt[b.dataset.k] = ["type","prof"].includes(b.dataset.k) ? b.dataset.v : Number(b.dataset.v); keepScroll(render); break;
     case "favf": UI.filt.fav = !UI.filt.fav; keepScroll(render); break;
-    case "open": UI.sheet = {kind:"recipe", id:Number(b.dataset.id), f:Number(b.dataset.fac)}; renderSheet(); break;
+    case "seasonf": UI.filt.season = !UI.filt.season; keepScroll(render); break;
+    case "open": UI.sheet = {kind:"recipe", id:b.dataset.id, f:Number(b.dataset.fac)}; renderSheet(); break;
     case "close": closeSheet(); break;
     case "portion": UI.sheet.f = Math.min(3, Math.max(0.25, UI.sheet.f + Number(b.dataset.d))); renderSheet(); break;
-    case "fav": { const id = Number(b.dataset.id), i = S.favs.indexOf(id); i<0?S.favs.push(id):S.favs.splice(i,1); persist(); keepScroll(render); toast(i<0?"Ajouté aux favoris.":"Retiré des favoris."); break; }
-    case "addone": addToList(Number(b.dataset.id), Number(b.dataset.fac)); persist(); toast("Ingrédients ajoutés aux courses."); break;
+    case "fav": { const id = b.dataset.id, i = S.favs.indexOf(id); i<0?S.favs.push(id):S.favs.splice(i,1); persist(); keepScroll(render); toast(i<0?"Ajouté aux favoris.":"Retiré des favoris."); break; }
+    case "addone": addToList(b.dataset.id, Number(b.dataset.fac)); persist(); toast("Ingrédients ajoutés aux courses."); break;
     case "addrecipe": addToList(UI.sheet.id, UI.sheet.f); persist(); toast("Ingrédients ajoutés aux courses."); break;
     case "addday": UI.day.forEach(x=>addToList(x.id, x.f)); persist(); toast("Journée ajoutée aux courses."); break;
     case "findprod": { const id = b.dataset.id; closeSheet(); UI.prod.q = searchTerm(id); UI.prod.target = id; UI.prod.results = null; go("products"); doSearch(); break; }
