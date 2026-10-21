@@ -1,7 +1,7 @@
 /* Assiette : service worker (fonctionnement hors ligne)
    Change CACHE à chaque nouvelle version pour forcer la mise à jour.
    Les photos Pexels sont gardées dans un cache séparé, conservé entre versions. */
-const CACHE = "assiette-v2.4.0";
+const CACHE = "assiette-v3.0.0";
 const IMG = "assiette-img";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
@@ -35,7 +35,9 @@ self.addEventListener("fetch", e => {
   }
   // Photos des plats : cache d'abord (affichage hors ligne)
   if (url.hostname === "images.unsplash.com") { e.respondWith(cacheFirst(e.request, IMG)); return; }
+  // Icônes des enseignes : cache d'abord, conservées entre versions
+  if ((url.hostname === "www.google.com" && url.pathname.startsWith("/s2/favicons")) || /^t\d\.gstatic\.com$/.test(url.hostname)) { e.respondWith(cacheFirst(e.request, IMG)); return; }
   // Polices et bibliothèque de scan : cache d'abord
   if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || url.hostname === "cdn.jsdelivr.net") { e.respondWith(cacheFirst(e.request, CACHE)); return; }
-  // API Unsplash et Open Food Facts : toujours en direct
+  // API Unsplash, Open Food Facts et Open Prices : toujours en direct
 });

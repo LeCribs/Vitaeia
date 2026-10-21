@@ -3,178 +3,223 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14201c">
-<meta name="description" content="Recettes adaptées à tes objectifs sportifs, avec les produits de tes magasins.">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Recettes adaptées à tes objectifs sportifs et à ton budget, avec les produits de tes magasins.">
 <title>Assiette</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#14201c;--surface:#1c2924;--surface2:#25352e;--line:#33463e;
-  --text:#e7ede6;--muted:#9fb1a7;--accent:#a6dcb5;--on-accent:#10201a;
-  --p:#7cc3e6;--g:#e8c46b;--l:#c9a2e9;--warn:#f2b3a0;
-  --r-sm:8px;--r-md:14px;--r-lg:22px;
-  --font:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
-  color-scheme:dark;box-sizing:border-box;
+  --bg:#ffffff;--soft:#fafafa;--fill:#f2f2f2;--line:#ebebeb;--line2:#dbdbdb;
+  --text:#111111;--muted:#737373;--accent:#f2542d;--accent-soft:#fff1ec;--on-accent:#ffffff;
+  --p:#2f80ed;--g:#f2a516;--l:#a259ff;--ok:#1f9d55;--warn:#e5484d;
+  --r-sm:10px;--r-md:14px;--r-lg:22px;
+  --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15.5px;line-height:1.5;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 button,input,textarea,select{font:inherit;color:inherit}
 button{cursor:pointer}
+a{color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-main{max-width:640px;margin:0 auto;padding:20px 18px calc(96px + env(safe-area-inset-bottom,0px))}
-h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0}
-h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
-h2{font-size:21px;font-weight:600;margin-bottom:10px}
-h3{font-size:17px;font-weight:600}
+svg.i{width:24px;height:24px;flex:none;display:block}
+main{max-width:640px;margin:0 auto;padding:0 16px calc(90px + env(safe-area-inset-bottom,0px))}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--bg);margin:0 -16px;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.topbar h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:0}
+.topbar .brand{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.topbar .brand span{color:var(--accent)}
+h2{font-size:19px;font-weight:800;letter-spacing:-.01em;margin:0 0 10px;line-height:1.2}
+h3{font-size:16px;font-weight:700;margin:0;line-height:1.25}
 p{margin:0}
 .muted{color:var(--muted)}
-.small{font-size:14px}
+.small{font-size:13.5px}
 .stack>*+*{margin-top:14px}
-.section{margin-top:30px}
-.lead{margin:6px 0 18px}
+.section{margin-top:28px}
+.lead{margin:14px 0 4px}
 
-.kcal{font-family:var(--display);font-weight:800;font-size:56px;line-height:1;letter-spacing:-.02em;margin-top:14px}
-.kcal small{font-size:20px;font-weight:600;color:var(--muted);margin-left:6px}
-.band{display:flex;height:44px;border-radius:var(--r-sm);overflow:hidden;margin-top:18px}
-.band span{display:block;height:100%}
-.band .bp{background:var(--p)}.band .bg{background:var(--g)}.band .bl{background:var(--l)}
-.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.legend div{border-left:4px solid;padding-left:8px}
-.legend b{display:block;font-family:var(--display);font-size:22px;font-weight:600}
-.legend .lp{border-color:var(--p)}.legend .lg{border-color:var(--g)}.legend .ll{border-color:var(--l)}
-details{background:var(--surface);border-radius:var(--r-md);padding:12px 14px;margin-top:16px}
-summary{cursor:pointer;font-weight:700}
-details ul{margin:10px 0 0;padding-left:18px}
+/* Besoins */
+.hero-card{margin-top:16px;border:1px solid var(--line);border-radius:var(--r-lg);padding:18px}
+.kcal{font-weight:800;font-size:44px;line-height:1;letter-spacing:-.03em}
+.kcal small{font-size:16px;font-weight:500;color:var(--muted);margin-left:6px;letter-spacing:0}
+.band{display:flex;height:10px;border-radius:99px;overflow:hidden;margin-top:16px;gap:3px}
+.band span{display:block;height:100%;border-radius:99px}
+.bp{background:var(--p)}.bg{background:var(--g)}.bl{background:var(--l)}
+.legend{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.legend b{display:block;font-size:19px;font-weight:800}
+.legend span{font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+details{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+details ul{margin:8px 0 0;padding-left:18px;font-size:13.5px}
 details li{margin:4px 0}
+.budgetbar{height:8px;border-radius:99px;background:var(--fill);overflow:hidden;margin-top:10px}
+.budgetbar span{display:block;height:100%;background:var(--ok);border-radius:99px}
+.budgetbar.over span{background:var(--warn)}
 
-.meal-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
-.card{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px}
-.card h3{margin-bottom:6px}
+/* Fil des repas */
+.post{margin-top:24px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.post-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.post-head b{font-size:15px}
+.photo{position:relative;display:block;width:calc(100% + 32px);margin:0 -16px;border:none;padding:0;background:var(--fill);aspect-ratio:4/3;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;font-weight:700;background:linear-gradient(135deg,#f6f6f6,#ececec)}
+.actions{display:flex;align-items:center;gap:4px;margin:6px -8px 0}
+.actions button{border:none;background:none;padding:8px;border-radius:50%;display:flex}
+.actions button.on{color:var(--accent)}
+.actions .grow{flex:1}
+.post-body{padding:2px 0 12px;width:100%;text-align:left;border:none;background:none}
+.post-body h3{font-size:16.5px;margin-bottom:6px}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.pill{font-size:13px;background:var(--surface2);border-radius:999px;padding:2px 10px;color:var(--muted)}
-.pill.hl{color:var(--on-accent);background:var(--accent)}
-.macros{display:flex;flex-wrap:wrap;gap:12px;font-size:14px}
-.macros i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
-.dp{background:var(--p)}.dg{background:var(--g)}.dl{background:var(--l)}
-.link{background:none;border:none;color:var(--accent);font-weight:700;padding:6px 0}
-.total{background:var(--surface2);border-radius:var(--r-md);padding:12px 14px;margin-top:22px}
-.list>*+*{margin-top:10px}
+.pill{font-size:12.5px;font-weight:700;background:var(--fill);border-radius:99px;padding:3px 10px;color:#333}
+.pill.hl{background:var(--accent-soft);color:var(--accent)}
+.pill.ok{background:#e9f7ef;color:var(--ok)}
+.pill.over{background:#fdecec;color:var(--warn)}
+.macros{display:flex;flex-wrap:wrap;gap:12px;font-size:13.5px;color:#333}
+.macros i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.total{background:var(--soft);border:1px solid var(--line);border-radius:var(--r-md);padding:14px;margin-top:22px}
 
-label.f{display:block;font-weight:700;margin-bottom:6px}
+/* Grille recettes */
+.stories{display:flex;gap:14px;overflow-x:auto;padding:14px 2px 6px;scrollbar-width:none}
+.stories::-webkit-scrollbar{display:none}
+.story{display:flex;flex-direction:column;align-items:center;gap:6px;width:70px;flex:none;border:none;background:none;padding:0;font-size:12px;font-weight:700}
+.ring{width:66px;height:66px;border-radius:50%;padding:2.5px;background:var(--line2)}
+.story[aria-pressed=true] .ring{background:linear-gradient(135deg,var(--accent),#ffb03a)}
+.ring>span{display:block;width:100%;height:100%;border-radius:50%;border:2.5px solid #fff;overflow:hidden;background:var(--fill)}
+.ring img{width:100%;height:100%;object-fit:cover;display:block}
+.ring .ini{display:flex;align-items:center;justify-content:center;height:100%;font-size:20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;display:block;width:100%;aspect-ratio:1/1.12;border:none;padding:0;border-radius:var(--r-md);overflow:hidden;background:var(--fill);text-align:left}
+.tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile .ov{position:absolute;inset:auto 0 0 0;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff}
+.tile .ov h3{font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .ov p{font-size:12px;opacity:.92;margin-top:3px;font-weight:500}
+.tile .tag{position:absolute;top:8px;left:8px;font-size:11.5px;font-weight:800;background:rgba(255,255,255,.94);color:#111;border-radius:99px;padding:2px 8px}
+.tile .tag.over{color:var(--warn)}
+.tile .fav{position:absolute;top:6px;right:8px;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+
+/* Formulaires */
+label.f{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.grid4 label{font-size:13px;color:var(--muted);display:block;margin-bottom:4px}
-input[type=number],input[type=text],input[type=search],textarea,select{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 12px}
+.grid4 label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:4px}
+input[type=number],input[type=text],input[type=search],input[type=password],textarea,select{width:100%;background:var(--soft);border:1px solid var(--line2);border-radius:var(--r-sm);padding:11px 12px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#a8a8a8;background:#fff}
 textarea{min-height:70px;resize:vertical}
-.seg{display:flex;background:var(--surface);border-radius:var(--r-sm);padding:4px;gap:4px}
-.seg button{flex:1;border:none;background:none;border-radius:6px;padding:9px}
-.seg button[aria-pressed=true]{background:var(--accent);color:var(--on-accent);font-weight:700}
+.search{border-radius:99px !important;padding-left:16px !important;background:var(--fill) !important;border-color:transparent !important}
+.seg{display:flex;background:var(--fill);border-radius:var(--r-sm);padding:4px;gap:4px}
+.seg button{flex:1;border:none;background:none;border-radius:8px;padding:9px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .opts>*+*{margin-top:8px}
-.opt{display:block;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-md);padding:12px 14px}
-.opt[aria-pressed=true]{border-color:var(--accent);background:var(--surface2)}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line2);border-radius:var(--r-md);padding:12px 14px}
+.opt[aria-pressed=true]{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
 .opt b{display:block}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:15px}
-.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
-.scroller{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{border:1px solid var(--line2);background:#fff;border-radius:99px;padding:7px 14px;font-size:14px;font-weight:700;display:inline-flex;align-items:center}
+.chip[aria-pressed=true]{background:var(--text);border-color:var(--text);color:#fff}
+.scroller{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .scroller::-webkit-scrollbar{display:none}
 .scroller .chip{white-space:nowrap;flex:none}
-.btn{border:none;border-radius:var(--r-md);padding:14px 18px;font-weight:700;background:var(--accent);color:var(--on-accent)}
-.btn.ghost{background:var(--surface2);color:var(--text)}
+.btn{border:none;border-radius:var(--r-sm);padding:13px 18px;font-weight:800;background:var(--accent);color:var(--on-accent);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.dark{background:var(--text)}
+.btn.ghost{background:var(--fill);color:var(--text)}
 .btn.wide{width:100%}
-.btn:disabled{opacity:.5}
+.btn:disabled{opacity:.45}
 .row{display:flex;gap:10px}
 .row .btn{flex:1}
+.link{background:none;border:none;color:var(--accent);font-weight:800;padding:6px 0}
 .err{color:var(--warn);font-weight:700}
-.steps{display:flex;gap:6px;margin:6px 0 22px}
-.steps span{flex:1;height:5px;border-radius:3px;background:var(--line)}
-.steps span.on{background:var(--accent)}
-.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r-md);padding:16px}
-.banner{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--r-md);padding:10px 14px;margin-top:12px}
+.steps{display:flex;gap:5px;margin:18px 0 22px}
+.steps span{flex:1;height:4px;border-radius:3px;background:var(--line)}
+.steps span.on{background:var(--text)}
+.empty{background:var(--soft);border:1px dashed var(--line2);border-radius:var(--r-md);padding:16px;color:#444}
+.banner{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--accent-soft);border-radius:var(--r-md);padding:12px 14px;margin-top:16px}
+.x{border:none;background:var(--fill);border-radius:50%;width:36px;height:36px;flex:none;display:flex;align-items:center;justify-content:center}
+
+/* Magasins */
+.stores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.store{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;border:1.5px solid var(--line2);background:#fff;border-radius:var(--r-md);padding:14px 6px 10px;font-weight:700;font-size:13.5px}
+.store[aria-pressed=true]{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+.store .chk{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--text);color:#fff;display:none;align-items:center;justify-content:center}
+.store[aria-pressed=true] .chk{display:flex}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:12px;background:#fff;border:1px solid var(--line);overflow:hidden;flex:none}
+.logo img{width:78%;height:78%;object-fit:contain}
+.logo.sm{width:22px;height:22px;border-radius:6px}
+.logo.md{width:34px;height:34px;border-radius:9px}
+.sb{display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--sb);color:#111;font-weight:800;font-size:13px;letter-spacing:.02em}
+.logo.sm .sb{font-size:8px}.logo.md .sb{font-size:10px}
+.storehead{display:flex;align-items:center;gap:10px}
+.spill{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--fill);border-radius:99px;padding:2px 9px 2px 3px}
 
 /* Produits */
+.card{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:12px}
 .prow{display:flex;gap:12px;align-items:center}
-.pimg{width:56px;height:56px;border-radius:var(--r-sm);object-fit:contain;background:#f4f4f0;flex:none}
-.pimg.none{display:flex;align-items:center;justify-content:center;color:#55615b;font-size:22px}
-.prow h3{font-size:16px}
+.pimg{width:60px;height:60px;border-radius:var(--r-sm);object-fit:contain;background:var(--soft);border:1px solid var(--line);flex:none}
+.pimg.none{display:flex;align-items:center;justify-content:center;color:#bbb}
 .searchrow{display:flex;gap:8px}
 .searchrow input{flex:1}
-.searchrow .btn{padding:11px 16px}
+.list>*+*{margin-top:10px}
+.price{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.price .pt{flex:1;min-width:0}
+.price b{font-size:16px}
+.price.mine{background:linear-gradient(90deg,var(--accent-soft),transparent);margin:0 -10px;padding:10px;border-radius:var(--r-sm)}
 
 /* Courses */
-.check{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:11px 0}
-.box{width:24px;height:24px;border-radius:6px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;color:var(--on-accent);font-weight:800;margin-top:1px}
-.check[aria-pressed=true] .box{background:var(--accent);border-color:var(--accent)}
+.check{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:12px 0}
+.box{width:24px;height:24px;border-radius:50%;border:2px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center;color:#fff;margin-top:1px}
+.check[aria-pressed=true] .box{background:var(--ok);border-color:var(--ok)}
 .check[aria-pressed=true] .ct{text-decoration:line-through;color:var(--muted)}
 .check .ct{flex:1}
-.check b{white-space:nowrap}
+.check .q{text-align:right;white-space:nowrap}
 
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
-nav.tabs button{flex:1;max-width:140px;border:none;background:none;padding:7px 2px;border-radius:var(--r-sm);color:var(--muted);font-weight:700;font-size:12px}
-nav.tabs button span{display:block;font-size:19px;line-height:1.2}
-nav.tabs button[aria-current=page]{color:var(--accent);background:var(--surface2)}
+/* Navigation */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav.tabs[hidden]{display:none}
+nav.tabs button{flex:1;max-width:120px;border:none;background:none;padding:6px 2px;color:#8a8a8a;font-weight:700;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button[aria-current=page]{color:var(--text)}
+nav.tabs svg.i{width:25px;height:25px}
 
-.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,10,8,.6)}
+/* Fiches */
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.45)}
 .sheet[hidden]{display:none}
-.sheet-in{background:var(--bg);width:100%;max-width:640px;max-height:92%;overflow-y:auto;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+.sheet-in{background:#fff;width:100%;max-width:640px;max-height:94%;overflow-y:auto;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:0 18px calc(24px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.sheet-in{animation:none}}
+.sheet-pad{padding-top:18px}
 .sheet-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.x{border:none;background:var(--surface2);border-radius:50%;width:38px;height:38px;flex:none;font-size:18px}
-.stepper{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--r-md);padding:10px 12px;margin-top:14px}
-.stepper button{width:40px;height:40px;border-radius:50%;border:none;background:var(--surface2);font-size:20px;font-weight:700}
+.hero{position:relative;margin:0 -18px;aspect-ratio:16/10;background:var(--fill);overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.hero .x{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.credit{font-size:11.5px;color:var(--muted);margin-top:6px}
+.credit a{color:var(--muted)}
+.photo-actions{display:flex;flex-wrap:wrap;gap:0 16px}
+.stepper{display:flex;align-items:center;gap:12px;background:var(--soft);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px;margin-top:14px}
+.stepper button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:#fff;font-size:20px;font-weight:700}
 .stepper div{flex:1}
 .ing{list-style:none;padding:0;margin:0}
-.ing li{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ing li{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
 .ing li .n{flex:1}
-.ing li b{white-space:nowrap}
-.ing .link{padding:0;font-size:14px}
+.ing li .q{white-space:nowrap;text-align:right}
+.ing .link{padding:0;font-size:13.5px}
 ol.how{padding-left:22px;margin:0}
 ol.how li{margin:8px 0}
 .video{position:relative;border-radius:var(--r-md);overflow:hidden;background:#000;aspect-ratio:4/3;margin-top:14px}
 .video video{width:100%;height:100%;object-fit:cover;display:block}
 .video::after{content:"";position:absolute;left:12%;right:12%;top:50%;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
-/* Visuels */
-.card.dish{padding:0;overflow:hidden;display:flex;align-items:stretch}
-.thumb{background:radial-gradient(circle at 30% 25%,#2d433a,#1a2722);display:flex;align-items:center;justify-content:center;flex:none}
-.card.dish .thumb{width:112px;min-height:112px}
-.card.dish .cb{padding:12px 14px;flex:1;min-width:0}
-.card.dish.big{flex-direction:column}
-.card.dish.big .thumb{width:100%;height:180px}
-.thumb img.ph{width:100%;height:100%;object-fit:cover;display:block}
-.hero{margin:14px -18px 0;height:250px;overflow:hidden}
-.hero img.ph{width:100%;height:100%;object-fit:cover}
-.ph-empty{color:var(--muted);font-size:12px;text-align:center;padding:6px}
-.credit{font-size:12px;color:var(--muted);margin-top:6px}
-.credit a{color:var(--muted)}
-.photo-actions{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:6px}
-.sb{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 5px;border-radius:6px;background:var(--sb);color:#10201a;font:800 11px/1 var(--display);letter-spacing:.03em;margin-right:7px;vertical-align:middle;flex:none}
-.sb.lg{height:32px;min-width:44px;font-size:14px;border-radius:9px;margin-right:10px}
-.chip .sb{margin-left:-7px;height:20px;min-width:28px}
-.pill .sb{height:16px;min-width:24px;font-size:9px;margin:0 5px 0 -6px;border-radius:4px}
-.storehead{display:flex;align-items:center}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);font-weight:700;padding:10px 16px;border-radius:999px;z-index:30;max-width:90%;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#111;color:#fff;font-weight:700;padding:10px 16px;border-radius:99px;z-index:30;max-width:90%;text-align:center;font-size:14px}
 .toast[hidden]{display:none}
 </style>
 </head>
 <body>
 <main id="app" aria-live="polite"></main>
-<nav class="tabs" id="tabs" hidden>
-  <button data-a="nav" data-v="home"><span>☀︎</span>Journée</button>
-  <button data-a="nav" data-v="recipes"><span>☰</span>Recettes</button>
-  <button data-a="nav" data-v="products"><span>⌕</span>Produits</button>
-  <button data-a="nav" data-v="list"><span>✓</span>Courses</button>
-  <button data-a="nav" data-v="profile"><span>◐</span>Profil</button>
-</nav>
+<nav class="tabs" id="tabs" hidden></nav>
 <div class="sheet" id="sheet" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <input type="file" id="importfile" accept="application/json,.json" hidden>
@@ -362,8 +407,23 @@ const RECIPES = [
 {n:"Tartine beurre de cacahuète et miel",t:"c",m:2,b:1,i:[["pain",60],["pbutter",15],["miel",10]],e:["Tartine. Parfait avant une séance longue."]}
 ];
 
+/* Prix moyens estimés en grande surface (France, 2026), en € par kg
+   (ou par litre), pour le poids indiqué dans les recettes (cuit si
+   l’ingrédient est cuit). Ils sont remplacés par le prix de ton
+   produit si tu en associes un dans le garde-manger. */
+const PRICE = {
+  avoine:2.2, lait:1.1, skyr:4.5, fb0:2.8, ygrec:4.5, cottage:6, oeuf:5, blanc:6, banane:2, pomme:2.8,
+  frouges:8, compote:3.5, dattes:8, avocat:7, pbutter:9, amandes:16, noix:18, chia:12, miel:12, choco:14,
+  cacao:12, whey:25, pain:4.5, painburger:5, tortilla:5, galette:9, riz:1, pates:0.8, patesc:1, quinoa:2.6,
+  semoule:0.8, nouilles:2.4, pdt:1.5, pdouce:3, lentilles:1.4, pchiches:3, hrouges:3, poulet:12, dinde:12,
+  boeuf5:12, rumsteck:25, jambon:15, saumon:25, saumonf:40, cabillaud:25, thon:16, sardines:14, crevettes:20,
+  tofu:9, mozza:9, feta:13, parmesan:25, emmental:11, creme:5, beurre:11, huile:9, laitcoco:5, pesto:14,
+  houmous:10, soja:8, tomate:3.5, tconc:2.2, concombre:2.5, courgette:2.8, brocoli:3.5, epinards:3.5,
+  poivron:4.5, oignon:2, champi:5, hverts:3.5, carotte:1.5, salade:6, mais:4, ppois:3.5
+};
+
 /* =========================================================
-   3. PARAMÈTRES DE CALCUL
+   3. PARAMÈTRES
    ========================================================= */
 const ACT = {
   sedentaire:{l:"Sédentaire",d:"Peu ou pas de sport",f:1.2},
@@ -378,27 +438,46 @@ const GOALS = {
   maintien:{l:"Maintien",d:"Calories d’équilibre",k:1.00,p:1.6,lip:1.0},
   perf:{l:"Performance",d:"Léger surplus, glucides élevés pour l’entraînement",k:1.05,p:1.8,lip:1.0}
 };
-const MEALS = {p:{l:"Petit-déjeuner",s:.25},d:{l:"Déjeuner",s:.35},s:{l:"Dîner",s:.30},c:{l:"Collation",s:.10}};
-const STORES = ["Leclerc","Carrefour","Intermarché","Lidl","Auchan","Super U","Aldi","Monoprix","Casino","Grand Frais","Picard"];
+const MEALS = {p:{l:"Petit-déjeuner",s:.25,c:.20},d:{l:"Déjeuner",s:.35,c:.35},s:{l:"Dîner",s:.30,c:.35},c:{l:"Collation",s:.10,c:.10}};
+/* Enseignes : domaine (pour afficher leur icône officielle, chargée depuis
+   leur site) et variantes de nom pour reconnaître l’enseigne dans les données. */
+const STORE_INFO = {
+  "Leclerc":{d:"e.leclerc",a:["leclerc"]},
+  "Carrefour":{d:"carrefour.fr",a:["carrefour"]},
+  "Intermarché":{d:"intermarche.com",a:["intermarche"]},
+  "Lidl":{d:"lidl.fr",a:["lidl"]},
+  "Auchan":{d:"auchan.fr",a:["auchan"]},
+  "Super U":{d:"magasins-u.com",a:["super u","hyper u","magasins u","systeme u","u express","coursesu"]},
+  "Aldi":{d:"aldi.fr",a:["aldi"]},
+  "Monoprix":{d:"monoprix.fr",a:["monoprix","monop"]},
+  "Netto":{d:"netto.fr",a:["netto"]},
+  "Casino":{d:"supercasino.fr",a:["casino"]},
+  "Franprix":{d:"franprix.fr",a:["franprix"]},
+  "Grand Frais":{d:"grandfrais.com",a:["grand frais"]},
+  "Picard":{d:"picard.fr",a:["picard"]},
+  "Biocoop":{d:"biocoop.fr",a:["biocoop"]}
+};
+const STORES = Object.keys(STORE_INFO);
 const NO_STORE = "Sans magasin attribué";
 
 /* =========================================================
-   4. OPEN FOOD FACTS (API gratuite, sans clé)
-   Merci de rester raisonnable : 10 recherches par minute maximum.
+   4. SOURCES DE DONNÉES (gratuites, sans clé)
+   Open Food Facts : produits. Open Prices : prix relevés en magasin.
    ========================================================= */
 const OFF = "https://world.openfoodfacts.org";
-const FIELDS = "code,product_name,product_name_fr,brands,quantity,stores,image_front_small_url,image_small_url,nutriments";
+const FIELDS = "code,product_name,product_name_fr,brands,quantity,product_quantity,product_quantity_unit,stores,image_front_small_url,image_small_url,nutriments";
 const r1 = v => (v===null || v===undefined || v==="" || isNaN(v)) ? null : Math.round(Number(v)*10)/10;
-
 function fromOFF(p){
   const n = p.nutriments || {};
   let k = n["energy-kcal_100g"];
   if((k===undefined || k===null) && n.energy_100g!=null) k = n.energy_100g/4.184;
+  const unit = (p.product_quantity_unit||"g").toLowerCase();
   const pr = {
     id:"", code:p.code||"", name:(p.product_name_fr||p.product_name||"").trim()||"Produit sans nom",
     brand:(p.brands||"").split(",")[0].trim(), qty:p.quantity||"",
     img:p.image_front_small_url||p.image_small_url||"", offStores:p.stores||"",
     k:r1(k), p:r1(n.proteins_100g), g:r1(n.carbohydrates_100g), l:r1(n.fat_100g),
+    price:null, weight:(["g","ml"].includes(unit) && Number(p.product_quantity)>0) ? Math.round(Number(p.product_quantity)) : null,
     link:"", stores:[]
   };
   pr.stores = myStores().filter(s=>storeMatch(pr.offStores, s));
@@ -419,6 +498,22 @@ const ProductSource = {
     if(!r.ok) throw new Error("HTTP "+r.status);
     const j = await r.json();
     return j.status===1 && j.product ? fromOFF({...j.product, code}) : null;
+  },
+  /* Prix réels relevés par les consommateurs, avec le magasin précis */
+  async prices(code){
+    const qs = new URLSearchParams({product_code:code, order_by:"-date", size:50});
+    const r = await fetch(`https://prices.openfoodfacts.org/api/v1/prices?${qs}`);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j = await r.json();
+    return (j.items||[]).filter(x=>(x.currency||"EUR")==="EUR" && x.price>0).map(x=>{
+      const loc = x.location||{}, prod = x.product||{};
+      const unit = (prod.product_quantity_unit||"g").toLowerCase(), q = Number(prod.product_quantity)||0;
+      const ppk = x.price_per==="KILOGRAM" ? x.price : (q>0 && ["g","ml"].includes(unit) ? x.price/(q/1000) : null);
+      const label = [loc.osm_brand, loc.osm_name].filter(Boolean).join(" ").trim();
+      return {price:x.price, per:x.price_per, ppk, weight:x.price_per==="KILOGRAM"?1000:(q||null), date:x.date,
+        brand:loc.osm_brand||"", name:loc.osm_name||"", city:loc.osm_address_city||"", logo:loc.osm_brand_logo_url||"",
+        store:myStores().find(s=>storeMatch(label, s))||""};
+    });
   }
 };
 
@@ -435,15 +530,16 @@ function sane(s){
   if(!s.list || typeof s.list!=="object") s.list = {};
   if(!Array.isArray(s.checked)) s.checked = [];
   if(s.profile===undefined) s.profile = null;
+  if(s.profile){ if(s.profile.budget===undefined) s.profile.budget = ""; if(!s.profile.personnes) s.profile.personnes = 1; }
+  s.pantry.forEach(x=>{ if(x.price===undefined) x.price = null; if(x.weight===undefined) x.weight = null; });
   return s;
 }
 let S = sane(load());
-
-const blankProfile = () => ({sexe:"h",age:30,poids:75,taille:178,activite:"modere",sport:"",objectif:"maintien",exclus:[],vege:false,eviter:"",magasins:[],autreMagasin:""});
+const blankProfile = () => ({sexe:"h",age:30,poids:75,taille:178,activite:"modere",sport:"",objectif:"maintien",exclus:[],vege:false,eviter:"",budget:"",personnes:1,magasins:[],autreMagasin:""});
 const UI = {
   view:S.profile?"home":"onboard", step:0, err:"",
   draft:S.profile?JSON.parse(JSON.stringify(S.profile)):blankProfile(),
-  offsets:{p:0,d:0,s:0,c:0}, filt:{type:"all",time:0,budget:0,q:"",fav:false},
+  offsets:{p:0,d:0,s:0,c:0}, filt:{type:"all",time:0,cost:0,q:"",fav:false},
   prod:{q:"",results:null,loading:false,err:"",mine:false,target:""},
   sheet:null, day:[]
 };
@@ -451,21 +547,18 @@ const UI = {
 /* =========================================================
    6. CALCULS
    ========================================================= */
-const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+const norm = s => String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.\-]/g," ").replace(/\s+/g," ").trim();
 function myStores(){ const p = S.profile || UI.draft; return [...(p.magasins||[]), ...(p.autreMagasin?[p.autreMagasin.trim()]:[])].filter(Boolean); }
-function storeMatch(offStores, store){ return norm(offStores).includes(norm(store)); }
+function storeMatch(text, store){ const t = " "+norm(text)+" "; const al = STORE_INFO[store] ? STORE_INFO[store].a : [norm(store)]; return al.some(a=>t.includes(a)); }
 const linked = id => S.pantry.find(x=>x.link===id);
-
-/* Valeurs d’un ingrédient : produit associé si présent, sinon Ciqual */
-function ingVals(id){
-  const x = ING[id], pr = linked(id);
-  return pr ? [x[0], pr.k, pr.p, pr.g, pr.l, x[5]] : x;
-}
+function ingVals(id){ const x = ING[id], pr = linked(id); return pr ? [x[0], pr.k, pr.p, pr.g, pr.l, x[5]] : x; }
+function ingPrice(id){ const pr = linked(id); return (pr && pr.price>0 && pr.weight>0) ? pr.price/pr.weight*1000 : PRICE[id]; }
 function mac(r){
   let k=0,p=0,g=0,l=0;
   for(const [id,q] of r.i){ const x = ingVals(id); k+=x[1]*q/100; p+=x[2]*q/100; g+=x[3]*q/100; l+=x[4]*q/100; }
   return {k,p,g,l};
 }
+const cost = r => r.i.reduce((t,[id,q])=>t+ingPrice(id)*q/1000, 0);
 RECIPES.forEach((r,idx)=>{ r.id = idx; });
 
 function needs(p){
@@ -476,7 +569,8 @@ function needs(p){
   const prot = Math.round(g.p*p.poids);
   const lip = Math.round(g.lip*p.poids);
   const gluc = Math.max(50, Math.round((kcal - prot*4 - lip*9)/4));
-  return {bmr, tdee, kcal, prot, lip, gluc, a, g};
+  const b = Number(p.budget)>0 ? Number(p.budget)/Math.max(1, Number(p.personnes)||1)/30.4 : 0;
+  return {bmr, tdee, kcal, prot, lip, gluc, a, g, day:b};
 }
 function allowed(r, p){
   const ex = new Set(p.exclus);
@@ -495,8 +589,10 @@ function fit(r, n, type){
   f = Math.min(2.5, Math.max(0.5, f));
   const tP = n.prot*4/n.kcal, tG = n.gluc*4/n.kcal;
   const pS = m.p*4/m.k, gS = m.g*4/m.k;
-  const score = Math.abs(pS-tP)*2 + Math.abs(gS-tG) + Math.abs(target/(m.k*f)-1)*1.5;
-  return {f, score, m};
+  const c = cost(r)*f, cap = n.day ? n.day*MEALS[type].c : 0;
+  let score = Math.abs(pS-tP)*2 + Math.abs(gS-tG) + Math.abs(target/(m.k*f)-1)*1.5;
+  if(cap && c>cap) score += (c/cap-1)*1.5;
+  return {f, score, m, c, cap, over: cap>0 && c>cap*1.05};
 }
 function ranked(type, n, p, exclude){
   return RECIPES.filter(r=>r.t.includes(type) && allowed(r,p) && r.id!==exclude)
@@ -514,6 +610,48 @@ function guessLink(name){
   return bs>=0.5 ? best : "";
 }
 const searchTerm = id => ING[id][0].replace(/\(.*?\)/g,"").trim();
+
+
+/* =========================================================
+   7. AFFICHAGE : utilitaires, icônes, logos
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf = (x,d=0) => Number(x).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumFractionDigits:d});
+const eur = x => nf(x,2)+" €";
+const pressed = c => `aria-pressed="${c?"true":"false"}"`;
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2800); }
+const unitHint = (id,g) => { const u=UNITS[id]; if(!u) return ""; const c=Math.round(g/u[0]*2)/2; return c>0?` <span class="muted small">(≈ ${nf(c,c%1?1:0)} ${c>1?u[2]:u[1]})</span>`:""; };
+const roundG = v => v>=100 ? Math.round(v/10)*10 : v>=20 ? Math.round(v/5)*5 : Math.round(v);
+
+const IC = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  grid:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  bag:'<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',
+  heart:'<path d="M12 20.5S3.5 15.3 3.5 9.2A4.7 4.7 0 0 1 12 6.6a4.7 4.7 0 0 1 8.5 2.6c0 6.1-8.5 11.3-8.5 11.3z"/>',
+  shuffle:'<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
+  cartplus:'<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/><path d="M12 11.5v5M9.5 14h5"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  camera:'<path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M7 12h10"/>'
+};
+const icon = (n, fill) => `<svg class="i" viewBox="0 0 24 24" fill="${fill?"currentColor":"none"}" stroke="currentColor" stroke-width="${fill?0:1.9}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+
+/* Pastille de secours (enseigne sans site ou icône indisponible) */
+const BADGE_COLORS = ["#ffd9cc","#d6e6ff","#ffe9b3","#ead9ff","#d4f2e1","#fde2ef"];
+function hashStr(s){ let h = 0; for(const c of s) h = (h*31 + c.charCodeAt(0))|0; return Math.abs(h); }
+function storeAbbr(s){ const w = norm(s).split(" ").filter(Boolean); return (w.length>1 ? w.map(x=>x[0]).join("").slice(0,2) : w.join("").slice(0,3)).toUpperCase(); }
+function badgeHTML(s){ return `<span class="sb" style="--sb:${BADGE_COLORS[hashStr(norm(s))%BADGE_COLORS.length]}">${esc(storeAbbr(s))}</span>`; }
+/* Icône officielle de l’enseigne, chargée depuis son propre site via le service d’icônes de Google */
+function logo(s, size){
+  const info = STORE_INFO[s], cls = `logo${size?" "+size:""}`;
+  if(!info) return `<span class="${cls}" aria-hidden="true">${badgeHTML(s)}</span>`;
+  return `<span class="${cls}" aria-hidden="true"><img src="https://www.google.com/s2/favicons?domain=${info.d}&sz=128" alt="" loading="lazy" data-store="${esc(s)}"></span>`;
+}
 
 /* =========================================================
    PHOTOS DES PLATS (Unsplash, banque d’images gratuite)
@@ -594,45 +732,30 @@ async function resizeImage(file){
   c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
   return new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(new Error("jpeg")),"image/jpeg",.82));
 }
+function picURL(r, size="s"){
+  const own = Photos.urls[r.id]; if(own) return own;
+  const p = Pics.get(r.id); if(p) return p[size]||p.m;
+  Pics.want(r.id); return "";
+}
 function visual(r, size="s"){
-  const own = Photos.urls[r.id];
-  if(own) return `<img class="ph" src="${own}" alt="Ta photo : ${esc(r.n)}">`;
-  const p = Pics.get(r.id);
-  if(p) return `<img class="ph" src="${esc(p[size]||p.m)}" alt="${esc(r.n)}" loading="lazy" style="background:${esc(p.c||"transparent")}">`;
-  Pics.want(r.id);
+  const u = picURL(r, size);
+  if(u) return `<img src="${esc(u)}" alt="${esc(r.n)}" loading="lazy"${!Photos.urls[r.id]&&Pics.get(r.id)?` style="background:${esc(Pics.get(r.id).c||"transparent")}"`:""}>`;
   return `<span class="ph-empty">${MEALS[r.t[0]].l}</span>`;
 }
 
 /* =========================================================
-   PASTILLES MAGASINS (design original, pas les logos officiels)
+   8. ÉCRANS
    ========================================================= */
-const BADGE_COLORS = ["#a6dcb5","#7cc3e6","#e8c46b","#c9a2e9","#f2b3a0","#8fd3c8"];
-function storeAbbr(s){ const w = norm(s).split(/\s+/).filter(Boolean); return (w.length>1 ? w.map(x=>x[0]).join("").slice(0,2) : w.join("").slice(0,3)).toUpperCase(); }
-function hashStr(s){ let h = 0; for(const c of s) h = (h*31 + c.charCodeAt(0))|0; return Math.abs(h); }
-function badge(s, size){ return `<span class="sb${size?" "+size:""}" style="--sb:${BADGE_COLORS[hashStr(norm(s))%BADGE_COLORS.length]}" aria-hidden="true">${esc(storeAbbr(s))}</span>`; }
-
-/* =========================================================
-   7. AFFICHAGE
-   ========================================================= */
-const $ = s => document.querySelector(s);
-const esc = s => String(s??"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nf = (x,d=0) => Number(x).toLocaleString("fr-FR",{maximumFractionDigits:d,minimumFractionDigits:d});
-const euro = b => "€".repeat(b);
-const pressed = c => `aria-pressed="${c?"true":"false"}"`;
-let toastT;
-function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 2600); }
-const unitHint = (id,g) => { const u=UNITS[id]; if(!u) return ""; const c=Math.round(g/u[0]*2)/2; return c>0?` <span class="muted small">(≈ ${nf(c,c%1?1:0)} ${c>1?u[2]:u[1]})</span>`:""; };
-const roundG = v => v>=100 ? Math.round(v/10)*10 : v>=20 ? Math.round(v/5)*5 : Math.round(v);
-
+const TABS = [["home","home","Journée"],["recipes","grid","Recettes"],["products","search","Produits"],["list","bag","Courses"],["profile","user","Profil"]];
 function render(){
   const app = $("#app"), tabs = $("#tabs");
   tabs.hidden = UI.view==="onboard";
-  tabs.querySelectorAll("button").forEach(b=>b.removeAttribute("aria-current"));
-  const cur = tabs.querySelector(`[data-v="${UI.view}"]`); if(cur) cur.setAttribute("aria-current","page");
+  tabs.innerHTML = TABS.map(([v,ic,l])=>`<button data-a="nav" data-v="${v}" ${UI.view===v?'aria-current="page"':""}>${icon(ic, UI.view===v && ic!=="search")}${l}</button>`).join("");
   const V = {onboard:vOnboard, home:vHome, recipes:vRecipes, products:vProducts, list:vList, profile:vProfile};
   app.innerHTML = V[UI.view]();
   renderSheet();
 }
+const topbar = (t, right="") => `<div class="topbar">${t}${right}</div>`;
 
 /* ---- Champs du profil ---- */
 function fIdentity(d){
@@ -658,10 +781,20 @@ function fAvoid(d){
     <div><label class="f">Je ne mange pas</label><div class="chips">${Object.entries(TAGS).map(([k,l])=>`<button class="chip" data-a="toggle" data-f="exclus" data-v="${k}" ${pressed(d.exclus.includes(k)||(d.vege&&MEAT.includes(k)))}>${l}</button>`).join("")}</div></div>
     <div><label class="f" for="eviter">Autres aliments que je n’aime pas</label><textarea id="eviter" data-f="eviter" placeholder="Sépare par des virgules : champignons, avocat…">${esc(d.eviter)}</textarea></div></div>`;
 }
+function fBudget(d){
+  const per = Number(d.budget)>0 ? Number(d.budget)/Math.max(1,Number(d.personnes)||1)/30.4 : 0;
+  return `<div class="stack">
+    <div class="grid3" style="grid-template-columns:2fr 1fr">
+      <div><label class="f" for="budget">Budget courses par mois (€)</label><input id="budget" type="number" inputmode="decimal" min="0" step="10" data-f="budget" placeholder="ex. 300" value="${esc(d.budget)}"></div>
+      <div><label class="f" for="pers">Personnes</label><input id="pers" type="number" inputmode="numeric" min="1" max="12" data-f="personnes" value="${d.personnes||1}"></div>
+    </div>
+    <p class="small muted" id="budgethint">${per?`Soit environ <b>${eur(per)}</b> par jour et par personne. Les recettes trop chères pour ce budget passeront après les autres.`:"Laisse vide si tu ne veux pas tenir compte du budget."}</p>
+    <p class="small muted">Les coûts sont estimés à partir de prix moyens en grande surface. Ils deviennent exacts pour chaque produit de ton garde-manger dont tu indiques le prix.</p></div>`;
+}
 function fStores(d){
-  return `<div class="stack"><div class="chips">${STORES.map(s=>`<button class="chip" data-a="toggle" data-f="magasins" data-v="${s}" ${pressed(d.magasins.includes(s))}>${badge(s)}${s}</button>`).join("")}</div>
+  return `<div class="stack"><div class="stores">${STORES.map(s=>`<button class="store" data-a="toggle" data-f="magasins" data-v="${s}" ${pressed(d.magasins.includes(s))}><span class="chk">${icon("check")}</span>${logo(s)}<span>${s}</span></button>`).join("")}</div>
     <div><label class="f" for="autre">Autre magasin</label><input id="autre" type="text" data-f="autreMagasin" placeholder="ex. Biocoop du quartier" value="${esc(d.autreMagasin)}"></div>
-    <p class="muted small">Les produits vendus dans tes magasins remonteront en premier dans les recherches.</p></div>`;
+    <p class="muted small">Les produits et les prix relevés dans tes magasins remonteront en premier.</p></div>`;
 }
 
 const STEPS = [
@@ -669,69 +802,77 @@ const STEPS = [
   {t:"Ton activité", s:"Compte toutes tes séances de la semaine.", f:fActivity},
   {t:"Ton objectif", s:"Tu pourras le changer à tout moment.", f:fGoal},
   {t:"Ce que tu évites", s:"Les recettes concernées seront masquées.", f:fAvoid},
+  {t:"Ton budget", s:"Pour te proposer des recettes à ta portée.", f:fBudget},
   {t:"Tes magasins", s:"Où fais-tu tes courses ?", f:fStores}
 ];
 function vOnboard(){
   const st = STEPS[UI.step], last = UI.step===STEPS.length-1;
-  return `<div class="steps">${STEPS.map((_,i)=>`<span class="${i<=UI.step?"on":""}"></span>`).join("")}</div>
-    <h1>${st.t}</h1><p class="muted lead">${st.s}</p>
+  return `${topbar(`<span class="brand">Assiette<span>.</span></span>`)}
+    <div class="steps">${STEPS.map((_,i)=>`<span class="${i<=UI.step?"on":""}"></span>`).join("")}</div>
+    <h2 style="font-size:26px">${st.t}</h2><p class="muted" style="margin:-4px 0 20px">${st.s}</p>
     ${st.f(UI.draft)}
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
     <div class="row" style="margin-top:26px">
       ${UI.step>0?`<button class="btn ghost" data-a="prev">Retour</button>`:""}
-      <button class="btn" data-a="${last?"finish":"next"}">${last?"Voir mes recettes":"Continuer"}</button>
+      <button class="btn dark" data-a="${last?"finish":"next"}">${last?"C’est parti":"Continuer"}</button>
     </div>
     ${UI.step===0?`<button class="link" style="margin-top:14px" data-a="import">J’ai une sauvegarde à importer</button>`:""}`;
 }
 
-function macroLine(p,g,l){
-  return `<div class="macros"><span><i class="dp"></i>${nf(p)} g prot.</span><span><i class="dg"></i>${nf(g)} g gluc.</span><span><i class="dl"></i>${nf(l)} g lip.</span></div>`;
-}
-function card(r, f, big){
-  const m = mac(r), own = r.i.some(([id])=>linked(id));
-  return `<button class="card dish${big?" big":""}" data-a="open" data-id="${r.id}" data-fac="${f}"><div class="thumb" data-pic="${r.id}" data-size="${big?"m":"s"}">${visual(r, big?"m":"s")}</div><div class="cb">
-    <h3>${r.n}</h3>
-    <div class="meta"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span><span class="pill hl">${nf(m.k*f)} kcal</span>${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}${own?`<span class="pill">tes produits</span>`:""}${S.favs.includes(r.id)?`<span class="pill">♥</span>`:""}</div>
-    ${macroLine(m.p*f,m.g*f,m.l*f)}</div></button>`;
-}
+const macroLine = (p,g,l) => `<div class="macros"><span><i class="bp"></i>${nf(p)} g prot.</span><span><i class="bg"></i>${nf(g)} g gluc.</span><span><i class="bl"></i>${nf(l)} g lip.</span></div>`;
+const costPill = x => x.cap ? `<span class="pill ${x.over?"over":"ok"}">≈ ${eur(x.c)}</span>` : `<span class="pill">≈ ${eur(x.c)}</span>`;
 
 function vHome(){
   const p = S.profile, n = needs(p);
   const pk = n.prot*4, gk = n.gluc*4, lk = n.lip*9, tot = pk+gk+lk;
-  let sum = {k:0,p:0,g:0,l:0}, prevD = -1;
+  let sum = {k:0,p:0,g:0,l:0,c:0}, prevD = -1;
   UI.day = [];
   const meals = ["p","d","s","c"].map(t=>{
     const list = ranked(t, n, p, t==="s"?prevD:-1).slice(0,8);
-    if(!list.length) return `<div class="section"><h2>${MEALS[t].l}</h2><div class="empty">Aucune recette ne passe tes exclusions pour ce repas. Assouplis-les dans Profil.</div></div>`;
-    const pick = list[UI.offsets[t] % list.length];
-    if(t==="d") prevD = pick.r.id;
-    UI.day.push({id:pick.r.id, f:pick.f});
-    const m = pick.m;
-    sum.k+=m.k*pick.f; sum.p+=m.p*pick.f; sum.g+=m.g*pick.f; sum.l+=m.l*pick.f;
-    return `<div class="section"><div class="meal-head"><h2 style="margin:0">${MEALS[t].l}</h2><span class="muted small">cible ${nf(n.kcal*MEALS[t].s)} kcal</span></div>
-      ${card(pick.r, pick.f, true)}
-      <button class="link" data-a="reroll" data-t="${t}">Autre idée</button></div>`;
+    if(!list.length) return `<div class="post"><div class="post-head"><b>${MEALS[t].l}</b></div><div class="empty">Aucune recette ne passe tes exclusions pour ce repas. Assouplis-les dans Profil.</div></div>`;
+    const x = list[UI.offsets[t] % list.length], r = x.r, m = x.m, f = x.f;
+    if(t==="d") prevD = r.id;
+    UI.day.push({id:r.id, f});
+    sum.k+=m.k*f; sum.p+=m.p*f; sum.g+=m.g*f; sum.l+=m.l*f; sum.c+=x.c;
+    const fav = S.favs.includes(r.id);
+    return `<article class="post">
+      <div class="post-head"><b>${MEALS[t].l}</b><span class="muted small">cible ${nf(n.kcal*MEALS[t].s)} kcal${x.cap?`, ${eur(x.cap)}`:""}</span></div>
+      <button class="photo" data-a="open" data-id="${r.id}" data-fac="${f}" aria-label="Voir ${esc(r.n)}"><span class="pic" data-pic="${r.id}" data-size="m">${visual(r,"m")}</span></button>
+      <div class="actions">
+        <button class="${fav?"on":""}" data-a="fav" data-id="${r.id}" aria-label="${fav?"Retirer des favoris":"Ajouter aux favoris"}">${icon("heart",fav)}</button>
+        <button data-a="reroll" data-t="${t}" aria-label="Autre idée">${icon("shuffle")}</button>
+        <button data-a="addone" data-id="${r.id}" data-fac="${f}" aria-label="Ajouter aux courses">${icon("cartplus")}</button>
+        <span class="grow"></span><button class="link" style="padding:8px" data-a="open" data-id="${r.id}" data-fac="${f}">Voir la recette</button>
+      </div>
+      <button class="post-body" data-a="open" data-id="${r.id}" data-fac="${f}"><h3>${r.n}</h3>
+        <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span>${costPill(x)}${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}</div>
+        ${macroLine(m.p*f,m.g*f,m.l*f)}</button>
+    </article>`;
   }).join("");
-  return `<h1>Ta journée</h1>
-    <p class="muted">${GOALS[p.objectif].l}${p.sport?`, ${esc(p.sport)}`:""}</p>
-    <div class="kcal">${nf(n.kcal)}<small>kcal par jour</small></div>
-    <div class="band" role="img" aria-label="Répartition : ${n.prot} g de protéines, ${n.gluc} g de glucides, ${n.lip} g de lipides">
-      <span class="bp" style="width:${pk/tot*100}%"></span><span class="bg" style="width:${gk/tot*100}%"></span><span class="bl" style="width:${lk/tot*100}%"></span></div>
-    <div class="legend"><div class="lp"><b>${n.prot} g</b><span class="small muted">protéines</span></div><div class="lg"><b>${n.gluc} g</b><span class="small muted">glucides</span></div><div class="ll"><b>${n.lip} g</b><span class="small muted">lipides</span></div></div>
-    <details><summary>Comment c’est calculé</summary><ul class="small">
-      <li>Métabolisme de base (Mifflin-St Jeor) : 10 × ${nf(p.poids,1)} + 6,25 × ${p.taille} − 5 × ${p.age} ${p.sexe==="h"?"+ 5":"− 161"} = <b>${nf(n.bmr)} kcal</b></li>
-      <li>Dépense totale : ${nf(n.bmr)} × ${nf(n.a.f,3)} (activité ${n.a.l.toLowerCase()}) = <b>${nf(n.tdee)} kcal</b></li>
-      <li>Objectif ${n.g.l.toLowerCase()} : × ${nf(n.g.k,2)} = <b>${nf(n.kcal)} kcal</b></li>
-      <li>Protéines : ${nf(n.g.p,1)} g × ${nf(p.poids,1)} kg = <b>${n.prot} g</b></li>
-      <li>Lipides : ${nf(n.g.lip,1)} g × ${nf(p.poids,1)} kg = <b>${n.lip} g</b></li>
-      <li>Glucides : le reste des calories ÷ 4 = <b>${n.gluc} g</b></li>
-      <li class="muted">Ces repères conviennent à un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
-    </ul></details>
-    ${Pics.key||Pics.sharedCount()?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Unsplash gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
+  const budget = n.day ? `<div class="hero-card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Budget du jour</b><span class="small muted">${eur(sum.c)} sur ${eur(n.day)}</span></div>
+      <div class="budgetbar ${sum.c>n.day?"over":""}"><span style="width:${Math.min(100,sum.c/n.day*100)}%"></span></div>
+      <p class="small muted" style="margin-top:8px">${sum.c>n.day?"Cette journée dépasse ton budget : touche ⇄ sur un repas pour une autre idée.":"Cette journée tient dans ton budget."}</p></div>` : "";
+  return `${topbar(`<span class="brand">Assiette<span>.</span></span>`, `<button class="x" data-a="nav" data-v="products" aria-label="Scanner ou chercher un produit">${icon("scan")}</button>`)}
+    <div class="hero-card">
+      <p class="small muted">${GOALS[p.objectif].l}${p.sport?`, ${esc(p.sport)}`:""}</p>
+      <div class="kcal">${nf(n.kcal)}<small>kcal par jour</small></div>
+      <div class="band" role="img" aria-label="Répartition : ${n.prot} g de protéines, ${n.gluc} g de glucides, ${n.lip} g de lipides">
+        <span class="bp" style="width:${pk/tot*100}%"></span><span class="bg" style="width:${gk/tot*100}%"></span><span class="bl" style="width:${lk/tot*100}%"></span></div>
+      <div class="legend"><div><b>${n.prot} g</b><span><i class="bp"></i>protéines</span></div><div><b>${n.gluc} g</b><span><i class="bg"></i>glucides</span></div><div><b>${n.lip} g</b><span><i class="bl"></i>lipides</span></div></div>
+      <details><summary>Comment c’est calculé</summary><ul>
+        <li>Métabolisme de base (Mifflin-St Jeor) : 10 × ${nf(p.poids,1)} + 6,25 × ${p.taille} − 5 × ${p.age} ${p.sexe==="h"?"+ 5":"− 161"} = <b>${nf(n.bmr)} kcal</b></li>
+        <li>Dépense totale : ${nf(n.bmr)} × ${nf(n.a.f,3)} (activité ${n.a.l.toLowerCase()}) = <b>${nf(n.tdee)} kcal</b></li>
+        <li>Objectif ${n.g.l.toLowerCase()} : × ${nf(n.g.k,2)} = <b>${nf(n.kcal)} kcal</b></li>
+        <li>Protéines : ${nf(n.g.p,1)} g × ${nf(p.poids,1)} kg = <b>${n.prot} g</b> ; lipides : ${nf(n.g.lip,1)} g × ${nf(p.poids,1)} kg = <b>${n.lip} g</b> ; glucides : le reste ÷ 4 = <b>${n.gluc} g</b></li>
+        ${n.day?`<li>Budget : ${nf(p.budget)} € ÷ ${p.personnes} personne${p.personnes>1?"s":""} ÷ 30,4 jours = <b>${eur(n.day)}</b> par jour</li>`:""}
+        <li class="muted">Repères pour un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
+      </ul></details>
+    </div>
+    ${budget}
+    ${Pics.key||Pics.sharedCount()?"":`<div class="banner"><span class="small">Affiche les photos des plats avec une clé Unsplash gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
     ${meals}
-    <div class="total"><b>Total de cette journée : ${nf(sum.k)} kcal</b><div style="margin-top:6px">${macroLine(sum.p,sum.g,sum.l)}</div>
-      <p class="small muted" style="margin-top:6px">Objectif : ${nf(n.kcal)} kcal, ${n.prot} g de protéines.</p></div>
-    ${UI.day.length?`<button class="btn wide" style="margin-top:16px" data-a="addday">Ajouter cette journée à ma liste de courses</button>`:""}`;
+    <div class="total"><b>Ta journée : ${nf(sum.k)} kcal${sum.c?`, environ ${eur(sum.c)}`:""}</b><div style="margin-top:6px">${macroLine(sum.p,sum.g,sum.l)}</div></div>
+    ${UI.day.length?`<button class="btn wide" style="margin-top:14px" data-a="addday">${icon("cartplus")}Ajouter la journée aux courses</button>`:""}`;
 }
 
 function recipeList(){
@@ -739,34 +880,49 @@ function recipeList(){
   return RECIPES.filter(r=>allowed(r,p))
     .filter(r=>F.type==="all"||r.t.includes(F.type))
     .filter(r=>!F.time||r.m<=F.time)
-    .filter(r=>!F.budget||r.b<=F.budget)
     .filter(r=>!F.fav||S.favs.includes(r.id))
     .filter(r=>!q||norm(r.n).includes(q)||r.i.some(([id])=>norm(ING[id][0]).includes(q)))
     .map(r=>({r, ...fit(r,n,F.type==="all"?r.t[0]:F.type)}))
+    .filter(x=>F.cost===0 ? true : F.cost===-1 ? !x.over : x.c<=F.cost)
     .sort((a,b)=>a.score-b.score);
 }
-const listHTML = list => list.length ? list.map(x=>card(x.r,x.f)).join("") : `<div class="empty">Aucune recette avec ces filtres. Retire un filtre ou change ta recherche.</div>`;
+function tile(x){
+  const r = x.r, fav = S.favs.includes(r.id);
+  return `<button class="tile" data-a="open" data-id="${r.id}" data-fac="${x.f}"><span class="pic" data-pic="${r.id}" data-size="s">${visual(r,"s")}</span>
+    <span class="tag ${x.over?"over":""}">≈ ${eur(x.c)}</span>${fav?`<span class="fav">${icon("heart",true)}</span>`:""}
+    <span class="ov"><h3>${r.n}</h3><p>${nf(x.m.k*x.f)} kcal, ${nf(x.m.p*x.f)} g prot., ${r.m} min</p></span></button>`;
+}
+const listHTML = list => list.length ? `<div class="grid2">${list.map(tile).join("")}</div>` : `<div class="empty">Aucune recette avec ces filtres. Retire un filtre ou change ta recherche.</div>`;
 const countTxt = list => `${list.length} recette${list.length>1?"s":""}`;
 function vRecipes(){
-  const F = UI.filt, list = recipeList();
+  const F = UI.filt, list = recipeList(), p = S.profile, n = needs(p);
+  const story = (k,l) => {
+    let img = "";
+    if(k!=="all"){ const top = ranked(k,n,p,-1)[0]; if(top){ const u = picURL(top.r,"s"); if(u) img = `<img src="${esc(u)}" alt="">`; } }
+    const ini = {all:"✦",p:"☀︎",d:"◑",s:"☾",c:"◆"}[k];
+    return `<button class="story" data-a="filt" data-k="type" data-v="${k}" ${pressed(F.type===k)}><span class="ring"><span>${img||`<span class="ini">${ini}</span>`}</span></span>${l}</button>`;
+  };
   const chip = (k,v,l) => `<button class="chip" data-a="filt" data-k="${k}" data-v="${v}" ${pressed(String(F[k])===String(v))}>${l}</button>`;
-  return `<h1>Recettes</h1><p class="muted lead">Triées selon tes besoins, portions ajustées.</p>
-    <input type="search" data-f="q" data-scope="filt" placeholder="Chercher une recette ou un ingrédient" value="${esc(F.q)}" aria-label="Rechercher une recette">
-    <div class="scroller" style="margin-top:12px">${chip("type","all","Tous les repas")}${Object.entries(MEALS).map(([k,m])=>chip("type",k,m.l)).join("")}</div>
+  return `${topbar(`<h1>Recettes</h1>`)}
+    <div class="stories">${story("all","Tout")}${Object.entries(MEALS).map(([k,m])=>story(k,m.l.replace("Petit-déjeuner","Petit-déj"))).join("")}</div>
+    <input type="search" class="search" data-f="q" data-scope="filt" placeholder="Chercher une recette ou un ingrédient" value="${esc(F.q)}" aria-label="Rechercher une recette" style="margin-top:6px">
+    <div class="scroller" style="margin-top:12px">${n.day?chip("cost",-1,"Dans mon budget"):""}${chip("cost",0,"Tout prix")}${chip("cost",2,"Moins de 2 €")}${chip("cost",4,"Moins de 4 €")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
     <div class="scroller" style="margin-top:8px">${chip("time",0,"Tout temps")}${chip("time",10,"10 min max")}${chip("time",20,"20 min max")}${chip("time",30,"30 min max")}</div>
-    <div class="scroller" style="margin-top:8px">${chip("budget",0,"Tout budget")}${chip("budget",1,"€")}${chip("budget",2,"€€ max")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
-    <p class="muted small" style="margin:16px 0 10px" id="count">${countTxt(list)}</p>
-    <div class="list" id="rlist">${listHTML(list)}</div>
-    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=assiette&utm_medium=referral" target="_blank" rel="noopener" style="color:inherit">Unsplash</a>, à titre d’illustration : le plat peut différer de la recette.</p>`;
+    <p class="muted small" style="margin:14px 0 10px" id="count">${countTxt(list)}, triées selon tes besoins${n.day?" et ton budget":""}</p>
+    <div id="rlist">${listHTML(list)}</div>
+    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=assiette&utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, à titre d’illustration. Coûts estimés par portion.</p>`;
 }
 
 /* ---- Produits ---- */
-function pimg(pr){ return pr.img ? `<img class="pimg" src="${esc(pr.img)}" alt="" loading="lazy">` : `<span class="pimg none">◻︎</span>`; }
+function pimg(pr){ return pr.img ? `<img class="pimg" src="${esc(pr.img)}" alt="" loading="lazy">` : `<span class="pimg none">${icon("bag")}</span>`; }
+const spill = s => `<span class="spill">${logo(s,"sm")}${esc(s)}</span>`;
 function prodCard(pr, action, extra){
   const full = [pr.k,pr.p,pr.g,pr.l].every(v=>v!==null);
+  const ppk = pr.price>0 && pr.weight>0 ? pr.price/pr.weight*1000 : 0;
   return `<button class="card" ${action}><div class="prow">${pimg(pr)}<div style="flex:1;min-width:0">
-    <h3>${esc(pr.name)}</h3><p class="small muted">${esc([pr.brand,pr.qty].filter(Boolean).join(", "))}</p>
-    <div class="meta" style="margin:6px 0 0">${full?`<span class="pill">${nf(pr.k)} kcal</span><span class="pill">P ${nf(pr.p,1)}</span><span class="pill">G ${nf(pr.g,1)}</span><span class="pill">L ${nf(pr.l,1)}</span>`:`<span class="pill">valeurs incomplètes</span>`}${pr.stores.map(s=>`<span class="pill">${badge(s)}${esc(s)}</span>`).join("")}</div>
+    <h3 style="font-size:15px">${esc(pr.name)}</h3><p class="small muted">${esc([pr.brand,pr.qty].filter(Boolean).join(", "))}</p>
+    <div class="meta" style="margin:6px 0 0">${full?`<span class="pill">${nf(pr.k)} kcal</span><span class="pill">P ${nf(pr.p,1)}</span><span class="pill">G ${nf(pr.g,1)}</span><span class="pill">L ${nf(pr.l,1)}</span>`:`<span class="pill over">valeurs incomplètes</span>`}${ppk?`<span class="pill ok">${eur(ppk)}/kg</span>`:""}</div>
+    ${pr.stores.length?`<div class="meta" style="margin:6px 0 0">${pr.stores.map(spill).join("")}</div>`:""}
     ${extra||""}</div></div></button>`;
 }
 function vProducts(){
@@ -779,41 +935,44 @@ function vProducts(){
   const body = P.loading ? `<p class="muted">Recherche en cours…</p>`
     : P.err ? `<p class="err">${P.err}</p>`
     : res===null ? ""
-    : res.length ? `<p class="muted small" style="margin-bottom:10px">${res.length} produit${res.length>1?"s":""}, valeurs pour 100 g</p><div class="list">${res.map((x,i)=>prodCard(x,`data-a="pickres" data-i="${P.results.indexOf(x)}"`)).join("")}</div>`
+    : res.length ? `<p class="muted small" style="margin-bottom:10px">${res.length} produit${res.length>1?"s":""}, valeurs pour 100 g. Touche un produit pour voir où il a été vu et à quel prix.</p><div class="list">${res.map(x=>prodCard(x,`data-a="pickres" data-i="${P.results.indexOf(x)}"`)).join("")}</div>`
     : `<div class="empty">Aucun produit trouvé${P.mine?" dans tes magasins. Désactive le filtre « Mes magasins »":". Essaie un terme plus simple, ou scanne le code-barres"}.</div>`;
   const pantry = S.pantry.length
-    ? `<div class="list">${S.pantry.map(x=>prodCard(x,`data-a="editprod" data-id="${esc(x.id)}"`,`<p class="small" style="margin-top:6px">${x.link?`Remplace : ${ING[x.link][0]}`:`<span class="muted">Associé à aucun ingrédient</span>`}</p>`)).join("")}</div>`
-    : `<div class="empty">Ton garde-manger est vide. Scanne ou cherche un produit que tu achètes, puis associe-le à un ingrédient : ses vraies valeurs seront utilisées dans les recettes.</div>`;
-  return `<h1>Produits</h1><p class="muted lead">Trouve tes produits en rayon et utilise leurs vraies valeurs dans les recettes.</p>
-    <div class="row"><button class="btn" data-a="scan">Scanner un code-barres</button><button class="btn ghost" data-a="newprod">Créer un produit</button></div>
-    <form id="psearch" class="searchrow" style="margin-top:14px" role="search">
-      <input type="search" data-f="q" data-scope="search" placeholder="ex. skyr, filet de poulet, riz basmati" value="${esc(P.q)}" aria-label="Rechercher un produit">
+    ? `<div class="list">${S.pantry.map(x=>prodCard(x,`data-a="editprod" data-id="${esc(x.id)}"`,`<p class="small" style="margin-top:6px">${x.link?`Remplace : <b>${ING[x.link][0]}</b>`:`<span class="muted">Associé à aucun ingrédient</span>`}</p>`)).join("")}</div>`
+    : `<div class="empty">Ton garde-manger est vide. Scanne ou cherche un produit que tu achètes, puis associe-le à un ingrédient : ses vraies valeurs et son prix seront utilisés dans les recettes.</div>`;
+  return `${topbar(`<h1>Produits</h1>`)}
+    <div class="row" style="margin-top:14px"><button class="btn dark" data-a="scan">${icon("scan")}Scanner</button><button class="btn ghost" data-a="newprod">Créer un produit</button></div>
+    <form id="psearch" class="searchrow" style="margin-top:12px" role="search">
+      <input type="search" class="search" data-f="q" data-scope="search" placeholder="ex. skyr, filet de poulet, riz basmati" value="${esc(P.q)}" aria-label="Rechercher un produit">
       <button class="btn" type="submit" ${P.loading?"disabled":""}>Chercher</button></form>
-    ${P.target?`<div class="banner"><span class="small">Pour l’ingrédient : <b>${ING[P.target][0]}</b></span><button class="x" data-a="untarget" aria-label="Ne plus cibler cet ingrédient">✕</button></div>`:""}
-    ${mine.length?`<div class="chips" style="margin-top:12px"><button class="chip" data-a="minef" ${pressed(P.mine)}>Seulement mes magasins</button></div>`:""}
+    ${P.target?`<div class="banner"><span class="small">Pour l’ingrédient : <b>${ING[P.target][0]}</b></span><button class="x" data-a="untarget" aria-label="Ne plus cibler cet ingrédient">${icon("x")}</button></div>`:""}
+    ${mine.length?`<div class="scroller" style="margin-top:12px"><button class="chip" data-a="minef" ${pressed(P.mine)}>Seulement mes magasins</button>${mine.map(s=>`<span class="spill" style="flex:none">${logo(s,"sm")}${esc(s)}</span>`).join("")}</div>`:""}
     <div class="section" style="margin-top:18px">${body}</div>
     <div class="section"><h2>Mon garde-manger (${S.pantry.length})</h2>${pantry}</div>
-    <p class="small muted" style="margin-top:20px">Données Open Food Facts, base collaborative sous licence ODbL. Les pastilles de magasins sont des repères visuels propres à l’app, sans lien avec les enseignes. Les magasins indiqués sont renseignés par les contributeurs et peuvent être incomplets.</p>`;
+    <p class="small muted" style="margin-top:20px">Produits : Open Food Facts. Prix : Open Prices, relevés par des consommateurs. Bases collaboratives sous licence ODbL : la couverture varie selon les magasins. Les icônes d’enseignes viennent de leurs sites et appartiennent à leurs propriétaires.</p>`;
 }
 
 /* ---- Courses ---- */
 function vList(){
   const ids = Object.keys(S.list).filter(id=>ING[id]);
-  if(!ids.length) return `<h1>Courses</h1><p class="muted lead">Ta liste se remplit depuis les recettes.</p>
-    <div class="empty">Ta liste est vide. Ajoute une recette depuis sa fiche, ou ta journée type depuis l’onglet Journée.</div>`;
+  if(!ids.length) return `${topbar(`<h1>Courses</h1>`)}<p class="muted lead">Ta liste se remplit depuis les recettes.</p>
+    <div class="empty">Ta liste est vide. Touche ${icon("cartplus").replace('class="i"','class="i" style="display:inline;width:18px;height:18px;vertical-align:-4px"')} sur un repas ou dans une recette.</div>`;
   const order = [...myStores(), NO_STORE];
   const groups = {};
   ids.forEach(id=>{ const pr = linked(id); const st = (pr && pr.stores[0]) || NO_STORE; (groups[st] ||= []).push(id); });
   const keys = Object.keys(groups).sort((a,b)=>(order.indexOf(a)+1||99)-(order.indexOf(b)+1||99));
   const done = S.checked.filter(id=>S.list[id]).length;
-  return `<h1>Courses</h1><p class="muted lead">${ids.length} article${ids.length>1?"s":""}, ${done} dans le panier.</p>
-    ${keys.map(k=>`<div class="section" style="margin-top:22px"><h2 class="storehead">${k===NO_STORE?"":badge(k,"lg")}${esc(k)}</h2>${groups[k].sort((a,b)=>ING[a][0].localeCompare(ING[b][0],"fr")).map(id=>{
+  const total = ids.reduce((t,id)=>t+ingPrice(id)*S.list[id]/1000,0);
+  return `${topbar(`<h1>Courses</h1>`)}
+    <p class="muted lead">${ids.length} article${ids.length>1?"s":""}, ${done} dans le panier. Coût estimé : <b style="color:var(--text)">${eur(total)}</b></p>
+    ${keys.map(k=>`<div class="section" style="margin-top:20px"><h2 class="storehead">${k===NO_STORE?"":logo(k,"md")}${esc(k)}</h2>${groups[k].sort((a,b)=>ING[a][0].localeCompare(ING[b][0],"fr")).map(id=>{
       const pr = linked(id), g = roundG(S.list[id]), on = S.checked.includes(id);
-      return `<button class="check" data-a="check" data-id="${id}" ${pressed(on)}><span class="box">${on?"✓":""}</span>
-        <span class="ct">${pr?`${esc(pr.name)}${pr.brand?` <span class="muted small">${esc(pr.brand)}</span>`:""}<br><span class="small muted">${ING[id][0]}</span>`:ING[id][0]}${unitHint(id,S.list[id])}</span><b>${nf(g)} g</b></button>`;
+      return `<button class="check" data-a="check" data-id="${id}" ${pressed(on)}><span class="box">${on?icon("check"):""}</span>
+        <span class="ct">${pr?`${esc(pr.name)}${pr.brand?` <span class="muted small">${esc(pr.brand)}</span>`:""}<br><span class="small muted">${ING[id][0]}</span>`:ING[id][0]}${unitHint(id,S.list[id])}</span>
+        <span class="q"><b>${nf(g)} g</b><br><span class="small muted">≈ ${eur(ingPrice(id)*S.list[id]/1000)}</span></span></button>`;
     }).join("")}</div>`).join("")}
     <div class="row" style="margin-top:24px"><button class="btn ghost" data-a="clearchecked" ${done?"":"disabled"}>Retirer les cochés</button><button class="btn ghost" data-a="clearlist">Vider la liste</button></div>
-    <button class="btn wide" style="margin-top:10px" data-a="sharelist">Partager la liste</button>`;
+    <button class="btn wide dark" style="margin-top:10px" data-a="sharelist">Partager la liste</button>`;
 }
 function listText(){
   const lines = ["Liste de courses (Assiette)"];
@@ -826,16 +985,18 @@ function listText(){
 
 function vProfile(){
   const d = UI.draft;
-  return `<h1>Profil</h1><p class="muted lead">Modifie puis enregistre : tes besoins sont recalculés.</p>
-    <div class="section" style="margin-top:0"><h2>Toi</h2>${fIdentity(d)}</div>
+  return `${topbar(`<h1>Profil</h1>`)}
+    <p class="muted lead">Modifie puis enregistre : tes besoins sont recalculés.</p>
+    <div class="section" style="margin-top:16px"><h2>Toi</h2>${fIdentity(d)}</div>
     <div class="section"><h2>Activité</h2>${fActivity(d)}</div>
     <div class="section"><h2>Objectif</h2>${fGoal(d)}</div>
-    <div class="section"><h2>Ce que tu évites</h2>${fAvoid(d)}</div>
+    <div class="section"><h2>Budget</h2>${fBudget(d)}</div>
     <div class="section"><h2>Magasins</h2>${fStores(d)}</div>
+    <div class="section"><h2>Ce que tu évites</h2>${fAvoid(d)}</div>
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
-    <button class="btn wide" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
+    <button class="btn wide dark" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
     <div class="section"><h2>Photos des plats</h2>
-      <p class="small muted" style="margin-bottom:12px">Les photos viennent d’Unsplash, une banque d’images gratuite. Il faut une clé d’accès personnelle, gratuite, à créer sur <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener" style="color:var(--accent)">unsplash.com/oauth/applications</a>. Elle reste sur ce téléphone. Limite : 50 nouvelles photos par heure.</p>
+      <p class="small muted" style="margin-bottom:12px">Les photos viennent d’Unsplash, une banque d’images gratuite. Il faut une clé d’accès personnelle, gratuite, à créer sur <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener" style="color:var(--accent)">unsplash.com/oauth/applications</a>. Elle reste sur cet appareil. Limite : 50 nouvelles photos par heure.</p>
       <label class="f" for="pkey">Clé d’accès Unsplash (Access Key)</label>
       <input id="pkey" type="password" autocomplete="off" spellcheck="false" placeholder="Colle ta clé ici" value="${esc(Pics.key)}">
       <div class="row" style="margin-top:10px"><button class="btn" data-a="savekey">Enregistrer la clé</button><button class="btn ghost" data-a="preload" ${Pics.key?"":"disabled"}>Précharger tout</button></div>
@@ -843,13 +1004,13 @@ function vProfile(){
       ${Pics.err?`<p class="err small" style="margin-top:6px">${Pics.err}</p>`:""}
       <button class="link" data-a="clearpics">Recharger toutes les photos</button>
       <div style="margin-top:14px"><label class="f">Partager avec tous mes appareils</label>
-        <p class="small muted" style="margin-bottom:10px">Exporte le fichier photos.json, puis dépose-le à la racine de ton dépôt GitHub : tous tes appareils afficheront ces photos, sans clé. Tes choix « Autre photo » sont inclus.</p>
+        <p class="small muted" style="margin-bottom:10px">Exporte le fichier photos.json, puis dépose-le à la racine de ton dépôt GitHub : tous tes appareils afficheront ces photos, sans clé.</p>
         <button class="btn ghost wide" data-a="exportpics" ${Pics.count()?"":"disabled"}>Exporter photos.json</button></div></div>
-    <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur ce téléphone. Exporte-les de temps en temps : vider les données du navigateur les efface. Tes photos de plats ne sont pas incluses dans l’export.</p>
+    <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur cet appareil. Exporte-les de temps en temps : vider les données du navigateur les efface. Tes photos personnelles ne sont pas incluses.</p>
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
-    <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger, qui utilisent les valeurs Open Food Facts ou celles que tu as saisies. Protéine en poudre : valeur moyenne du marché.</p></div>
+    <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger. Prix : moyennes estimées, remplacées par tes prix ou ceux d’Open Prices. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 2.4</p>`;
+    <p class="small muted" style="margin-top:16px">Version 3.0</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -862,59 +1023,89 @@ function renderSheet(){
 }
 function sRecipe(sh){
   const r = RECIPES[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
-  return `<div class="sheet-top"><h1 style="font-size:25px">${r.n}</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
-    <div class="hero thumb" data-pic="${r.id}" data-size="l">${visual(r,"l")}</div>
-    ${!Photos.urls[r.id] && Pics.get(r.id) ? (p=>`<p class="credit">Photo : <a href="${esc(p.pu)}" target="_blank" rel="noopener">${esc(p.ph)}</a> sur <a href="${esc(p.u)}" target="_blank" rel="noopener">Unsplash</a></p>`)(Pics.get(r.id)) : ""}
-    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.entry(r.id)?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Unsplash</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
-    <div class="meta" style="margin-top:10px"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
-    <button class="link" data-a="fav" data-id="${r.id}">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
+  const c = cost(r)*f, own = Photos.urls[r.id], pic = !own && Pics.get(r.id);
+  return `<div class="hero"><span class="pic" data-pic="${r.id}" data-size="l">${visual(r,"l")}</span><button class="x" data-a="close" aria-label="Fermer">${icon("x")}</button></div>
+    ${pic?`<p class="credit">Photo : <a href="${esc(pic.pu)}" target="_blank" rel="noopener">${esc(pic.ph)}</a> sur <a href="${esc(pic.u)}" target="_blank" rel="noopener">Unsplash</a></p>`:""}
+    <div class="actions">
+      <button class="${fav?"on":""}" data-a="fav" data-id="${r.id}" aria-label="${fav?"Retirer des favoris":"Ajouter aux favoris"}">${icon("heart",fav)}</button>
+      <button data-a="photo" data-src="cam" aria-label="Prendre une photo de mon plat">${icon("camera")}</button>
+      <button data-a="addrecipe" aria-label="Ajouter aux courses">${icon("cartplus")}</button>
+      <span class="grow"></span>
+      ${!own && (Pics.entry(r.id)?.list.length>1)?`<button class="link" style="padding:8px" data-a="nextpic">Autre photo</button>`:""}
+      ${own?`<button class="link" style="padding:8px" data-a="unphoto">Retirer ma photo</button>`:`<button class="link" style="padding:8px" data-a="photo" data-src="gal">Galerie</button>`}
+    </div>
+    <h2 style="font-size:23px;margin-top:4px">${r.n}</h2>
+    <div class="meta"><span class="pill hl">${nf(m.k*f)} kcal</span><span class="pill">${r.m} min</span><span class="pill">≈ ${eur(c)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
       <div><b>Portion ×${nf(f,2)}</b><div class="small muted">${nf(m.k*f)} kcal, soit ${nf(m.p*f/n.prot*100)} % de tes protéines du jour</div></div>
       <button data-a="portion" data-d="0.25" aria-label="Augmenter la portion">+</button></div>
     <div style="margin-top:12px">${macroLine(m.p*f,m.g*f,m.l*f)}</div>
-    <button class="btn wide" style="margin-top:16px" data-a="addrecipe">Ajouter à ma liste de courses</button>
+    <button class="btn wide" style="margin-top:16px" data-a="addrecipe">${icon("cartplus")}Ajouter aux courses</button>
     <div class="section"><h2>Ingrédients</h2><ul class="ing">${r.i.map(([id,g])=>{
       const pr = linked(id);
-      return `<li><span class="n">${ING[id][0]}${unitHint(id,g*f)}<br>${pr?`<span class="small muted">Ton produit : ${esc(pr.name)}${pr.brand?`, ${esc(pr.brand)}`:""}</span>`:`<button class="link" data-a="findprod" data-id="${id}">Trouver mon produit</button>`}</span><b>${nf(roundG(g*f))} g</b></li>`;
+      return `<li><span class="n">${ING[id][0]}${unitHint(id,g*f)}<br>${pr?`<span class="small muted">Ton produit : ${esc(pr.name)}${pr.brand?`, ${esc(pr.brand)}`:""}</span>`:`<button class="link" data-a="findprod" data-id="${id}">Trouver mon produit</button>`}</span><span class="q"><b>${nf(roundG(g*f))} g</b><br><span class="small muted">≈ ${eur(ingPrice(id)*g*f/1000)}</span></span></li>`;
     }).join("")}</ul>
       <p class="small muted" style="margin-top:8px">Sel, poivre, épices et citron à ton goût.</p></div>
     <div class="section"><h2>Préparation</h2><ol class="how">${r.e.map(s=>`<li>${s}</li>`).join("")}</ol></div>`;
+}
+function sPrices(sh){
+  const P = sh.p, st = sh.prices;
+  if(!P.code) return "";
+  let body;
+  if(!st || st.loading) body = `<p class="small muted">Recherche des prix relevés en magasin…</p>`;
+  else if(st.err) body = `<p class="small err">${st.err}</p>`;
+  else {
+    const mine = st.items.filter(x=>x.store), others = st.items.filter(x=>!x.store);
+    const row = x => `<div class="price ${x.store?"mine":""}">${x.store?logo(x.store,"md"):(x.logo?`<span class="logo md"><img src="${esc(x.logo)}" alt="" loading="lazy"></span>`:`<span class="logo md">${badgeHTML(x.brand||x.name||"?")}</span>`)}
+      <div class="pt"><b>${eur(x.price)}</b>${x.ppk&&x.per!=="KILOGRAM"?` <span class="small muted">(${eur(x.ppk)}/kg)</span>`:x.per==="KILOGRAM"?` <span class="small muted">le kg</span>`:""}<br>
+        <span class="small">${esc([x.brand,x.name].filter(Boolean).join(" ").replace(/^(.+) \1/,"$1")||"Magasin")}${x.city?`, ${esc(x.city)}`:""}</span><br><span class="small muted">relevé le ${new Date(x.date).toLocaleDateString("fr-FR")}</span></div>
+      <button class="btn ghost" style="padding:8px 12px;font-size:13px" data-a="useprice" data-i="${st.items.indexOf(x)}">Utiliser</button></div>`;
+    body = !st.items.length ? `<p class="small muted">Aucun prix relevé pour ce produit pour l’instant. Tu peux en ajouter un depuis l’app Open Food Facts : il profitera à tout le monde.</p>`
+      : `${mine.length?`<p class="small" style="margin-bottom:4px"><b>Dans tes magasins</b></p>${mine.slice(0,6).map(row).join("")}`:`<p class="small muted">Pas encore de prix relevé dans tes magasins.</p>`}
+         ${others.length?`<p class="small" style="margin:12px 0 4px"><b>Ailleurs</b></p>${others.slice(0,mine.length?3:6).map(row).join("")}`:""}`;
+  }
+  const look = myStores().filter(s=>STORE_INFO[s]).map(s=>`<a class="spill" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent([P.name,P.brand,s].filter(Boolean).join(" "))}">${logo(s,"sm")}${esc(s)}</a>`).join("");
+  return `<div class="section" style="margin-top:22px"><h2>Où le trouver</h2>${body}
+    ${look?`<p class="small" style="margin:14px 0 6px"><b>Chercher chez mes magasins</b></p><div class="chips">${look}</div>`:""}</div>`;
 }
 function sProduct(sh){
   const P = sh.p, stores = myStores();
   const opts = Object.entries(ING).sort((a,b)=>a[1][0].localeCompare(b[1][0],"fr"))
     .map(([id,x])=>`<option value="${id}" ${P.link===id?"selected":""}>${x[0]}</option>`).join("");
-  const num = (f,l) => `<div><label for="pf-${f}">${l}</label><input id="pf-${f}" type="number" inputmode="decimal" step="0.1" min="0" data-scope="prod" data-f="${f}" value="${P[f]??""}"></div>`;
+  const num = (f,l,st="0.1") => `<div><label for="pf-${f}">${l}</label><input id="pf-${f}" type="number" inputmode="decimal" step="${st}" min="0" data-scope="prod" data-f="${f}" value="${P[f]??""}"></div>`;
   const full = [P.k,P.p,P.g,P.l].every(v=>v!==null && v!=="" && !isNaN(v));
-  return `<div class="sheet-top"><div class="prow">${pimg(P)}<h1 style="font-size:22px">${sh.existing?"Modifier le produit":"Ajouter au garde-manger"}</h1></div><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
+  const ppk = P.price>0 && P.weight>0 ? P.price/P.weight*1000 : 0;
+  return `<div class="sheet-pad"><div class="sheet-top"><div class="prow">${pimg(P)}<h2 style="font-size:20px;margin:0">${sh.existing?"Modifier le produit":"Ajouter au garde-manger"}</h2></div><button class="x" data-a="close" aria-label="Fermer">${icon("x")}</button></div>
     <div class="stack" style="margin-top:16px">
       <div><label class="f" for="pf-name">Nom</label><input id="pf-name" type="text" data-scope="prod" data-f="name" value="${esc(P.name)}"></div>
       <div class="grid3" style="grid-template-columns:2fr 1fr"><div><label class="f" for="pf-brand">Marque</label><input id="pf-brand" type="text" data-scope="prod" data-f="brand" value="${esc(P.brand)}"></div>
         <div><label class="f" for="pf-qty">Format</label><input id="pf-qty" type="text" data-scope="prod" data-f="qty" value="${esc(P.qty)}" placeholder="500 g"></div></div>
       <div><label class="f">Valeurs pour 100 g</label><div class="grid4">${num("k","kcal")}${num("p","Protéines")}${num("g","Glucides")}${num("l","Lipides")}</div>
         ${full?"":`<p class="small err" style="margin-top:6px">Complète les valeurs manquantes avec l’étiquette du produit.</p>`}</div>
+      <div><label class="f">Prix</label><div class="grid3" style="grid-template-columns:1fr 1fr">${num("price","Prix payé (€)","0.01")}${num("weight","Poids du paquet (g)","1")}</div>
+        <p class="small muted" style="margin-top:6px" id="ppk">${ppk?`Soit ${eur(ppk)} le kg, utilisé pour estimer le coût des recettes.`:"Facultatif : sert à calculer le coût réel des recettes."}</p></div>
       <div><label class="f" for="pf-link">Remplace dans mes recettes</label><select id="pf-link" data-scope="prod" data-f="link"><option value="">Aucun ingrédient</option>${opts}</select>
-        <p class="small muted" style="margin-top:6px">Ses valeurs remplaceront celles de Ciqual pour cet ingrédient, dans toutes les recettes.</p></div>
-      ${stores.length?`<div><label class="f">Je l’achète chez</label><div class="chips">${stores.map(s=>`<button class="chip" data-a="pstore" data-v="${esc(s)}" ${pressed(P.stores.includes(s))}>${badge(s)}${esc(s)}</button>`).join("")}</div></div>`:""}
+        <p class="small muted" style="margin-top:6px">Ses valeurs et son prix remplaceront ceux par défaut pour cet ingrédient, dans toutes les recettes.</p></div>
+      ${stores.length?`<div><label class="f">Je l’achète chez</label><div class="chips">${stores.map(s=>`<button class="chip" style="padding:5px 12px 5px 5px;gap:6px" data-a="pstore" data-v="${esc(s)}" ${pressed(P.stores.includes(s))}>${logo(s,"sm")}${esc(s)}</button>`).join("")}</div></div>`:""}
       ${P.offStores?`<p class="small muted">Vendu chez, selon Open Food Facts : ${esc(P.offStores)}</p>`:""}
       ${P.code?`<p class="small muted">Code-barres : ${esc(P.code)}</p>`:""}
       ${sh.err?`<p class="err">${sh.err}</p>`:""}
-      <button class="btn wide" data-a="saveprod">${sh.existing?"Enregistrer les modifications":"Ajouter au garde-manger"}</button>
+      <button class="btn wide dark" data-a="saveprod">${sh.existing?"Enregistrer les modifications":"Ajouter au garde-manger"}</button>
       ${sh.existing?`<button class="btn ghost wide" data-a="delprod">Retirer du garde-manger</button>`:""}
-    </div>`;
+    </div>
+    <div id="pricebox">${sPrices(sh)}</div></div>`;
 }
 function sScan(sh){
-  return `<div class="sheet-top"><h1 style="font-size:25px">Scanner un produit</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
+  return `<div class="sheet-pad"><div class="sheet-top"><h2 style="font-size:22px;margin:0">Scanner un produit</h2><button class="x" data-a="close" aria-label="Fermer">${icon("x")}</button></div>
     <div class="video"><video id="scanvideo" playsinline muted></video></div>
     <p id="scanmsg" class="small muted" style="margin-top:10px">${esc(sh.msg||"Vise le code-barres, bien éclairé, à 15 cm environ.")}</p>
     <div id="scanextra"></div>
     <form id="manualcode" class="searchrow" style="margin-top:14px">
       <input type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Ou saisis le code (8 à 13 chiffres)" aria-label="Code-barres" id="codeinput">
-      <button class="btn" type="submit">Chercher</button></form>`;
+      <button class="btn" type="submit">Chercher</button></form></div>`;
 }
-
 /* =========================================================
-   8. SCAN DE CODE-BARRES
+   9. SCAN DE CODE-BARRES
    BarcodeDetector (natif dans Chrome Android), sinon ZXing.
    ========================================================= */
 const scan = {stream:null, timer:0, reader:null, busy:false};
@@ -978,17 +1169,26 @@ async function found(code){
   }
 }
 
+
 /* =========================================================
-   9. ACTIONS
+   10. ACTIONS
    ========================================================= */
 function openProduct(pr, existing){
   const P = JSON.parse(JSON.stringify(pr));
   if(!existing){
     const same = P.code && S.pantry.find(x=>x.code===P.code);
-    if(same){ UI.sheet = {kind:"product", p:JSON.parse(JSON.stringify(same)), existing:true}; renderSheet(); toast("Ce produit est déjà dans ton garde-manger."); return; }
+    if(same) return openProduct(same, true), toast("Ce produit est déjà dans ton garde-manger.");
     P.link = UI.prod.target || guessLink(P.name);
   }
-  UI.sheet = {kind:"product", p:P, existing}; renderSheet();
+  const sh = {kind:"product", p:P, existing, prices:P.code?{loading:true}:null};
+  UI.sheet = sh; renderSheet();
+  if(P.code){
+    ProductSource.prices(P.code).then(items=>{
+      items.sort((a,b)=>(!!b.store-!!a.store) || String(b.date).localeCompare(String(a.date)));
+      sh.prices = {items};
+    }).catch(()=>{ sh.prices = {err:"Prix indisponibles pour le moment (pas de connexion ou service Open Prices injoignable)."}; })
+      .finally(()=>{ const box = $("#pricebox"); if(UI.sheet===sh && box) box.innerHTML = sPrices(sh); });
+  }
 }
 async function doSearch(){
   const P = UI.prod, q = P.q.trim();
@@ -1002,9 +1202,12 @@ async function doSearch(){
 function saveProduct(){
   const sh = UI.sheet, P = sh.p;
   ["k","p","g","l"].forEach(f=>P[f] = r1(P[f]));
+  P.price = P.price===null||P.price===""||isNaN(P.price) ? null : Math.round(Number(P.price)*100)/100;
+  P.weight = P.weight===null||P.weight===""||isNaN(P.weight) ? null : Math.round(Number(P.weight));
   if(!P.name.trim()){ sh.err = "Donne un nom au produit."; return renderSheet(); }
   if([P.k,P.p,P.g,P.l].some(v=>v===null || v<0)){ sh.err = "Renseigne les 4 valeurs pour 100 g, telles qu’écrites sur l’étiquette."; return renderSheet(); }
   if(P.p+P.g+P.l>100.5){ sh.err = "Protéines + glucides + lipides dépassent 100 g : vérifie les valeurs."; return renderSheet(); }
+  if((P.price>0) !== (P.weight>0)){ sh.err = "Pour le prix, indique à la fois le prix payé et le poids du paquet (ou aucun des deux)."; return renderSheet(); }
   if(!P.id) P.id = P.code || ("m"+Date.now());
   let moved = "";
   if(P.link) S.pantry.forEach(x=>{ if(x.id!==P.id && x.link===P.link){ x.link=""; moved = x.name; } });
@@ -1021,66 +1224,74 @@ function validate(d){
   if(!(d.age>=14&&d.age<=90)) return "Indique un âge entre 14 et 90 ans.";
   if(!(d.poids>=35&&d.poids<=250)) return "Indique un poids entre 35 et 250 kg.";
   if(!(d.taille>=130&&d.taille<=220)) return "Indique une taille entre 130 et 220 cm.";
+  if(d.budget!=="" && d.budget!==null && !(Number(d.budget)>=0)) return "Le budget doit être un montant positif.";
+  if(!(d.personnes>=1&&d.personnes<=12)) return "Indique entre 1 et 12 personnes.";
   return "";
 }
 function closeSheet(){ stopScan(); UI.sheet = null; renderSheet(); }
 function go(view){ UI.view = view; UI.err = ""; if(view==="profile") UI.draft = JSON.parse(JSON.stringify(S.profile)); render(); scrollTo(0,0); }
+const keepScroll = fn => { const y = scrollY; fn(); scrollTo(0,y); };
 
 document.addEventListener("click", e=>{
   const b = e.target.closest("[data-a]");
   if(!b){ if(e.target.id==="sheet") closeSheet(); return; }
   const a = b.dataset.a, D = UI.draft;
   switch(a){
-    case "set": D[b.dataset.f] = b.dataset.v; render(); break;
-    case "toggle": { const arr = D[b.dataset.f], v = b.dataset.v, i = arr.indexOf(v); i<0?arr.push(v):arr.splice(i,1); render(); break; }
-    case "vege": D.vege = !D.vege; render(); break;
-    case "next": if(UI.step===0){ UI.err = validate(D); if(UI.err) return render(); } UI.err=""; UI.step++; render(); scrollTo(0,0); break;
+    case "set": D[b.dataset.f] = b.dataset.v; keepScroll(render); break;
+    case "toggle": { const arr = D[b.dataset.f], v = b.dataset.v, i = arr.indexOf(v); i<0?arr.push(v):arr.splice(i,1); keepScroll(render); break; }
+    case "vege": D.vege = !D.vege; keepScroll(render); break;
+    case "next": { const er = UI.step===0 ? validate({...D, budget:"", personnes:1}) : UI.step===4 ? validate(D) : ""; UI.err = er; if(er) return render(); UI.step++; render(); scrollTo(0,0); break; }
     case "prev": UI.err=""; UI.step--; render(); scrollTo(0,0); break;
     case "finish": S.profile = JSON.parse(JSON.stringify(D)); persist(); go("home"); break;
     case "nav": closeSheet(); go(b.dataset.v); break;
-    case "saveProfile": UI.err = validate(D); if(UI.err) return render(); S.profile = JSON.parse(JSON.stringify(D));
+    case "saveProfile": UI.err = validate(D); if(UI.err) return keepScroll(render); S.profile = JSON.parse(JSON.stringify(D));
       S.pantry.forEach(x=>{ x.stores = x.stores.filter(s=>myStores().includes(s)); }); persist(); toast("Profil enregistré."); go("home"); break;
     case "reset": if(confirm("Effacer ton profil, tes favoris, ton garde-manger et ta liste ?")){ S = sane(null); persist(); Photos.clear(); UI.draft = blankProfile(); UI.step = 0; UI.view = "onboard"; render(); } break;
-    case "reroll": UI.offsets[b.dataset.t]++; render(); break;
-    case "filt": UI.filt[b.dataset.k] = b.dataset.k==="type" ? b.dataset.v : Number(b.dataset.v); render(); break;
-    case "favf": UI.filt.fav = !UI.filt.fav; render(); break;
+    case "reroll": UI.offsets[b.dataset.t]++; keepScroll(render); break;
+    case "filt": UI.filt[b.dataset.k] = b.dataset.k==="type" ? b.dataset.v : Number(b.dataset.v); keepScroll(render); break;
+    case "favf": UI.filt.fav = !UI.filt.fav; keepScroll(render); break;
     case "open": UI.sheet = {kind:"recipe", id:Number(b.dataset.id), f:Number(b.dataset.fac)}; renderSheet(); break;
     case "close": closeSheet(); break;
     case "portion": UI.sheet.f = Math.min(3, Math.max(0.25, UI.sheet.f + Number(b.dataset.d))); renderSheet(); break;
-    case "fav": { const id = Number(b.dataset.id), i = S.favs.indexOf(id); i<0?S.favs.push(id):S.favs.splice(i,1); persist(); const y = scrollY; render(); scrollTo(0,y); break; }
-    case "addrecipe": addToList(UI.sheet.id, UI.sheet.f); persist(); toast("Ingrédients ajoutés à ta liste de courses."); break;
-    case "addday": UI.day.forEach(x=>addToList(x.id, x.f)); persist(); toast("Journée ajoutée à ta liste de courses."); break;
+    case "fav": { const id = Number(b.dataset.id), i = S.favs.indexOf(id); i<0?S.favs.push(id):S.favs.splice(i,1); persist(); keepScroll(render); toast(i<0?"Ajouté aux favoris.":"Retiré des favoris."); break; }
+    case "addone": addToList(Number(b.dataset.id), Number(b.dataset.fac)); persist(); toast("Ingrédients ajoutés aux courses."); break;
+    case "addrecipe": addToList(UI.sheet.id, UI.sheet.f); persist(); toast("Ingrédients ajoutés aux courses."); break;
+    case "addday": UI.day.forEach(x=>addToList(x.id, x.f)); persist(); toast("Journée ajoutée aux courses."); break;
     case "findprod": { const id = b.dataset.id; closeSheet(); UI.prod.q = searchTerm(id); UI.prod.target = id; UI.prod.results = null; go("products"); doSearch(); break; }
     case "untarget": UI.prod.target = ""; render(); break;
-    case "minef": UI.prod.mine = !UI.prod.mine; render(); break;
+    case "minef": UI.prod.mine = !UI.prod.mine; keepScroll(render); break;
     case "scan": startScan(); break;
-    case "newprod": stopScan(); openProduct({id:"",code:b.dataset.code||"",name:"",brand:"",qty:"",img:"",offStores:"",k:null,p:null,g:null,l:null,link:UI.prod.target||"",stores:[]}, false); break;
+    case "newprod": stopScan(); openProduct({id:"",code:b.dataset.code||"",name:"",brand:"",qty:"",img:"",offStores:"",k:null,p:null,g:null,l:null,price:null,weight:null,link:UI.prod.target||"",stores:[]}, false); break;
     case "pickres": openProduct(UI.prod.results[Number(b.dataset.i)], false); break;
     case "editprod": { const pr = S.pantry.find(x=>x.id===b.dataset.id); if(pr) openProduct(pr, true); break; }
     case "pstore": { const arr = UI.sheet.p.stores, v = b.dataset.v, i = arr.indexOf(v); i<0?arr.push(v):arr.splice(i,1); renderSheet(); break; }
+    case "useprice": { const sh = UI.sheet, x = sh.prices.items[Number(b.dataset.i)];
+      sh.p.price = x.price; if(x.weight) sh.p.weight = x.weight;
+      if(x.store && !sh.p.stores.includes(x.store)) sh.p.stores.push(x.store);
+      renderSheet(); toast(x.weight ? "Prix repris : pense à enregistrer." : "Prix repris : vérifie le poids du paquet."); break; }
     case "saveprod": saveProduct(); break;
-    case "delprod": if(confirm("Retirer ce produit ? Les recettes reprendront les valeurs Ciqual.")){ S.pantry = S.pantry.filter(x=>x.id!==UI.sheet.p.id); persist(); UI.sheet = null; toast("Produit retiré."); render(); } break;
-    case "check": { const id = b.dataset.id, i = S.checked.indexOf(id); i<0?S.checked.push(id):S.checked.splice(i,1); persist(); const y = scrollY; render(); scrollTo(0,y); break; }
+    case "delprod": if(confirm("Retirer ce produit ? Les recettes reprendront les valeurs par défaut.")){ S.pantry = S.pantry.filter(x=>x.id!==UI.sheet.p.id); persist(); UI.sheet = null; toast("Produit retiré."); render(); } break;
+    case "check": { const id = b.dataset.id, i = S.checked.indexOf(id); i<0?S.checked.push(id):S.checked.splice(i,1); persist(); keepScroll(render); break; }
     case "clearchecked": S.checked.forEach(id=>delete S.list[id]); S.checked = []; persist(); render(); break;
     case "clearlist": if(confirm("Vider toute la liste de courses ?")){ S.list = {}; S.checked = []; persist(); render(); } break;
     case "sharelist": { const t = listText();
       if(navigator.share) navigator.share({title:"Liste de courses", text:t}).catch(()=>{});
       else if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast("Liste copiée."), ()=>toast("Copie impossible."));
       break; }
-    case "export": { const blob = new Blob([JSON.stringify({app:"assiette", version:2, date:new Date().toISOString(), data:S}, null, 2)], {type:"application/json"});
+    case "export": { const blob = new Blob([JSON.stringify({app:"assiette", version:3, date:new Date().toISOString(), data:S}, null, 2)], {type:"application/json"});
       const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = `assiette-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
       document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000); toast("Sauvegarde exportée."); break; }
     case "import": $("#importfile").click(); break;
-    case "savekey": Pics.setKey($("#pkey").value); toast(Pics.key ? "Clé enregistrée." : "Clé supprimée."); render(); break;
+    case "savekey": Pics.setKey($("#pkey").value); toast(Pics.key ? "Clé enregistrée." : "Clé supprimée."); keepScroll(render); break;
     case "preload": Pics.blocked = false; Pics.err = ""; Pics.warm = true; RECIPES.forEach(r=>{ const p = Pics.get(r.id); if(p) [p.s,p.m].forEach(u=>fetch(u,{mode:"no-cors"}).catch(()=>{})); else Pics.want(r.id); }); Pics.pump(); toast("Préchargement lancé, garde l’app ouverte."); break;
-    case "clearpics": if(confirm("Effacer tes photos locales ? Celles de photos.json restent affichées.")){ Pics.cache = {}; Pics.save(); Pics.blocked = false; Pics.err = ""; toast("Les photos vont se recharger."); render(); } break;
+    case "clearpics": if(confirm("Effacer tes photos locales ? Celles de photos.json restent affichées.")){ Pics.cache = {}; Pics.save(); Pics.blocked = false; Pics.err = ""; toast("Les photos vont se recharger."); keepScroll(render); } break;
     case "exportpics": { const data = Pics.exportJSON(); const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
       const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = "photos.json";
       document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000);
       toast(`photos.json exporté : ${data.count} recettes.`); break; }
-    case "nextpic": { const sid = UI.sheet.id; if(!Pics.cache[sid] && Pics.shared[sid]) Pics.cache[sid] = JSON.parse(JSON.stringify(Pics.shared[sid])); const c = Pics.cache[sid]; if(c){ c.i = (c.i+1) % c.list.length; Pics.save(); renderSheet(); refreshPic(UI.sheet.id); } break; }
+    case "nextpic": { const sid = UI.sheet.id; if(!Pics.cache[sid] && Pics.shared[sid]) Pics.cache[sid] = JSON.parse(JSON.stringify(Pics.shared[sid])); const c = Pics.cache[sid]; if(c){ c.i = (c.i+1) % c.list.length; Pics.save(); renderSheet(); refreshPic(sid); } break; }
     case "photo": UI.photoFor = UI.sheet.id; $(b.dataset.src==="cam"?"#photocam":"#photogal").click(); break;
-    case "unphoto": if(confirm("Supprimer ta photo ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); const y = scrollY; render(); scrollTo(0,y); }); } break;
+    case "unphoto": if(confirm("Supprimer ta photo ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); keepScroll(render); }); } break;
   }
 });
 document.addEventListener("input", e=>{
@@ -1088,18 +1299,26 @@ document.addEventListener("input", e=>{
   const scope = t.dataset.scope;
   if(scope==="filt"){ UI.filt.q = t.value; const list = recipeList(); $("#rlist").innerHTML = listHTML(list); $("#count").textContent = countTxt(list); return; }
   if(scope==="search"){ UI.prod.q = t.value; return; }
-  if(scope==="prod"){ UI.sheet.p[f] = t.type==="number" ? (t.value===""?null:Number(t.value.replace(",","."))) : t.value; return; }
-  UI.draft[f] = t.type==="number" ? Number(t.value.replace(",",".")) : t.value;
+  if(scope==="prod"){
+    const P = UI.sheet.p; P[f] = t.type==="number" ? (t.value===""?null:Number(t.value.replace(",","."))) : t.value;
+    if(f==="price"||f==="weight"){ const el = $("#ppk"), v = P.price>0 && P.weight>0 ? P.price/P.weight*1000 : 0; if(el) el.textContent = v ? `Soit ${eur(v)} le kg, utilisé pour estimer le coût des recettes.` : "Facultatif : sert à calculer le coût réel des recettes."; }
+    return;
+  }
+  if(f==="budget") UI.draft.budget = t.value==="" ? "" : Number(t.value.replace(",","."));
+  else UI.draft[f] = t.type==="number" ? Number(t.value.replace(",",".")) : t.value;
+  if(f==="budget"||f==="personnes"){ const h = $("#budgethint"); if(h){ const tmp = document.createElement("div"); tmp.innerHTML = fBudget(UI.draft); h.innerHTML = tmp.querySelector("#budgethint").innerHTML; } }
 });
 document.addEventListener("submit", e=>{
   e.preventDefault();
   if(e.target.id==="psearch") doSearch();
   if(e.target.id==="manualcode"){ scan.busy = false; found($("#codeinput").value); }
 });
+/* Icône d’enseigne introuvable : pastille de secours */
+document.addEventListener("error", e=>{ const t = e.target; if(t && t.tagName==="IMG" && t.dataset && t.dataset.store) t.parentNode.innerHTML = badgeHTML(t.dataset.store); }, true);
 ["#photocam","#photogal"].forEach(sel=>$(sel).addEventListener("change", async e=>{
   const file = e.target.files[0], id = UI.photoFor; e.target.value = "";
   if(!file || id===undefined) return;
-  try{ toast("Enregistrement de la photo…"); await Photos.put(id, await resizeImage(file)); toast("Photo enregistrée."); const y = scrollY; render(); scrollTo(0,y); }
+  try{ toast("Enregistrement de la photo…"); await Photos.put(id, await resizeImage(file)); toast("Photo enregistrée."); keepScroll(render); }
   catch(err){ toast("Impossible d’enregistrer cette photo."); }
 }));
 $("#importfile").addEventListener("change", e=>{
@@ -1121,8 +1340,8 @@ document.addEventListener("visibilitychange", ()=>{ if(document.hidden && UI.she
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 render();
-Pics.loadShared().then(()=>{ if(Pics.sharedCount() && UI.view!=="onboard") render(); });
-Photos.loadAll().then(()=>{ if(Object.keys(Photos.urls).length && UI.view!=="onboard") render(); });
+Pics.loadShared().then(()=>{ if(Pics.sharedCount() && UI.view!=="onboard") keepScroll(render); });
+Photos.loadAll().then(()=>{ if(Object.keys(Photos.urls).length && UI.view!=="onboard") keepScroll(render); });
 </script>
 </body>
 </html>
