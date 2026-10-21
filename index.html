@@ -526,12 +526,22 @@ const PHOTO_Q = ["porridge banana peanut butter", "overnight oats berries jar", 
 const Pics = {
   key:(()=>{ try{ return localStorage.getItem("assiette.unsplash")||""; }catch(e){ return ""; } })(),
   cache:(()=>{ try{ return JSON.parse(localStorage.getItem("assiette.pics")||"{}"); }catch(e){ return {}; } })(),
-  queue:[], busy:0, pending:new Set(), blocked:false, err:"", warm:false,
+  shared:{}, queue:[], busy:0, pending:new Set(), blocked:false, err:"", warm:false,
+  async loadShared(){
+    try{ const r = await fetch("photos.json", {cache:"no-cache"}); if(!r.ok) return; const j = await r.json(); if(j && j.photos) this.shared = j.photos; }catch(e){}
+  },
+  entry(id){ return this.cache[id] || this.shared[id]; },
   save(){ try{ localStorage.setItem("assiette.pics", JSON.stringify(this.cache)); }catch(e){} },
   setKey(k){ this.key = k.trim(); this.blocked = false; this.err = ""; try{ this.key ? localStorage.setItem("assiette.unsplash", this.key) : localStorage.removeItem("assiette.unsplash"); }catch(e){} },
-  count(){ return Object.values(this.cache).filter(c=>c.list.length).length; },
-  get(id){ const c = this.cache[id]; return c && c.list.length ? c.list[c.i % c.list.length] : null; },
-  want(id){ if(!this.key || this.blocked || this.cache[id] || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
+  count(){ return RECIPES.filter(r=>{ const c = this.entry(r.id); return c && c.list.length; }).length; },
+  sharedCount(){ return Object.values(this.shared).filter(c=>c && c.list && c.list.length).length; },
+  get(id){ const c = this.entry(id); return c && c.list.length ? c.list[c.i % c.list.length] : null; },
+  exportJSON(){
+    const photos = {};
+    RECIPES.forEach(r=>{ const c = this.entry(r.id); if(c && c.list.length) photos[r.id] = {i:c.i % c.list.length, list:c.list}; });
+    return {app:"assiette", source:"unsplash", date:new Date().toISOString(), count:Object.keys(photos).length, photos};
+  },
+  want(id){ if(!this.key || this.blocked || this.entry(id) || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
   pump(){
     while(this.busy<2 && this.queue.length){ const id = this.queue.shift(); this.busy++; this.fetch(id).finally(()=>{ this.busy--; this.pending.delete(id); this.pump(); }); }
     if(!this.busy && !this.queue.length && this.warm){ this.warm = false; toast(this.blocked ? this.err : `Photos prêtes : ${this.count()} sur ${RECIPES.length}.`); if(UI.view==="profile") render(); }
@@ -717,7 +727,7 @@ function vHome(){
       <li>Glucides : le reste des calories ÷ 4 = <b>${n.gluc} g</b></li>
       <li class="muted">Ces repères conviennent à un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
     </ul></details>
-    ${Pics.key?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Unsplash gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
+    ${Pics.key||Pics.sharedCount()?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Unsplash gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
     ${meals}
     <div class="total"><b>Total de cette journée : ${nf(sum.k)} kcal</b><div style="margin-top:6px">${macroLine(sum.p,sum.g,sum.l)}</div>
       <p class="small muted" style="margin-top:6px">Objectif : ${nf(n.kcal)} kcal, ${n.prot} g de protéines.</p></div>
@@ -829,14 +839,17 @@ function vProfile(){
       <label class="f" for="pkey">Clé d’accès Unsplash (Access Key)</label>
       <input id="pkey" type="password" autocomplete="off" spellcheck="false" placeholder="Colle ta clé ici" value="${esc(Pics.key)}">
       <div class="row" style="margin-top:10px"><button class="btn" data-a="savekey">Enregistrer la clé</button><button class="btn ghost" data-a="preload" ${Pics.key?"":"disabled"}>Précharger tout</button></div>
-      <p class="small muted" style="margin-top:8px">Photos en mémoire : ${Pics.count()} sur ${RECIPES.length}.</p>
+      <p class="small muted" style="margin-top:8px">Photos disponibles : ${Pics.count()} sur ${RECIPES.length}, dont ${Pics.sharedCount()} partagées via photos.json.</p>
       ${Pics.err?`<p class="err small" style="margin-top:6px">${Pics.err}</p>`:""}
-      <button class="link" data-a="clearpics">Recharger toutes les photos</button></div>
+      <button class="link" data-a="clearpics">Recharger toutes les photos</button>
+      <div style="margin-top:14px"><label class="f">Partager avec tous mes appareils</label>
+        <p class="small muted" style="margin-bottom:10px">Exporte le fichier photos.json, puis dépose-le à la racine de ton dépôt GitHub : tous tes appareils afficheront ces photos, sans clé. Tes choix « Autre photo » sont inclus.</p>
+        <button class="btn ghost wide" data-a="exportpics" ${Pics.count()?"":"disabled"}>Exporter photos.json</button></div></div>
     <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur ce téléphone. Exporte-les de temps en temps : vider les données du navigateur les efface. Tes photos de plats ne sont pas incluses dans l’export.</p>
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger, qui utilisent les valeurs Open Food Facts ou celles que tu as saisies. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 2.3</p>`;
+    <p class="small muted" style="margin-top:16px">Version 2.4</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -852,7 +865,7 @@ function sRecipe(sh){
   return `<div class="sheet-top"><h1 style="font-size:25px">${r.n}</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
     <div class="hero thumb" data-pic="${r.id}" data-size="l">${visual(r,"l")}</div>
     ${!Photos.urls[r.id] && Pics.get(r.id) ? (p=>`<p class="credit">Photo : <a href="${esc(p.pu)}" target="_blank" rel="noopener">${esc(p.ph)}</a> sur <a href="${esc(p.u)}" target="_blank" rel="noopener">Unsplash</a></p>`)(Pics.get(r.id)) : ""}
-    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.cache[r.id]?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Unsplash</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
+    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.entry(r.id)?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Unsplash</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
     <div class="meta" style="margin-top:10px"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
     <button class="link" data-a="fav" data-id="${r.id}">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
@@ -1060,8 +1073,12 @@ document.addEventListener("click", e=>{
     case "import": $("#importfile").click(); break;
     case "savekey": Pics.setKey($("#pkey").value); toast(Pics.key ? "Clé enregistrée." : "Clé supprimée."); render(); break;
     case "preload": Pics.blocked = false; Pics.err = ""; Pics.warm = true; RECIPES.forEach(r=>{ const p = Pics.get(r.id); if(p) [p.s,p.m].forEach(u=>fetch(u,{mode:"no-cors"}).catch(()=>{})); else Pics.want(r.id); }); Pics.pump(); toast("Préchargement lancé, garde l’app ouverte."); break;
-    case "clearpics": if(confirm("Effacer les photos en mémoire et les recharger ?")){ Pics.cache = {}; Pics.save(); Pics.blocked = false; Pics.err = ""; toast("Les photos vont se recharger."); render(); } break;
-    case "nextpic": { const c = Pics.cache[UI.sheet.id]; if(c){ c.i = (c.i+1) % c.list.length; Pics.save(); renderSheet(); refreshPic(UI.sheet.id); } break; }
+    case "clearpics": if(confirm("Effacer tes photos locales ? Celles de photos.json restent affichées.")){ Pics.cache = {}; Pics.save(); Pics.blocked = false; Pics.err = ""; toast("Les photos vont se recharger."); render(); } break;
+    case "exportpics": { const data = Pics.exportJSON(); const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+      const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = "photos.json";
+      document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000);
+      toast(`photos.json exporté : ${data.count} recettes.`); break; }
+    case "nextpic": { const sid = UI.sheet.id; if(!Pics.cache[sid] && Pics.shared[sid]) Pics.cache[sid] = JSON.parse(JSON.stringify(Pics.shared[sid])); const c = Pics.cache[sid]; if(c){ c.i = (c.i+1) % c.list.length; Pics.save(); renderSheet(); refreshPic(UI.sheet.id); } break; }
     case "photo": UI.photoFor = UI.sheet.id; $(b.dataset.src==="cam"?"#photocam":"#photogal").click(); break;
     case "unphoto": if(confirm("Supprimer ta photo ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); const y = scrollY; render(); scrollTo(0,y); }); } break;
   }
@@ -1104,6 +1121,7 @@ document.addEventListener("visibilitychange", ()=>{ if(document.hidden && UI.she
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 render();
+Pics.loadShared().then(()=>{ if(Pics.sharedCount() && UI.view!=="onboard") render(); });
 Photos.loadAll().then(()=>{ if(Object.keys(Photos.urls).length && UI.view!=="onboard") render(); });
 </script>
 </body>
