@@ -488,16 +488,48 @@ async function fetchT(url, opts={}, ms=12000){
   const c = new AbortController(), t = setTimeout(()=>c.abort(), ms);
   try{ return await fetch(url, {...opts, signal:c.signal}); } finally{ clearTimeout(t); }
 }
+/* Limiteur côté app : Open Food Facts autorise 10 recherches par minute et par IP.
+   On reste en dessous (6 requêtes par minute) et on observe une pause après un bridage. */
+const Gate = {
+  hits:[], until:0,
+  wait(){ const now = Date.now(); this.hits = this.hits.filter(t=>now-t<60000);
+    if(this.until>now) return Math.ceil((this.until-now)/1000);
+    return this.hits.length>=6 ? Math.ceil((60000-(now-this.hits[0]))/1000) : 0; },
+  note(){ this.hits.push(Date.now()); },
+  block(sec){ this.until = Math.max(this.until, Date.now()+sec*1000); }
+};
+/* Résultats de recherche gardés 7 jours sur l’appareil : une même recherche ne coûte rien */
+const SearchCache = {
+  key:"assiette.search", ttl:7*864e5,
+  all(){ try{ return JSON.parse(localStorage.getItem(this.key)||"{}"); }catch(e){ return {}; } },
+  rehydrate(list){ return list.map(x=>({...x, stores:myStores().filter(st=>storeMatch(x.offStores, st))})); },
+  get(q){ const c = this.all()[norm(q)]; return c && Date.now()-c.t<this.ttl ? this.rehydrate(c.r) : null; },
+  put(q, list){
+    const c = this.all(); c[norm(q)] = {t:Date.now(), r:list.slice(0,40)};
+    const o = {}; Object.keys(c).sort((a,b)=>c[b].t-c[a].t).slice(0,30).forEach(k=>o[k]=c[k]);
+    try{ localStorage.setItem(this.key, JSON.stringify(o)); }catch(e){}
+  },
+  /* Secours hors ligne : produits déjà vus dont le nom contient les mots cherchés */
+  seen(q){
+    const words = norm(q).split(" ").filter(w=>w.length>1), out = new Map();
+    Object.values(this.all()).forEach(c=>c.r.forEach(x=>{ const n = norm(x.name+" "+x.brand); if(words.every(w=>n.includes(w)) && x.code && !out.has(x.code)) out.set(x.code, x); }));
+    return this.rehydrate([...out.values()]);
+  }
+};
 /* Les champs du nouveau moteur peuvent être du texte, une liste ou un objet par langue */
 const pickTxt = v => v==null ? "" : Array.isArray(v) ? v.filter(Boolean).join(", ") : typeof v==="object" ? String(v.fr||v.main||v.en||Object.values(v)[0]||"") : String(v);
 const ProductSource = {
   /* 1) Search-a-licious (nouveau moteur), 2) ancienne recherche en secours */
   async search(term){
+    const err = (status, name) => Object.assign(new Error("search"), {status, name: name||"SearchError"});
     const clean = term.replace(/[+\-!(){}\[\]^"~*?:\\/&|]/g," ").replace(/\s+/g," ").trim();
     if(!clean) return [];
+    let sal = 0;
     try{
+      Gate.note();
       const qs = new URLSearchParams({q:`(${clean}) AND countries_tags:"en:france"`, langs:"fr", page_size:40, fields:FIELDS});
       const r = await fetchT(`https://search.openfoodfacts.org/search?${qs}`);
+      sal = r.status;
       if(r.ok){
         const j = await r.json();
         const hits = (j.hits||[]).filter(h=>h && h.code).map(h=>fromOFF({
@@ -507,11 +539,17 @@ const ProductSource = {
           nutriments:h.nutriments||{}}));
         if(hits.length) return hits;
       }
-    }catch(e){}
-    const qs = new URLSearchParams({search_terms:clean, search_simple:1, action:"process", json:1, page_size:40,
-      tagtype_0:"countries", tag_contains_0:"contains", tag_0:"france", fields:FIELDS});
-    const r = await fetchT(`${OFF}/cgi/search.pl?${qs}`, {}, 20000);
-    if(!r.ok) throw new Error("HTTP "+r.status);
+    }catch(e){ if(e.name==="AbortError") sal = -1; }
+    /* Bridage (429/503) : la limite est commune aux deux moteurs, inutile d’insister */
+    if(sal===429 || sal===503) throw err(sal);
+    Gate.note();
+    let r;
+    try{
+      const qs = new URLSearchParams({search_terms:clean, search_simple:1, action:"process", json:1, page_size:40,
+        tagtype_0:"countries", tag_contains_0:"contains", tag_0:"france", fields:FIELDS});
+      r = await fetchT(`${OFF}/cgi/search.pl?${qs}`, {}, 20000);
+    }catch(e){ throw err(0, e.name==="AbortError" ? "AbortError" : "NetworkError"); }
+    if(!r.ok) throw err(r.status);
     const j = await r.json();
     return (j.products||[]).map(fromOFF);
   },
@@ -956,9 +994,8 @@ function vProducts(){
     if(P.mine) res = res.filter(x=>x.stores.length);
   }
   const body = P.loading ? `<p class="muted">Recherche en cours…</p>`
-    : P.err ? `<p class="err">${P.err}</p>`
-    : res===null ? ""
-    : res.length ? `<p class="muted small" style="margin-bottom:10px">${res.length} produit${res.length>1?"s":""}, valeurs pour 100 g. Touche un produit pour voir où il a été vu et à quel prix.</p><div class="list">${res.map(x=>prodCard(x,`data-a="pickres" data-i="${P.results.indexOf(x)}"`)).join("")}</div>`
+    : res===null ? (P.err ? `<p class="err">${P.err}</p>` : "")
+    : res.length ? `${P.note==="cached"?`<p class="small muted" style="margin-bottom:6px">Résultats enregistrés sur ton appareil. <button class="link" style="padding:0" data-a="research">Actualiser</button></p>`:""}<p class="muted small" style="margin-bottom:10px">${res.length} produit${res.length>1?"s":""}, valeurs pour 100 g. Touche un produit pour voir où il a été vu et à quel prix.</p><div class="list">${res.map(x=>prodCard(x,`data-a="pickres" data-i="${P.results.indexOf(x)}"`)).join("")}</div>`
     : `<div class="empty">Aucun produit trouvé${P.mine?" dans tes magasins. Désactive le filtre « Mes magasins »":". Essaie un terme plus simple, ou scanne le code-barres"}.</div>`;
   const pantry = S.pantry.length
     ? `<div class="list">${S.pantry.map(x=>prodCard(x,`data-a="editprod" data-id="${esc(x.id)}"`,`<p class="small" style="margin-top:6px">${x.link?`Remplace : <b>${ING[x.link][0]}</b>`:`<span class="muted">Associé à aucun ingrédient</span>`}</p>`)).join("")}</div>`
@@ -970,7 +1007,7 @@ function vProducts(){
       <button class="btn" type="submit" ${P.loading?"disabled":""}>Chercher</button></form>
     ${P.target?`<div class="banner"><span class="small">Pour l’ingrédient : <b>${ING[P.target][0]}</b></span><button class="x" data-a="untarget" aria-label="Ne plus cibler cet ingrédient">${icon("x")}</button></div>`:""}
     ${mine.length?`<div class="scroller" style="margin-top:12px"><button class="chip" data-a="minef" ${pressed(P.mine)}>Seulement mes magasins</button>${mine.map(s=>`<span class="spill" style="flex:none">${logo(s,"sm")}${esc(s)}</span>`).join("")}</div>`:""}
-    <div class="section" style="margin-top:18px">${body}</div>
+    <div class="section" style="margin-top:18px">${P.err && res ? `<p class="err" style="margin-bottom:12px">${P.err}</p>` : ""}${body}</div>
     <div class="section"><h2>Mon garde-manger (${S.pantry.length})</h2>${pantry}</div>
     <p class="small muted" style="margin-top:20px">Produits : Open Food Facts. Prix : Open Prices, relevés par des consommateurs. Bases collaboratives sous licence ODbL : la couverture varie selon les magasins. Les icônes d’enseignes viennent de leurs sites et appartiennent à leurs propriétaires.</p>`;
 }
@@ -1033,7 +1070,7 @@ function vProfile(){
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger. Prix : moyennes estimées, remplacées par tes prix ou ceux d’Open Prices. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 3.1</p>`;
+    <p class="small muted" style="margin-top:16px">Version 3.2</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -1225,17 +1262,29 @@ function enrich(sh){
     renderSheet();
   }).catch(()=>{});
 }
-async function doSearch(){
+async function doSearch(force){
   const P = UI.prod, q = P.q.trim();
   if(!q) return;
-  if(!navigator.onLine){ P.err = "Tu es hors ligne. La recherche de produits demande une connexion."; render(); return; }
-  P.loading = true; P.err = ""; render();
-  try{ P.results = await ProductSource.search(q); }
-  catch(e){ P.results = null; P.err = e && e.name==="AbortError"
-    ? "Open Food Facts met trop de temps à répondre. Réessaie dans un instant, ou scanne directement le code-barres : le scan passe par un service plus rapide."
-    : "Open Food Facts ne répond pas pour le moment. Réessaie dans un instant, ou scanne directement le code-barres."; }
+  P.err = ""; P.note = "";
+  const cached = !force && SearchCache.get(q);
+  if(cached){ P.results = cached; P.note = "cached"; render(); return; }
+  if(!navigator.onLine){ P.results = SearchCache.seen(q); P.err = "Tu es hors ligne : voici les produits déjà vus correspondant à ta recherche."; render(); return; }
+  const w = Gate.wait();
+  if(w){ P.err = `Pour respecter les limites d’Open Food Facts, patiente encore ${w} s avant une nouvelle recherche. Le scan de code-barres reste disponible.`; render(); return; }
+  P.loading = true; render();
+  try{ P.results = await ProductSource.search(q); SearchCache.put(q, P.results); }
+  catch(e){
+    const seen = SearchCache.seen(q);
+    P.results = seen.length ? seen : null;
+    if(e.status===429 || e.status===503){ Gate.block(60); P.err = `Open Food Facts limite temporairement les recherches (code ${e.status}). Réessaie dans 1 minute ; le scan de code-barres reste disponible.`; }
+    else if(e.name==="AbortError"){ Gate.block(20); P.err = "Open Food Facts met trop de temps à répondre (service saturé). Réessaie dans un instant, ou scanne le code-barres."; }
+    else if(e.status){ Gate.block(30); P.err = `Open Food Facts a renvoyé une erreur (code ${e.status}). Réessaie dans quelques minutes, ou scanne le code-barres.`; }
+    else { Gate.block(30); P.err = "Connexion à Open Food Facts refusée (service saturé ou bridé). Réessaie dans 1 minute, ou scanne le code-barres."; }
+    if(seen.length) P.err += " En attendant, voici les produits déjà vus correspondant à ta recherche.";
+  }
   P.loading = false; render();
 }
+
 function saveProduct(){
   const sh = UI.sheet, P = sh.p;
   ["k","p","g","l"].forEach(f=>P[f] = r1(P[f]));
@@ -1295,6 +1344,7 @@ document.addEventListener("click", e=>{
     case "addrecipe": addToList(UI.sheet.id, UI.sheet.f); persist(); toast("Ingrédients ajoutés aux courses."); break;
     case "addday": UI.day.forEach(x=>addToList(x.id, x.f)); persist(); toast("Journée ajoutée aux courses."); break;
     case "findprod": { const id = b.dataset.id; closeSheet(); UI.prod.q = searchTerm(id); UI.prod.target = id; UI.prod.results = null; go("products"); doSearch(); break; }
+    case "research": doSearch(true); break;
     case "untarget": UI.prod.target = ""; render(); break;
     case "minef": UI.prod.mine = !UI.prod.mine; keepScroll(render); break;
     case "scan": startScan(); break;
