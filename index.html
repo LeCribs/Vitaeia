@@ -516,18 +516,19 @@ function guessLink(name){
 const searchTerm = id => ING[id][0].replace(/\(.*?\)/g,"").trim();
 
 /* =========================================================
-   PHOTOS DES PLATS (Pexels, banque d’images gratuite)
+   PHOTOS DES PLATS (Unsplash, banque d’images gratuite)
    La clé est saisie dans l’app et reste sur le téléphone :
    elle n’apparaît jamais dans le dépôt GitHub.
-   Limite gratuite : 200 requêtes par heure.
+   Limite gratuite (mode démo) : 50 requêtes par heure.
+   Les fichiers images ne comptent pas dans cette limite.
    ========================================================= */
-const PEXELS_Q = ["porridge banana peanut butter", "overnight oats berries jar", "spinach feta omelette", "protein pancakes berries", "skyr bowl granola berries", "avocado toast egg", "yogurt apple walnuts", "banana peanut butter smoothie", "scrambled eggs ham toast", "chocolate oatmeal banana", "breakfast burrito eggs", "cottage cheese berries", "chia pudding berries", "egg muffins vegetables", "rice cakes peanut butter banana", "oat crepes", "smoked salmon toast", "oatmeal dates banana", "chicken rice broccoli", "teriyaki chicken bowl", "salmon sweet potato green beans", "spaghetti bolognese", "chili con carne rice", "chickpea coconut curry", "turkey stir fry noodles", "baked cod zucchini", "lentil salad boiled eggs", "tofu buddha bowl", "steak potatoes salad", "chicken wraps", "tuna pasta salad", "spanish tortilla", "chicken curry rice", "shrimp fried rice", "pesto pasta chicken", "shepherds pie", "salmon poke bowl", "chicken couscous vegetables", "zucchini gratin", "crustless quiche spinach", "homemade burger", "chicken caesar salad", "lentil dal rice", "egg fried rice", "cod mashed potatoes", "vegetarian chili beans", "roasted chicken sweet potato", "salmon pasta spinach", "hummus chicken plate", "tuna avocado rice bowl", "beef stir fry peppers", "sardines potatoes salad", "lentil soup bread", "mushroom omelette", "zucchini soup", "quinoa salad feta chickpeas", "chicken peppers tomato stew", "tortilla pizza", "croque monsieur", "tofu noodles broccoli", "creamy mushroom pasta", "salmon lentils", "shrimp quinoa avocado bowl", "tuna tomato pasta", "skyr berries", "banana protein shake", "rice cakes peanut butter", "apple almonds", "boiled eggs cherry tomatoes", "cottage cheese cucumber", "energy balls dates", "chocolate yogurt bowl", "ham roll ups", "banana dark chocolate", "hummus carrot sticks", "tuna toast", "greek yogurt honey walnuts", "homemade protein bars", "yogurt chia parfait", "peanut butter honey toast"];
+const PHOTO_Q = ["porridge banana peanut butter", "overnight oats berries jar", "spinach feta omelette", "protein pancakes berries", "skyr bowl granola berries", "avocado toast egg", "yogurt apple walnuts", "banana peanut butter smoothie", "scrambled eggs ham toast", "chocolate oatmeal banana", "breakfast burrito eggs", "cottage cheese berries", "chia pudding berries", "egg muffins vegetables", "rice cakes peanut butter banana", "oat crepes", "smoked salmon toast", "oatmeal dates banana", "chicken rice broccoli", "teriyaki chicken bowl", "salmon sweet potato green beans", "spaghetti bolognese", "chili con carne rice", "chickpea coconut curry", "turkey stir fry noodles", "baked cod zucchini", "lentil salad boiled eggs", "tofu buddha bowl", "steak potatoes salad", "chicken wraps", "tuna pasta salad", "spanish tortilla", "chicken curry rice", "shrimp fried rice", "pesto pasta chicken", "shepherds pie", "salmon poke bowl", "chicken couscous vegetables", "zucchini gratin", "crustless quiche spinach", "homemade burger", "chicken caesar salad", "lentil dal rice", "egg fried rice", "cod mashed potatoes", "vegetarian chili beans", "roasted chicken sweet potato", "salmon pasta spinach", "hummus chicken plate", "tuna avocado rice bowl", "beef stir fry peppers", "sardines potatoes salad", "lentil soup bread", "mushroom omelette", "zucchini soup", "quinoa salad feta chickpeas", "chicken peppers tomato stew", "tortilla pizza", "croque monsieur", "tofu noodles broccoli", "creamy mushroom pasta", "salmon lentils", "shrimp quinoa avocado bowl", "tuna tomato pasta", "skyr berries", "banana protein shake", "rice cakes peanut butter", "apple almonds", "boiled eggs cherry tomatoes", "cottage cheese cucumber", "energy balls dates", "chocolate yogurt bowl", "ham roll ups", "banana dark chocolate", "hummus carrot sticks", "tuna toast", "greek yogurt honey walnuts", "homemade protein bars", "yogurt chia parfait", "peanut butter honey toast"];
 const Pics = {
-  key:(()=>{ try{ return localStorage.getItem("assiette.pexels")||""; }catch(e){ return ""; } })(),
+  key:(()=>{ try{ return localStorage.getItem("assiette.unsplash")||""; }catch(e){ return ""; } })(),
   cache:(()=>{ try{ return JSON.parse(localStorage.getItem("assiette.pics")||"{}"); }catch(e){ return {}; } })(),
   queue:[], busy:0, pending:new Set(), blocked:false, err:"", warm:false,
   save(){ try{ localStorage.setItem("assiette.pics", JSON.stringify(this.cache)); }catch(e){} },
-  setKey(k){ this.key = k.trim(); this.blocked = false; this.err = ""; try{ this.key ? localStorage.setItem("assiette.pexels", this.key) : localStorage.removeItem("assiette.pexels"); }catch(e){} },
+  setKey(k){ this.key = k.trim(); this.blocked = false; this.err = ""; try{ this.key ? localStorage.setItem("assiette.unsplash", this.key) : localStorage.removeItem("assiette.unsplash"); }catch(e){} },
   count(){ return Object.values(this.cache).filter(c=>c.list.length).length; },
   get(id){ const c = this.cache[id]; return c && c.list.length ? c.list[c.i % c.list.length] : null; },
   want(id){ if(!this.key || this.blocked || this.cache[id] || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
@@ -537,12 +538,14 @@ const Pics = {
   },
   async fetch(id){
     try{
-      const r = await fetch(`https://api.pexels.com/v1/search?${new URLSearchParams({query:PEXELS_Q[id], per_page:8, orientation:"landscape"})}`, {headers:{Authorization:this.key}});
-      if(r.status===401 || r.status===403){ this.blocked = true; this.err = "Clé Pexels refusée : vérifie-la dans Profil."; this.queue = []; return; }
-      if(r.status===429){ this.blocked = true; this.err = "Limite Pexels atteinte (200 photos par heure). Les suivantes arriveront plus tard."; this.queue = []; return; }
+      const r = await fetch(`https://api.unsplash.com/search/photos?${new URLSearchParams({query:PHOTO_Q[id], per_page:8, orientation:"landscape", content_filter:"high"})}`, {headers:{Authorization:"Client-ID "+this.key, "Accept-Version":"v1"}});
+      if(r.status===401){ this.blocked = true; this.err = "Clé Unsplash refusée : vérifie la clé d’accès (Access Key) dans Profil."; this.queue = []; return; }
+      if(r.status===403 || r.status===429){ this.blocked = true; this.err = "Limite Unsplash atteinte (50 recettes par heure). Relance « Précharger tout » dans une heure pour la suite."; this.queue = []; return; }
       if(!r.ok) return;
-      const j = await r.json();
-      this.cache[id] = {i:0, list:(j.photos||[]).map(p=>({s:p.src.tiny, m:p.src.medium, l:p.src.landscape, ph:p.photographer, pu:p.photographer_url, u:p.url, c:p.avg_color}))};
+      const j = await r.json(), utm = "utm_source=assiette&utm_medium=referral";
+      const sz = (raw,w,h)=>`${raw}${raw.includes("?")?"&":"?"}w=${w}&h=${h}&fit=crop&auto=format&q=70`;
+      this.cache[id] = {i:0, list:(j.results||[]).map(p=>({s:sz(p.urls.raw,260,260), m:sz(p.urls.raw,800,380), l:sz(p.urls.raw,1080,560),
+        ph:p.user.name, pu:`${p.user.links.html}?${utm}`, u:`https://unsplash.com/?${utm}`, c:p.color}))};
       this.save(); refreshPic(id);
       if(UI.sheet && UI.sheet.kind==="recipe" && UI.sheet.id===id) renderSheet();
       if(this.warm){ const p = this.get(id); if(p) [p.s,p.m].forEach(u=>fetch(u,{mode:"no-cors"}).catch(()=>{})); }
@@ -714,7 +717,7 @@ function vHome(){
       <li>Glucides : le reste des calories ÷ 4 = <b>${n.gluc} g</b></li>
       <li class="muted">Ces repères conviennent à un adulte en bonne santé. En cas de pathologie, demande l’avis d’un médecin ou d’un diététicien.</li>
     </ul></details>
-    ${Pics.key?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Pexels gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
+    ${Pics.key?"":`<div class="banner" style="margin-top:22px"><span class="small">Affiche les photos des plats avec une clé Unsplash gratuite.</span><button class="btn" style="padding:9px 14px" data-a="nav" data-v="profile">Ajouter</button></div>`}
     ${meals}
     <div class="total"><b>Total de cette journée : ${nf(sum.k)} kcal</b><div style="margin-top:6px">${macroLine(sum.p,sum.g,sum.l)}</div>
       <p class="small muted" style="margin-top:6px">Objectif : ${nf(n.kcal)} kcal, ${n.prot} g de protéines.</p></div>
@@ -744,7 +747,7 @@ function vRecipes(){
     <div class="scroller" style="margin-top:8px">${chip("budget",0,"Tout budget")}${chip("budget",1,"€")}${chip("budget",2,"€€ max")}<button class="chip" data-a="favf" ${pressed(F.fav)}>♥ Favoris</button></div>
     <p class="muted small" style="margin:16px 0 10px" id="count">${countTxt(list)}</p>
     <div class="list" id="rlist">${listHTML(list)}</div>
-    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://www.pexels.com" target="_blank" rel="noopener" style="color:inherit">Pexels</a>, à titre d’illustration : le plat peut différer de la recette.</p>`;
+    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=assiette&utm_medium=referral" target="_blank" rel="noopener" style="color:inherit">Unsplash</a>, à titre d’illustration : le plat peut différer de la recette.</p>`;
 }
 
 /* ---- Produits ---- */
@@ -822,8 +825,8 @@ function vProfile(){
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
     <button class="btn wide" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
     <div class="section"><h2>Photos des plats</h2>
-      <p class="small muted" style="margin-bottom:12px">Les photos viennent de Pexels, une banque d’images gratuite. Il faut une clé personnelle, gratuite, à créer sur <a href="https://www.pexels.com/api/" target="_blank" rel="noopener" style="color:var(--accent)">pexels.com/api</a>. Elle reste sur ce téléphone.</p>
-      <label class="f" for="pkey">Clé Pexels</label>
+      <p class="small muted" style="margin-bottom:12px">Les photos viennent d’Unsplash, une banque d’images gratuite. Il faut une clé d’accès personnelle, gratuite, à créer sur <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener" style="color:var(--accent)">unsplash.com/oauth/applications</a>. Elle reste sur ce téléphone. Limite : 50 nouvelles photos par heure.</p>
+      <label class="f" for="pkey">Clé d’accès Unsplash (Access Key)</label>
       <input id="pkey" type="password" autocomplete="off" spellcheck="false" placeholder="Colle ta clé ici" value="${esc(Pics.key)}">
       <div class="row" style="margin-top:10px"><button class="btn" data-a="savekey">Enregistrer la clé</button><button class="btn ghost" data-a="preload" ${Pics.key?"":"disabled"}>Précharger tout</button></div>
       <p class="small muted" style="margin-top:8px">Photos en mémoire : ${Pics.count()} sur ${RECIPES.length}.</p>
@@ -833,7 +836,7 @@ function vProfile(){
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger, qui utilisent les valeurs Open Food Facts ou celles que tu as saisies. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 2.2</p>`;
+    <p class="small muted" style="margin-top:16px">Version 2.3</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -848,8 +851,8 @@ function sRecipe(sh){
   const r = RECIPES[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
   return `<div class="sheet-top"><h1 style="font-size:25px">${r.n}</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
     <div class="hero thumb" data-pic="${r.id}" data-size="l">${visual(r,"l")}</div>
-    ${!Photos.urls[r.id] && Pics.get(r.id) ? (p=>`<p class="credit">Photo : <a href="${esc(p.pu)}" target="_blank" rel="noopener">${esc(p.ph)}</a> sur <a href="${esc(p.u)}" target="_blank" rel="noopener">Pexels</a></p>`)(Pics.get(r.id)) : ""}
-    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.cache[r.id]?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Pexels</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
+    ${!Photos.urls[r.id] && Pics.get(r.id) ? (p=>`<p class="credit">Photo : <a href="${esc(p.pu)}" target="_blank" rel="noopener">${esc(p.ph)}</a> sur <a href="${esc(p.u)}" target="_blank" rel="noopener">Unsplash</a></p>`)(Pics.get(r.id)) : ""}
+    <div class="photo-actions">${!Photos.urls[r.id] && (Pics.cache[r.id]?.list.length>1) ? `<button class="link" data-a="nextpic">Autre photo</button>` : ""}${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à la photo Unsplash</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
     <div class="meta" style="margin-top:10px"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
     <button class="link" data-a="fav" data-id="${r.id}">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
