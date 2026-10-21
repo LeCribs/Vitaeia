@@ -483,17 +483,40 @@ function fromOFF(p){
   pr.stores = myStores().filter(s=>storeMatch(pr.offStores, s));
   return pr;
 }
+/* Requête avec délai maximal, pour ne jamais rester bloqué sur un service lent */
+async function fetchT(url, opts={}, ms=12000){
+  const c = new AbortController(), t = setTimeout(()=>c.abort(), ms);
+  try{ return await fetch(url, {...opts, signal:c.signal}); } finally{ clearTimeout(t); }
+}
+/* Les champs du nouveau moteur peuvent être du texte, une liste ou un objet par langue */
+const pickTxt = v => v==null ? "" : Array.isArray(v) ? v.filter(Boolean).join(", ") : typeof v==="object" ? String(v.fr||v.main||v.en||Object.values(v)[0]||"") : String(v);
 const ProductSource = {
+  /* 1) Search-a-licious (nouveau moteur), 2) ancienne recherche en secours */
   async search(term){
-    const qs = new URLSearchParams({search_terms:term, search_simple:1, action:"process", json:1, page_size:40,
+    const clean = term.replace(/[+\-!(){}\[\]^"~*?:\\/&|]/g," ").replace(/\s+/g," ").trim();
+    if(!clean) return [];
+    try{
+      const qs = new URLSearchParams({q:`(${clean}) AND countries_tags:"en:france"`, langs:"fr", page_size:40, fields:FIELDS});
+      const r = await fetchT(`https://search.openfoodfacts.org/search?${qs}`);
+      if(r.ok){
+        const j = await r.json();
+        const hits = (j.hits||[]).filter(h=>h && h.code).map(h=>fromOFF({
+          code:h.code, product_name_fr:pickTxt(h.product_name_fr), product_name:pickTxt(h.product_name), brands:pickTxt(h.brands),
+          quantity:pickTxt(h.quantity), product_quantity:h.product_quantity, product_quantity_unit:pickTxt(h.product_quantity_unit),
+          stores:pickTxt(h.stores)||pickTxt(h.stores_tags), image_front_small_url:pickTxt(h.image_front_small_url), image_small_url:pickTxt(h.image_small_url),
+          nutriments:h.nutriments||{}}));
+        if(hits.length) return hits;
+      }
+    }catch(e){}
+    const qs = new URLSearchParams({search_terms:clean, search_simple:1, action:"process", json:1, page_size:40,
       tagtype_0:"countries", tag_contains_0:"contains", tag_0:"france", fields:FIELDS});
-    const r = await fetch(`${OFF}/cgi/search.pl?${qs}`);
+    const r = await fetchT(`${OFF}/cgi/search.pl?${qs}`, {}, 20000);
     if(!r.ok) throw new Error("HTTP "+r.status);
     const j = await r.json();
     return (j.products||[]).map(fromOFF);
   },
   async barcode(code){
-    const r = await fetch(`${OFF}/api/v2/product/${encodeURIComponent(code)}.json?fields=${FIELDS}`);
+    const r = await fetchT(`${OFF}/api/v2/product/${encodeURIComponent(code)}.json?fields=${FIELDS}`);
     if(r.status===404) return null;
     if(!r.ok) throw new Error("HTTP "+r.status);
     const j = await r.json();
@@ -502,7 +525,7 @@ const ProductSource = {
   /* Prix réels relevés par les consommateurs, avec le magasin précis */
   async prices(code){
     const qs = new URLSearchParams({product_code:code, order_by:"-date", size:50});
-    const r = await fetch(`https://prices.openfoodfacts.org/api/v1/prices?${qs}`);
+    const r = await fetchT(`https://prices.openfoodfacts.org/api/v1/prices?${qs}`);
     if(!r.ok) throw new Error("HTTP "+r.status);
     const j = await r.json();
     return (j.items||[]).filter(x=>(x.currency||"EUR")==="EUR" && x.price>0).map(x=>{
@@ -1010,7 +1033,7 @@ function vProfile(){
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger. Prix : moyennes estimées, remplacées par tes prix ou ceux d’Open Prices. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 3.0</p>`;
+    <p class="small muted" style="margin-top:16px">Version 3.1</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -1190,13 +1213,27 @@ function openProduct(pr, existing){
       .finally(()=>{ const box = $("#pricebox"); if(UI.sheet===sh && box) box.innerHTML = sPrices(sh); });
   }
 }
+/* Complète un résultat de recherche avec la fiche produit complète (photo, valeurs) */
+function enrich(sh){
+  if(!sh || sh.kind!=="product" || !sh.p.code) return;
+  const P = sh.p;
+  if(P.img && [P.k,P.p,P.g,P.l].every(v=>v!==null) && P.weight) return;
+  ProductSource.barcode(P.code).then(full=>{
+    if(!full || UI.sheet!==sh) return;
+    ["img","brand","qty","offStores","k","p","g","l","weight"].forEach(f=>{ if((P[f]===null || P[f]==="") && full[f]!==null && full[f]!=="") P[f] = full[f]; });
+    if(!P.stores.length) P.stores = full.stores;
+    renderSheet();
+  }).catch(()=>{});
+}
 async function doSearch(){
   const P = UI.prod, q = P.q.trim();
   if(!q) return;
   if(!navigator.onLine){ P.err = "Tu es hors ligne. La recherche de produits demande une connexion."; render(); return; }
   P.loading = true; P.err = ""; render();
   try{ P.results = await ProductSource.search(q); }
-  catch(e){ P.results = null; P.err = "Open Food Facts ne répond pas. Réessaie dans un instant (10 recherches par minute maximum)."; }
+  catch(e){ P.results = null; P.err = e && e.name==="AbortError"
+    ? "Open Food Facts met trop de temps à répondre. Réessaie dans un instant, ou scanne directement le code-barres : le scan passe par un service plus rapide."
+    : "Open Food Facts ne répond pas pour le moment. Réessaie dans un instant, ou scanne directement le code-barres."; }
   P.loading = false; render();
 }
 function saveProduct(){
@@ -1262,7 +1299,7 @@ document.addEventListener("click", e=>{
     case "minef": UI.prod.mine = !UI.prod.mine; keepScroll(render); break;
     case "scan": startScan(); break;
     case "newprod": stopScan(); openProduct({id:"",code:b.dataset.code||"",name:"",brand:"",qty:"",img:"",offStores:"",k:null,p:null,g:null,l:null,price:null,weight:null,link:UI.prod.target||"",stores:[]}, false); break;
-    case "pickres": openProduct(UI.prod.results[Number(b.dataset.i)], false); break;
+    case "pickres": { const pr = UI.prod.results[Number(b.dataset.i)]; openProduct(pr, false); enrich(UI.sheet); break; }
     case "editprod": { const pr = S.pantry.find(x=>x.id===b.dataset.id); if(pr) openProduct(pr, true); break; }
     case "pstore": { const arr = UI.sheet.p.stores, v = b.dataset.v, i = arr.indexOf(v); i<0?arr.push(v):arr.splice(i,1); renderSheet(); break; }
     case "useprice": { const sh = UI.sheet, x = sh.prices.items[Number(b.dataset.i)];
