@@ -143,6 +143,25 @@ ol.how li{margin:8px 0}
 .video{position:relative;border-radius:var(--r-md);overflow:hidden;background:#000;aspect-ratio:4/3;margin-top:14px}
 .video video{width:100%;height:100%;object-fit:cover;display:block}
 .video::after{content:"";position:absolute;left:12%;right:12%;top:50%;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+/* Visuels */
+.card.dish{padding:0;overflow:hidden;display:flex;align-items:stretch}
+.thumb{background:radial-gradient(circle at 30% 25%,#2d433a,#1a2722);display:flex;align-items:center;justify-content:center;flex:none}
+.card.dish .thumb{width:108px;min-height:108px}
+.card.dish .thumb svg{width:96px;height:96px}
+.card.dish .cb{padding:12px 14px;flex:1;min-width:0}
+.card.dish.big{flex-direction:column}
+.card.dish.big .thumb{width:100%;height:180px}
+.card.dish.big .thumb svg{width:164px;height:164px}
+.thumb img.ph{width:100%;height:100%;object-fit:cover;display:block}
+.hero{margin:14px -18px 0;height:250px;overflow:hidden}
+.hero svg{width:230px;height:230px}
+.hero img.ph{width:100%;height:100%;object-fit:cover}
+.photo-actions{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:6px}
+.sb{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 5px;border-radius:6px;background:var(--sb);color:#10201a;font:800 11px/1 var(--display);letter-spacing:.03em;margin-right:7px;vertical-align:middle;flex:none}
+.sb.lg{height:32px;min-width:44px;font-size:14px;border-radius:9px;margin-right:10px}
+.chip .sb{margin-left:-7px;height:20px;min-width:28px}
+.pill .sb{height:16px;min-width:24px;font-size:9px;margin:0 5px 0 -6px;border-radius:4px}
+.storehead{display:flex;align-items:center}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);font-weight:700;padding:10px 16px;border-radius:999px;z-index:30;max-width:90%;text-align:center}
 .toast[hidden]{display:none}
 </style>
@@ -159,6 +178,8 @@ ol.how li{margin:8px 0}
 <div class="sheet" id="sheet" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 <input type="file" id="importfile" accept="application/json,.json" hidden>
+<input type="file" id="photocam" accept="image/*" capture="environment" hidden>
+<input type="file" id="photogal" accept="image/*" hidden>
 
 <script>
 /* =========================================================
@@ -495,6 +516,196 @@ function guessLink(name){
 const searchTerm = id => ING[id][0].replace(/\(.*?\)/g,"").trim();
 
 /* =========================================================
+   ILLUSTRATIONS DES PLATS
+   Chaque recette est dessinée à partir de ses ingrédients :
+   type de forme + couleurs. Rendu déterministe (même recette,
+   même dessin), 100 % local.
+   ========================================================= */
+const VIS = {
+  avoine:["flakes","#dcc89c"], lait:["liquid","#efece2"], skyr:["liquid","#f5f4ef"], fb0:["liquid","#f6f5f0"], ygrec:["liquid","#f3eee2"], cottage:["liquid","#efebe0"],
+  oeuf:["egg"], blanc:["eggwhite","#f6f2e4"], banane:["slice","#f4e6a8","#e2c766"], pomme:["cube","#f2e8c6","#c9473a"], frouges:["berry","#b3304b","#5a3b8f"],
+  compote:["liquid","#e6cd8a"], dattes:["chunk","#7a4a2a"], avocat:["slice","#b7d27a","#5f7f2f"], pbutter:["drizzle","#b9824a"], amandes:["nut","#c99a6b"],
+  noix:["nut","#a8774b"], chia:["seed","#2f2f2f"], miel:["drizzle","#e3a92e"], choco:["chunk","#4a2c1d"], cacao:["dust","#6b4430"], whey:["none"],
+  pain:["bread","#a8733f","#e6c999"], painburger:["bun","#c98a43"], tortilla:["wrap","#ead6a6"], galette:["bread","#d9c6a0","#f3ead6"],
+  riz:["grain","#f7f4ec"], pates:["pasta","#efd38a"], patesc:["pasta","#c9a066"], quinoa:["grain","#e6d9b6"], semoule:["grain","#efd99c"], nouilles:["noodle","#f1ebdc"],
+  pdt:["cube","#ecd38c","#c9a95a"], pdouce:["cube","#e98a3c","#c4661c"], lentilles:["legume","#7a5c3a"], pchiches:["legume","#dfbf86"], hrouges:["legume","#8a2f2f"],
+  poulet:["fillet","#eecb98","#b97a3e"], dinde:["fillet","#f1d9b0","#c2915a"], boeuf5:["patty","#6e3424"], rumsteck:["strips","#8a3a2a","#5e2418"], jambon:["ham","#f0a7a2","#e0807a"],
+  saumon:["fillet","#f2956a","#fbd0b4"], saumonf:["ham","#f2875e","#f7b394"], cabillaud:["fillet","#f5f0e7","#d6cdbf"], thon:["flake","#c9a58a"], sardines:["fish","#8f9aa3","#c9d1d6"],
+  crevettes:["shrimp","#f2865c"], tofu:["cube","#efe6cf","#cdbf9b"], mozza:["melt","#faf8f0"], feta:["cube","#f8f6ef","#ddd7c6"], parmesan:["dust","#f1e3b0"],
+  emmental:["shred","#f3d978"], creme:["liquid","#f7f3ea"], beurre:["none"], huile:["none"], laitcoco:["liquid","#f4efe2"], pesto:["drizzle","#5f8a2e"],
+  houmous:["mound","#d9b77e"], soja:["drizzle","#4a2a18"], tomate:["slice","#e2463b","#f39a88"], tconc:["sauce","#c13b2c"], concombre:["slice","#d6e8ae","#4f7f3a"],
+  courgette:["slice","#e8eed2","#4e7a32"], brocoli:["floret","#3f7f3a","#5f9f4b"], epinards:["leaf","#2f6b35"], poivron:["strip","#e04a34","#f0b23a"],
+  oignon:["ring","#e7d3e6"], champi:["mushroom","#dcc6a6"], hverts:["bean","#4f8f3f"], carotte:["slice","#ee8a2e","#f8b15e"], salade:["leaf","#86bb59"],
+  mais:["corn","#f2c94c"], ppois:["pea","#6fae4a"]
+};
+function rng(seed){ let a = seed>>>0; return ()=>{ a = a+0x6D2B79F5|0; let t = Math.imul(a^a>>>15,1|a); t = t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const f1 = n => Math.round(n*10)/10;
+function blobPath(r, R, irr=0.18, n=9){
+  const pts = [];
+  for(let i=0;i<n;i++){ const a = i/n*Math.PI*2, rr = r*(1-irr/2+R()*irr); pts.push([Math.cos(a)*rr, Math.sin(a)*rr]); }
+  const mid = (p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+  let m = mid(pts[n-1],pts[0]), d = `M${f1(m[0])} ${f1(m[1])}`;
+  for(let i=0;i<n;i++){ const p = pts[i], q = mid(p, pts[(i+1)%n]); d += `Q${f1(p[0])} ${f1(p[1])} ${f1(q[0])} ${f1(q[1])}`; }
+  return d+"Z";
+}
+/* Formes dessinées autour de (0,0) */
+const SHAPE = {
+  grain:(v)=>`<ellipse rx="2.7" ry="1.35" fill="${v[1]}" stroke="#0000001f" stroke-width=".4"/>`,
+  flakes:(v)=>`<ellipse rx="3.6" ry="2.5" fill="${v[1]}" stroke="#00000024" stroke-width=".5"/>`,
+  pasta:(v)=>`<path d="M-6 1q6-7 12 0" stroke="#00000022" stroke-width="4.6" fill="none" stroke-linecap="round"/><path d="M-6 1q6-7 12 0" stroke="${v[1]}" stroke-width="3.4" fill="none" stroke-linecap="round"/>`,
+  noodle:(v)=>`<path d="M-20 0q5-6 10 0t10 0t10 0t10 0" stroke="${v[1]}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`,
+  legume:(v)=>`<circle r="3.4" fill="${v[1]}"/><circle cx="-1" cy="-1" r="1" fill="#ffffff40"/>`,
+  pea:(v)=>`<circle r="2.9" fill="${v[1]}"/><circle cx="-.9" cy="-.9" r=".9" fill="#ffffff55"/>`,
+  corn:(v)=>`<rect x="-2.2" y="-2.2" width="4.4" height="4.4" rx="1.3" fill="${v[1]}"/>`,
+  berry:(v,R)=>`<circle r="4.3" fill="${R()<.6?v[1]:v[2]}"/><circle cx="-1.4" cy="-1.4" r="1.2" fill="#ffffff40"/>`,
+  nut:(v)=>`<ellipse rx="4.6" ry="3" fill="${v[1]}" stroke="#00000030" stroke-width=".6"/>`,
+  chunk:(v)=>`<rect x="-3.5" y="-3" width="7" height="6" rx="1.6" fill="${v[1]}"/>`,
+  slice:(v,R,id)=>`<circle r="${id==="banane"?7.5:9}" fill="${v[1]}" stroke="${v[2]}" stroke-width="2.2"/>`+
+    (id==="tomate"?`<circle cx="-3" cy="1" r="1.1" fill="#f6d27a"/><circle cx="3" cy="1" r="1.1" fill="#f6d27a"/><circle cy="-3" r="1.1" fill="#f6d27a"/>`
+    : id==="concombre"||id==="courgette"?`<circle r="3.6" fill="#ffffff30"/>` : `<circle r="2.6" fill="${v[2]}" opacity=".35"/>`),
+  cube:(v)=>`<rect x="-5" y="-5" width="10" height="10" rx="2.6" fill="${v[1]}" stroke="${v[2]}" stroke-width="1.1"/>`,
+  floret:(v)=>`<path d="M0 2v7" stroke="#9cc27a" stroke-width="3" stroke-linecap="round"/><circle cx="-4" cy="-1" r="4.6" fill="${v[1]}"/><circle cx="4" cy="-1" r="4.6" fill="${v[1]}"/><circle cy="-5" r="5" fill="${v[2]}"/><circle cy="1" r="3.8" fill="${v[2]}"/>`,
+  leaf:(v)=>`<path d="M0-11C8-6 8 6 0 11C-8 6-8-6 0-11Z" fill="${v[1]}"/><path d="M0-9V9" stroke="#ffffff35" stroke-width="1"/>`,
+  strip:(v,R)=>`<rect x="-8" y="-2.2" width="16" height="4.4" rx="2.2" fill="${R()<.55?v[1]:v[2]}"/>`,
+  ring:(v)=>`<circle r="6" fill="none" stroke="${v[1]}" stroke-width="1.8"/>`,
+  mushroom:(v)=>`<path d="M-6 0A6 6 0 0 1 6 0H3V4H-3V0Z" fill="${v[1]}" stroke="#00000030" stroke-width=".6"/>`,
+  bean:(v)=>`<rect x="-9" y="-1.8" width="18" height="3.6" rx="1.8" fill="${v[1]}"/>`,
+  flake:(v,R)=>`<path d="${blobPath(4.2,R,.45,6)}" fill="${v[1]}"/>`,
+  shrimp:(v)=>`<path d="M-6 3A6.5 6.5 0 1 1 6 3" stroke="${v[1]}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-2-3.5l1 2M2-3.5l-1 2" stroke="#ffffff60" stroke-width="1"/>`,
+  melt:(v,R)=>`<path d="${blobPath(9,R,.35)}" fill="${v[1]}" stroke="#00000014"/>`,
+  ham:(v,R)=>`<path d="${blobPath(13,R,.3)}" fill="${v[1]}"/><path d="M-8 2q4-5 8 0t8 0" stroke="${v[2]}" stroke-width="1.6" fill="none"/>`,
+  strips:(v)=>`<rect x="-10" y="-3.2" width="20" height="6.4" rx="3" fill="${v[1]}" stroke="${v[2]}" stroke-width="1"/>`,
+  egg:(v,R)=>`<path d="${blobPath(15,R,.3)}" fill="#fbfaf5" stroke="#00000014"/><circle cx="1.5" cy="-1" r="6.2" fill="#f2b51c"/><circle cx="-.5" cy="-3" r="1.8" fill="#ffffff70"/>`,
+  eggwhite:(v,R)=>`<path d="${blobPath(9,R,.45,7)}" fill="${v[1]}" stroke="#00000012"/>`,
+  fish:(v)=>`<ellipse rx="16" ry="5" fill="${v[1]}"/><path d="M15 0l7-5v10Z" fill="${v[1]}"/><path d="M-13 0H12" stroke="${v[2]}" stroke-width="1.6"/>`,
+  fillet:(v,R)=>`<path d="${blobPath(1,R,.2,8)}" fill="${v[1]}" transform="scale(31 20)" stroke="#00000020" stroke-width=".04"/><path d="M-16-10l-8 18M-4-14l-9 26M8-14l-9 26M19-9l-7 16" stroke="${v[2]}" stroke-width="2.8" stroke-linecap="round" opacity=".75"/>`,
+  patty:(v,R)=>{ let s = `<circle r="22" fill="${v[1]}"/><circle r="22" fill="none" stroke="#00000035" stroke-width="2"/>`; for(let i=0;i<14;i++){ const a=R()*6.28, d=R()*17; s += `<circle cx="${f1(Math.cos(a)*d)}" cy="${f1(Math.sin(a)*d)}" r="${f1(.8+R()*1.4)}" fill="${R()<.5?"#8e4a34":"#4f2116"}"/>`; } return s; },
+  bread:(v)=>`<rect x="-22" y="-17" width="44" height="34" rx="9" fill="${v[2]}" stroke="${v[1]}" stroke-width="4"/>`,
+  bun:(v,R)=>{ let s = `<circle r="27" fill="${v[1]}"/><circle cx="-6" cy="-7" r="14" fill="#ffffff18"/>`; for(let i=0;i<12;i++){ const a=R()*6.28, d=R()*19; s += `<ellipse cx="${f1(Math.cos(a)*d)}" cy="${f1(Math.sin(a)*d)}" rx="1.6" ry=".9" fill="#f6ebcc" transform="rotate(${Math.round(R()*180)} ${f1(Math.cos(a)*d)} ${f1(Math.sin(a)*d)})"/>`; } return s; },
+  wrap:(v)=>`<rect x="-26" y="-10" width="52" height="20" rx="10" fill="${v[1]}" stroke="#c9ae74" stroke-width="1.5"/><path d="M-12-10q4 10 0 20" stroke="#c9ae74" stroke-width="1.5" fill="none"/>`,
+  mound:(v,R)=>`<path d="${blobPath(21,R,.15)}" fill="${v[1]}"/><path d="M0 0m-12 0a12 12 0 1 0 24 0a8 8 0 1 0-16 0a4 4 0 1 0 8 0" stroke="#00000022" stroke-width="1.6" fill="none"/><circle cx="2" cy="-2" r="3" fill="#c9a21c" opacity=".7"/>`
+};
+const COUNT = {grain:g=>g*.6, flakes:g=>g*.9, pasta:g=>g*.2, noodle:g=>g*.07, legume:g=>g*.35, pea:g=>g*.45, corn:g=>g*.45, berry:g=>g*.2, nut:g=>g*.5,
+  chunk:g=>g*.3, slice:g=>g/18, cube:g=>g/13, floret:g=>g/20, leaf:g=>g/6, strip:g=>g/7, ring:g=>g/12, mushroom:g=>g/12, bean:g=>g/6, flake:g=>g/4,
+  shrimp:g=>g/11, melt:g=>g/12, ham:g=>g/25, strips:g=>g/14, egg:g=>g/50, eggwhite:g=>g/20, fish:g=>g/35, fillet:()=>1, patty:()=>1, bread:g=>g/40, bun:()=>1, wrap:g=>g/60, mound:()=>1};
+const CAP = {grain:150, flakes:90, pasta:48, noodle:14, legume:75, pea:40, corn:30, berry:28, nut:14, chunk:12, slice:12, cube:20, floret:10, leaf:16, strip:18, ring:6,
+  mushroom:12, bean:22, flake:26, shrimp:14, melt:6, ham:4, strips:12, egg:4, eggwhite:8, fish:4, fillet:1, patty:1, bread:3, bun:1, wrap:2, mound:1};
+const BIG = new Set(["fillet","patty","bread","bun","wrap","mound","egg","fish","ham"]);
+const OVER = new Set(["drizzle","dust","seed","shred"]);
+const BOWLRX = /bowl|porridge|soupe|velouté|dahl|curry|chili|pudding|overnight|skyr|fromage blanc|cottage|yaourt|shake/i;
+const DISH = {};
+function mixHex(a,b,t){ const h = x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)); const A = h(a), B = h(b); return "#"+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,"0")).join(""); }
+function dishSVG(r){
+  if(DISH[r.id]) return DISH[r.id];
+  const R = rng(r.id*9973+17), rnd = (a,b)=>a+R()*(b-a);
+  const items = r.i.map(([id,g])=>({id,g,v:VIS[id]||["none"]}));
+  const fluids = items.filter(x=>x.v[0]==="liquid"||x.v[0]==="sauce").sort((a,b)=>b.g-a.g);
+  const fluidG = fluids.reduce((s,x)=>s+x.g,0);
+  const bowl = fluidG>=100 || BOWLRX.test(r.n);
+  const shake = /shake/i.test(r.n);
+  let base = null;
+  if(bowl) base = fluids[0] || [...items].filter(x=>!OVER.has(x.v[0])&&x.v[0]!=="none").sort((a,b)=>b.g-a.g)[0];
+  let baseCol = base ? base.v[1] : "#c7d3ca";
+  if(bowl && base && ["liquid"].includes(base.v[0])){
+    const oats = items.find(x=>x.v[0]==="flakes" && x.g>=30), cocoa = items.find(x=>x.id==="cacao"), fruit = items.find(x=>x.id==="banane"&&shake);
+    if(oats) baseCol = mixHex(baseCol, "#d2b98a", .55);
+    if(cocoa) baseCol = mixHex(baseCol, "#6b4430", .6);
+    if(fruit && !cocoa) baseCol = mixHex(baseCol, "#efe0a0", .45);
+  }
+  const FR = bowl ? 74 : 70, cid = `dc${r.id}`;
+  let s = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration : ${r.n.replace(/"/g,"")}">`;
+  s += `<defs><clipPath id="${cid}"><circle cx="100" cy="100" r="${bowl?76:79}"/></clipPath><radialGradient id="g${cid}" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs>`;
+  s += `<ellipse cx="104" cy="108" rx="91" ry="90" fill="#06100d" opacity=".5"/>`;
+  if(bowl) s += `<circle cx="100" cy="100" r="90" fill="#dde6df"/><circle cx="100" cy="100" r="81" fill="#a9b8ae"/><circle cx="100" cy="100" r="76" fill="${baseCol}"/>`;
+  else s += `<circle cx="100" cy="100" r="92" fill="#dde6df"/><circle cx="100" cy="100" r="79" fill="#bfcdc3"/><circle cx="100" cy="100" r="79" fill="none" stroke="#a9b8ae" stroke-width="1.4"/>`;
+  s += `<g clip-path="url(#${cid})">`;
+  if(shake){ s += `<circle cx="100" cy="100" r="60" fill="#00000010"/>`; }
+  /* sauces sous les aliments */
+  if(!bowl) fluids.filter(x=>x.g>=40).forEach(x=>{ s += `<path d="${blobPath(rnd(40,52),R,.25)}" transform="translate(${f1(100+rnd(-8,8))} ${f1(100+rnd(-8,8))})" fill="${x.v[1]}" opacity=".95"/>`; });
+  if(bowl && fluids.length>1) fluids.slice(1).filter(x=>x.g>=40).forEach(x=>{ s += `<path d="${blobPath(rnd(26,36),R,.35)}" transform="translate(${f1(100+rnd(-14,14))} ${f1(100+rnd(-14,14))})" fill="${x.v[1]}" opacity=".85"/>`; });
+  const main = items.filter(x=>x!==base && !OVER.has(x.v[0]) && !["none","liquid","sauce"].includes(x.v[0]));
+  const small = [], big = [];
+  const tot = main.reduce((t,x)=>t+Math.max(4,Math.sqrt(x.g)),0);
+  let a = rnd(0,Math.PI*2);
+  main.forEach(x=>{
+    const span = main.length===1 ? Math.PI*2 : Math.max(4,Math.sqrt(x.g))/tot*Math.PI*2, a0 = a, a1 = a+span; a = a1;
+    const type = x.v[0], n = Math.max(1, Math.min(CAP[type]||10, Math.round((COUNT[type]||(()=>3))(x.g))));
+    for(let k=0;k<n;k++){
+      let ang, rad;
+      if(BIG.has(type)){
+        ang = n===1 ? (a0+a1)/2 : a0+(k+.5)/n*span;
+        rad = main.length===1 && n===1 ? 0 : span>Math.PI*1.2 ? FR*.32 : FR*.48;
+        if(n>1 && main.length===1) rad = FR*.4;
+      } else {
+        const pad = Math.min(.12, span*.15);
+        ang = rnd(a0+pad, a1-pad);
+        rad = Math.sqrt(rnd(.02,1))*(FR-6);
+      }
+      const x0 = 100+Math.cos(ang)*rad, y0 = 100+Math.sin(ang)*rad, rot = Math.round(rnd(0,360));
+      const g = `<g transform="translate(${f1(x0)} ${f1(y0)}) rotate(${rot})${BIG.has(type)?"":" scale(1.2)"}">${SHAPE[type](x.v,R,x.id)}</g>`;
+      (BIG.has(type)?big:small).push(g);
+    }
+  });
+  s += small.join("") + big.join("");
+  /* garnitures par-dessus */
+  items.filter(x=>OVER.has(x.v[0])).forEach(x=>{
+    const t = x.v[0];
+    if(t==="drizzle"){
+      const n = x.g>14 ? 2 : 1;
+      for(let k=0;k<n;k++){ const y = 100+rnd(-30,30), w = rnd(36,58);
+        s += `<path d="M${f1(100-w)} ${f1(y)}q${f1(w/4)} -10 ${f1(w/2)} 0t${f1(w/2)} 0t${f1(w/2)} 0t${f1(w/2)} 0" transform="rotate(${Math.round(rnd(0,180))} 100 100)" stroke="${x.v[1]}" stroke-width="${x.id==="soja"?2.2:3}" fill="none" stroke-linecap="round" opacity=".92"/>`; }
+    } else {
+      const n = Math.min(90, Math.round(x.g*(t==="seed"?2.5:t==="dust"?3:1.6)));
+      for(let k=0;k<n;k++){ const ang = rnd(0,6.283), rad = Math.sqrt(R())*(FR-8), px = f1(100+Math.cos(ang)*rad), py = f1(100+Math.sin(ang)*rad);
+        s += t==="shred" ? `<path d="M${px} ${py}l${f1(rnd(-3,3))} ${f1(rnd(2,5))}" stroke="${x.v[1]}" stroke-width="1.5" stroke-linecap="round"/>`
+          : `<circle cx="${px}" cy="${py}" r="${t==="seed"?.9:.8}" fill="${x.v[1]}" opacity="${t==="dust"?.75:1}"/>`; }
+    }
+  });
+  s += `</g><circle cx="100" cy="100" r="${bowl?90:92}" fill="url(#g${cid})"/></svg>`;
+  return DISH[r.id] = s;
+}
+
+/* =========================================================
+   PHOTOS PERSONNELLES (IndexedDB, sur le téléphone)
+   ========================================================= */
+const Photos = {
+  db:null, urls:{},
+  open(){
+    if(this.db) return Promise.resolve(this.db);
+    return new Promise((ok,ko)=>{ const q = indexedDB.open("assiette-photos",1);
+      q.onupgradeneeded = ()=>q.result.createObjectStore("photos");
+      q.onsuccess = ()=>{ this.db = q.result; ok(this.db); }; q.onerror = ()=>ko(q.error); });
+  },
+  async run(mode, fn){
+    const db = await this.open();
+    return new Promise((ok,ko)=>{ const t = db.transaction("photos",mode); fn(t.objectStore("photos")); t.oncomplete = ()=>ok(); t.onerror = ()=>ko(t.error); t.onabort = ()=>ko(t.error); });
+  },
+  async loadAll(){
+    try{ await this.run("readonly", st=>{ const c = st.openCursor(); c.onsuccess = ()=>{ const cur = c.result; if(cur){ this.urls[cur.key] = URL.createObjectURL(cur.value); cur.continue(); } }; }); }catch(e){}
+  },
+  async put(id, blob){ await this.run("readwrite", st=>st.put(blob,id)); if(this.urls[id]) URL.revokeObjectURL(this.urls[id]); this.urls[id] = URL.createObjectURL(blob); },
+  async del(id){ await this.run("readwrite", st=>st.delete(id)); if(this.urls[id]){ URL.revokeObjectURL(this.urls[id]); delete this.urls[id]; } },
+  async clear(){ try{ await this.run("readwrite", st=>st.clear()); }catch(e){} Object.values(this.urls).forEach(u=>URL.revokeObjectURL(u)); this.urls = {}; }
+};
+async function resizeImage(file){
+  let bmp;
+  try{ bmp = await createImageBitmap(file, {imageOrientation:"from-image"}); }catch(e){ bmp = await createImageBitmap(file); }
+  const max = 1000, k = Math.min(1, max/Math.max(bmp.width,bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+  c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
+  return new Promise((ok,ko)=>c.toBlob(b=>b?ok(b):ko(new Error("jpeg")),"image/jpeg",.82));
+}
+function visual(r){ const u = Photos.urls[r.id]; return u ? `<img class="ph" src="${u}" alt="Ta photo : ${esc(r.n)}">` : dishSVG(r); }
+
+/* =========================================================
+   PASTILLES MAGASINS (design original, pas les logos officiels)
+   ========================================================= */
+const BADGE_COLORS = ["#a6dcb5","#7cc3e6","#e8c46b","#c9a2e9","#f2b3a0","#8fd3c8"];
+function storeAbbr(s){ const w = norm(s).split(/\s+/).filter(Boolean); return (w.length>1 ? w.map(x=>x[0]).join("").slice(0,2) : w.join("").slice(0,3)).toUpperCase(); }
+function hashStr(s){ let h = 0; for(const c of s) h = (h*31 + c.charCodeAt(0))|0; return Math.abs(h); }
+function badge(s, size){ return `<span class="sb${size?" "+size:""}" style="--sb:${BADGE_COLORS[hashStr(norm(s))%BADGE_COLORS.length]}" aria-hidden="true">${esc(storeAbbr(s))}</span>`; }
+
+/* =========================================================
    7. AFFICHAGE
    ========================================================= */
 const $ = s => document.querySelector(s);
@@ -542,7 +753,7 @@ function fAvoid(d){
     <div><label class="f" for="eviter">Autres aliments que je n’aime pas</label><textarea id="eviter" data-f="eviter" placeholder="Sépare par des virgules : champignons, avocat…">${esc(d.eviter)}</textarea></div></div>`;
 }
 function fStores(d){
-  return `<div class="stack"><div class="chips">${STORES.map(s=>`<button class="chip" data-a="toggle" data-f="magasins" data-v="${s}" ${pressed(d.magasins.includes(s))}>${s}</button>`).join("")}</div>
+  return `<div class="stack"><div class="chips">${STORES.map(s=>`<button class="chip" data-a="toggle" data-f="magasins" data-v="${s}" ${pressed(d.magasins.includes(s))}>${badge(s)}${s}</button>`).join("")}</div>
     <div><label class="f" for="autre">Autre magasin</label><input id="autre" type="text" data-f="autreMagasin" placeholder="ex. Biocoop du quartier" value="${esc(d.autreMagasin)}"></div>
     <p class="muted small">Les produits vendus dans tes magasins remonteront en premier dans les recherches.</p></div>`;
 }
@@ -570,12 +781,12 @@ function vOnboard(){
 function macroLine(p,g,l){
   return `<div class="macros"><span><i class="dp"></i>${nf(p)} g prot.</span><span><i class="dg"></i>${nf(g)} g gluc.</span><span><i class="dl"></i>${nf(l)} g lip.</span></div>`;
 }
-function card(r, f){
+function card(r, f, big){
   const m = mac(r), own = r.i.some(([id])=>linked(id));
-  return `<button class="card" data-a="open" data-id="${r.id}" data-fac="${f}">
+  return `<button class="card dish${big?" big":""}" data-a="open" data-id="${r.id}" data-fac="${f}"><div class="thumb">${visual(r)}</div><div class="cb">
     <h3>${r.n}</h3>
     <div class="meta"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span><span class="pill hl">${nf(m.k*f)} kcal</span>${f!==1?`<span class="pill">portion ×${nf(f,2)}</span>`:""}${own?`<span class="pill">tes produits</span>`:""}${S.favs.includes(r.id)?`<span class="pill">♥</span>`:""}</div>
-    ${macroLine(m.p*f,m.g*f,m.l*f)}</button>`;
+    ${macroLine(m.p*f,m.g*f,m.l*f)}</div></button>`;
 }
 
 function vHome(){
@@ -592,7 +803,7 @@ function vHome(){
     const m = pick.m;
     sum.k+=m.k*pick.f; sum.p+=m.p*pick.f; sum.g+=m.g*pick.f; sum.l+=m.l*pick.f;
     return `<div class="section"><div class="meal-head"><h2 style="margin:0">${MEALS[t].l}</h2><span class="muted small">cible ${nf(n.kcal*MEALS[t].s)} kcal</span></div>
-      ${card(pick.r, pick.f)}
+      ${card(pick.r, pick.f, true)}
       <button class="link" data-a="reroll" data-t="${t}">Autre idée</button></div>`;
   }).join("");
   return `<h1>Ta journée</h1>
@@ -647,7 +858,7 @@ function prodCard(pr, action, extra){
   const full = [pr.k,pr.p,pr.g,pr.l].every(v=>v!==null);
   return `<button class="card" ${action}><div class="prow">${pimg(pr)}<div style="flex:1;min-width:0">
     <h3>${esc(pr.name)}</h3><p class="small muted">${esc([pr.brand,pr.qty].filter(Boolean).join(", "))}</p>
-    <div class="meta" style="margin:6px 0 0">${full?`<span class="pill">${nf(pr.k)} kcal</span><span class="pill">P ${nf(pr.p,1)}</span><span class="pill">G ${nf(pr.g,1)}</span><span class="pill">L ${nf(pr.l,1)}</span>`:`<span class="pill">valeurs incomplètes</span>`}${pr.stores.map(s=>`<span class="pill hl">${esc(s)}</span>`).join("")}</div>
+    <div class="meta" style="margin:6px 0 0">${full?`<span class="pill">${nf(pr.k)} kcal</span><span class="pill">P ${nf(pr.p,1)}</span><span class="pill">G ${nf(pr.g,1)}</span><span class="pill">L ${nf(pr.l,1)}</span>`:`<span class="pill">valeurs incomplètes</span>`}${pr.stores.map(s=>`<span class="pill">${badge(s)}${esc(s)}</span>`).join("")}</div>
     ${extra||""}</div></div></button>`;
 }
 function vProducts(){
@@ -674,7 +885,7 @@ function vProducts(){
     ${mine.length?`<div class="chips" style="margin-top:12px"><button class="chip" data-a="minef" ${pressed(P.mine)}>Seulement mes magasins</button></div>`:""}
     <div class="section" style="margin-top:18px">${body}</div>
     <div class="section"><h2>Mon garde-manger (${S.pantry.length})</h2>${pantry}</div>
-    <p class="small muted" style="margin-top:20px">Données Open Food Facts, base collaborative sous licence ODbL. Les magasins indiqués sont renseignés par les contributeurs et peuvent être incomplets.</p>`;
+    <p class="small muted" style="margin-top:20px">Données Open Food Facts, base collaborative sous licence ODbL. Les pastilles de magasins sont des repères visuels propres à l’app, sans lien avec les enseignes. Les magasins indiqués sont renseignés par les contributeurs et peuvent être incomplets.</p>`;
 }
 
 /* ---- Courses ---- */
@@ -688,7 +899,7 @@ function vList(){
   const keys = Object.keys(groups).sort((a,b)=>(order.indexOf(a)+1||99)-(order.indexOf(b)+1||99));
   const done = S.checked.filter(id=>S.list[id]).length;
   return `<h1>Courses</h1><p class="muted lead">${ids.length} article${ids.length>1?"s":""}, ${done} dans le panier.</p>
-    ${keys.map(k=>`<div class="section" style="margin-top:22px"><h2>${esc(k)}</h2>${groups[k].sort((a,b)=>ING[a][0].localeCompare(ING[b][0],"fr")).map(id=>{
+    ${keys.map(k=>`<div class="section" style="margin-top:22px"><h2 class="storehead">${k===NO_STORE?"":badge(k,"lg")}${esc(k)}</h2>${groups[k].sort((a,b)=>ING[a][0].localeCompare(ING[b][0],"fr")).map(id=>{
       const pr = linked(id), g = roundG(S.list[id]), on = S.checked.includes(id);
       return `<button class="check" data-a="check" data-id="${id}" ${pressed(on)}><span class="box">${on?"✓":""}</span>
         <span class="ct">${pr?`${esc(pr.name)}${pr.brand?` <span class="muted small">${esc(pr.brand)}</span>`:""}<br><span class="small muted">${ING[id][0]}</span>`:ING[id][0]}${unitHint(id,S.list[id])}</span><b>${nf(g)} g</b></button>`;
@@ -715,11 +926,11 @@ function vProfile(){
     <div class="section"><h2>Magasins</h2>${fStores(d)}</div>
     ${UI.err?`<p class="err" style="margin-top:14px">${UI.err}</p>`:""}
     <button class="btn wide" style="margin-top:24px" data-a="saveProfile">Enregistrer</button>
-    <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur ce téléphone. Exporte-les de temps en temps : vider les données de Chrome les efface.</p>
+    <div class="section"><h2>Sauvegarde</h2><p class="small muted" style="margin-bottom:12px">Tes données restent sur ce téléphone. Exporte-les de temps en temps : vider les données du navigateur les efface. Tes photos de plats ne sont pas incluses dans l’export.</p>
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger, qui utilisent les valeurs Open Food Facts ou celles que tu as saisies. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 2.0</p>`;
+    <p class="small muted" style="margin-top:16px">Version 2.1</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -733,6 +944,8 @@ function renderSheet(){
 function sRecipe(sh){
   const r = RECIPES[sh.id], f = sh.f, m = mac(r), n = needs(S.profile), fav = S.favs.includes(r.id);
   return `<div class="sheet-top"><h1 style="font-size:25px">${r.n}</h1><button class="x" data-a="close" aria-label="Fermer">✕</button></div>
+    <div class="hero thumb">${visual(r)}</div>
+    <div class="photo-actions">${Photos.urls[r.id]?`<button class="link" data-a="photo" data-src="cam">Changer la photo</button><button class="link" data-a="unphoto">Revenir à l’illustration</button>`:`<button class="link" data-a="photo" data-src="cam">Prendre une photo de mon plat</button><button class="link" data-a="photo" data-src="gal">Choisir dans la galerie</button>`}</div>
     <div class="meta" style="margin-top:10px"><span class="pill">${r.m} min</span><span class="pill">${euro(r.b)}</span>${r.t.split("").map(t=>`<span class="pill">${MEALS[t].l}</span>`).join("")}</div>
     <button class="link" data-a="fav" data-id="${r.id}">${fav?"♥ Retirer des favoris":"♡ Ajouter aux favoris"}</button>
     <div class="stepper"><button data-a="portion" data-d="-0.25" aria-label="Réduire la portion">−</button>
@@ -762,7 +975,7 @@ function sProduct(sh){
         ${full?"":`<p class="small err" style="margin-top:6px">Complète les valeurs manquantes avec l’étiquette du produit.</p>`}</div>
       <div><label class="f" for="pf-link">Remplace dans mes recettes</label><select id="pf-link" data-scope="prod" data-f="link"><option value="">Aucun ingrédient</option>${opts}</select>
         <p class="small muted" style="margin-top:6px">Ses valeurs remplaceront celles de Ciqual pour cet ingrédient, dans toutes les recettes.</p></div>
-      ${stores.length?`<div><label class="f">Je l’achète chez</label><div class="chips">${stores.map(s=>`<button class="chip" data-a="pstore" data-v="${esc(s)}" ${pressed(P.stores.includes(s))}>${esc(s)}</button>`).join("")}</div></div>`:""}
+      ${stores.length?`<div><label class="f">Je l’achète chez</label><div class="chips">${stores.map(s=>`<button class="chip" data-a="pstore" data-v="${esc(s)}" ${pressed(P.stores.includes(s))}>${badge(s)}${esc(s)}</button>`).join("")}</div></div>`:""}
       ${P.offStores?`<p class="small muted">Vendu chez, selon Open Food Facts : ${esc(P.offStores)}</p>`:""}
       ${P.code?`<p class="small muted">Code-barres : ${esc(P.code)}</p>`:""}
       ${sh.err?`<p class="err">${sh.err}</p>`:""}
@@ -907,7 +1120,7 @@ document.addEventListener("click", e=>{
     case "nav": closeSheet(); go(b.dataset.v); break;
     case "saveProfile": UI.err = validate(D); if(UI.err) return render(); S.profile = JSON.parse(JSON.stringify(D));
       S.pantry.forEach(x=>{ x.stores = x.stores.filter(s=>myStores().includes(s)); }); persist(); toast("Profil enregistré."); go("home"); break;
-    case "reset": if(confirm("Effacer ton profil, tes favoris, ton garde-manger et ta liste ?")){ S = sane(null); persist(); UI.draft = blankProfile(); UI.step = 0; UI.view = "onboard"; render(); } break;
+    case "reset": if(confirm("Effacer ton profil, tes favoris, ton garde-manger et ta liste ?")){ S = sane(null); persist(); Photos.clear(); UI.draft = blankProfile(); UI.step = 0; UI.view = "onboard"; render(); } break;
     case "reroll": UI.offsets[b.dataset.t]++; render(); break;
     case "filt": UI.filt[b.dataset.k] = b.dataset.k==="type" ? b.dataset.v : Number(b.dataset.v); render(); break;
     case "favf": UI.filt.fav = !UI.filt.fav; render(); break;
@@ -938,6 +1151,8 @@ document.addEventListener("click", e=>{
       const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = `assiette-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
       document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000); toast("Sauvegarde exportée."); break; }
     case "import": $("#importfile").click(); break;
+    case "photo": UI.photoFor = UI.sheet.id; $(b.dataset.src==="cam"?"#photocam":"#photogal").click(); break;
+    case "unphoto": if(confirm("Supprimer ta photo et revenir à l’illustration ?")){ const id = UI.sheet.id; Photos.del(id).then(()=>{ toast("Photo supprimée."); const y = scrollY; render(); scrollTo(0,y); }); } break;
   }
 });
 document.addEventListener("input", e=>{
@@ -953,6 +1168,12 @@ document.addEventListener("submit", e=>{
   if(e.target.id==="psearch") doSearch();
   if(e.target.id==="manualcode"){ scan.busy = false; found($("#codeinput").value); }
 });
+["#photocam","#photogal"].forEach(sel=>$(sel).addEventListener("change", async e=>{
+  const file = e.target.files[0], id = UI.photoFor; e.target.value = "";
+  if(!file || id===undefined) return;
+  try{ toast("Enregistrement de la photo…"); await Photos.put(id, await resizeImage(file)); toast("Photo enregistrée."); const y = scrollY; render(); scrollTo(0,y); }
+  catch(err){ toast("Impossible d’enregistrer cette photo."); }
+}));
 $("#importfile").addEventListener("change", e=>{
   const file = e.target.files[0]; if(!file) return;
   const rd = new FileReader();
@@ -970,7 +1191,9 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape" && UI.sheet) close
 document.addEventListener("visibilitychange", ()=>{ if(document.hidden && UI.sheet && UI.sheet.kind==="scan") stopScan(); });
 
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 render();
+Photos.loadAll().then(()=>{ if(Object.keys(Photos.urls).length && UI.view!=="onboard") render(); });
 </script>
 </body>
 </html>

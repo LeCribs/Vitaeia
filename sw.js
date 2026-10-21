@@ -1,6 +1,6 @@
 /* Assiette : service worker (fonctionnement hors ligne)
    Change CACHE à chaque nouvelle version pour forcer la mise à jour. */
-const CACHE = "assiette-v2.0.0";
+const CACHE = "assiette-v2.1.0";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png"];
 
 self.addEventListener("install", e => {
