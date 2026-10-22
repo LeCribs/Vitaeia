@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="description" content="Recettes adaptées à tes objectifs sportifs et à ton budget, avec les produits de tes magasins.">
-<title>Assiette</title>
+<title>Vitaeia</title>
+<script>try{ if(sessionStorage.getItem("vitaeia.splash")) document.documentElement.classList.add("nosplash"); }catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -215,11 +216,36 @@ ol.how li{margin:8px 0}
 .video{position:relative;border-radius:var(--r-md);overflow:hidden;background:#000;aspect-ratio:4/3;margin-top:14px}
 .video video{width:100%;height:100%;object-fit:cover;display:block}
 .video::after{content:"";position:absolute;left:12%;right:12%;top:50%;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+/* Animation d’ouverture */
+#splash{position:fixed;inset:0;z-index:100;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:env(safe-area-inset-top,0px) 24px env(safe-area-inset-bottom,0px);animation:spOut .5s ease 2.15s forwards;cursor:pointer}
+.nosplash #splash{display:none}
+#splash svg{width:104px;height:104px;overflow:visible}
+#splash .arc{fill:none;stroke-width:9;stroke-linecap:round;stroke-dashoffset:var(--l);animation:spDraw .7s cubic-bezier(.6,0,.2,1) forwards}
+#splash .dot{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:spPop .5s cubic-bezier(.3,1.7,.5,1) .6s forwards}
+#splash .word{display:flex;font-weight:800;font-size:48px;line-height:1.05;letter-spacing:-.035em;color:var(--text)}
+#splash .word span{display:inline-block;opacity:0;transform:translateY(20px);animation:spRise .55s cubic-bezier(.2,.8,.2,1) forwards}
+#splash .tagline{opacity:0;color:var(--muted);font-weight:500;font-size:15px;animation:spFade .6s ease 1.35s forwards}
+#splash.skip{animation:spOut .25s ease forwards}
+@keyframes spDraw{to{stroke-dashoffset:0}}
+@keyframes spPop{to{transform:scale(1)}}
+@keyframes spRise{to{opacity:1;transform:none}}
+@keyframes spFade{to{opacity:1}}
+@keyframes spOut{to{opacity:0;visibility:hidden;transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){
+  #splash *{animation-duration:.01s !important;animation-delay:0s !important}
+  #splash{animation:spOut .3s ease .9s forwards}
+}
 .toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#111;color:#fff;font-weight:700;padding:10px 16px;border-radius:99px;z-index:30;max-width:90%;text-align:center;font-size:14px}
 .toast[hidden]{display:none}
 </style>
 </head>
 <body>
+<div id="splash" role="img" aria-label="Vitaeia">
+  <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="arc" cx="50" cy="50" r="38" stroke="#2f80ed" stroke-dasharray="86.22 238.76" style="--l:86.22;animation-delay:0.1s" transform="rotate(-90 50 50)"/><circle class="arc" cx="50" cy="50" r="38" stroke="#f2a516" stroke-dasharray="119.38 238.76" style="--l:119.38;animation-delay:0.25s" transform="rotate(48 50 50)"/><circle class="arc" cx="50" cy="50" r="38" stroke="#a259ff" stroke-dasharray="17.24 238.76" style="--l:17.24;animation-delay:0.4s" transform="rotate(236 50 50)"/><circle class="dot" cx="50" cy="50" r="13" fill="#f2542d"/></svg>
+  <div class="word" aria-hidden="true"><span style="animation-delay:0.78s">V</span><span style="animation-delay:0.84s">i</span><span style="animation-delay:0.9s">t</span><span style="animation-delay:0.96s">a</span><span style="animation-delay:1.02s">e</span><span style="animation-delay:1.08s">i</span><span style="animation-delay:1.14s">a</span></div>
+  <p class="tagline">Bien manger, à ton rythme</p>
+</div>
 <main id="app" aria-live="polite"></main>
 <nav class="tabs" id="tabs" hidden></nav>
 <div class="sheet" id="sheet" hidden></div>
@@ -971,7 +997,7 @@ const Pics = {
   exportJSON(){
     const photos = {};
     RECIPES.forEach(r=>{ const c = this.entry(r.id); if(c && c.list.length) photos[r.id] = {i:c.i % c.list.length, list:c.list}; });
-    return {app:"assiette", version:2, source:"unsplash", date:new Date().toISOString(), count:Object.keys(photos).length, photos};
+    return {app:"vitaeia", version:2, source:"unsplash", date:new Date().toISOString(), count:Object.keys(photos).length, photos};
   },
   want(id){ if(!this.key || this.blocked || this.entry(id) || this.pending.has(id) || !navigator.onLine) return; this.pending.add(id); this.queue.push(id); this.pump(); },
   pump(){
@@ -984,7 +1010,7 @@ const Pics = {
       if(r.status===401){ this.blocked = true; this.err = "Clé Unsplash refusée : vérifie la clé d’accès (Access Key) dans Profil."; this.queue = []; return; }
       if(r.status===403 || r.status===429){ this.blocked = true; this.err = "Limite Unsplash atteinte (50 recettes par heure). Relance « Précharger tout » dans une heure pour la suite."; this.queue = []; return; }
       if(!r.ok) return;
-      const j = await r.json(), utm = "utm_source=assiette&utm_medium=referral";
+      const j = await r.json(), utm = "utm_source=vitaeia&utm_medium=referral";
       const sz = (raw,w,h)=>`${raw}${raw.includes("?")?"&":"?"}w=${w}&h=${h}&fit=crop&auto=format&q=70`;
       this.cache[id] = {i:0, list:(j.results||[]).map(p=>({s:sz(p.urls.raw,260,260), m:sz(p.urls.raw,800,380), l:sz(p.urls.raw,1080,560),
         ph:p.user.name, pu:`${p.user.links.html}?${utm}`, u:`https://unsplash.com/?${utm}`, c:p.color}))};
@@ -1106,7 +1132,7 @@ const STEPS = [
 ];
 function vOnboard(){
   const st = STEPS[UI.step], last = UI.step===STEPS.length-1;
-  return `${topbar(`<span class="brand">Assiette<span>.</span></span>`)}
+  return `${topbar(`<span class="brand">Vitaeia</span>`)}
     <div class="steps">${STEPS.map((_,i)=>`<span class="${i<=UI.step?"on":""}"></span>`).join("")}</div>
     <h2 style="font-size:26px">${st.t}</h2><p class="muted" style="margin:-4px 0 20px">${st.s}</p>
     ${st.f(UI.draft)}
@@ -1151,7 +1177,7 @@ function vHome(){
   const budget = n.day ? `<div class="hero-card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b>Budget du jour</b><span class="small muted">${eur(sum.c)} sur ${eur(n.day)}</span></div>
       <div class="budgetbar ${sum.c>n.day?"over":""}"><span style="width:${Math.min(100,sum.c/n.day*100)}%"></span></div>
       <p class="small muted" style="margin-top:8px">${sum.c>n.day?"Cette journée dépasse ton budget : touche ⇄ sur un repas pour une autre idée.":"Cette journée tient dans ton budget."}</p></div>` : "";
-  return `${topbar(`<span class="brand">Assiette<span>.</span></span>`, `<button class="x" data-a="nav" data-v="products" aria-label="Scanner ou chercher un produit">${icon("scan")}</button>`)}
+  return `${topbar(`<h1>Ta journée</h1>`, `<button class="x" data-a="nav" data-v="products" aria-label="Scanner ou chercher un produit">${icon("scan")}</button>`)}
     <div class="hero-card">
       <p class="small muted">${GOALS[p.objectif].l}${p.sport?`, ${esc(p.sport)}`:""}</p>
       <div class="kcal">${nf(n.kcal)}<small>kcal par jour</small></div>
@@ -1218,7 +1244,7 @@ function vRecipes(){
     ${F.season?`<p class="small muted" style="margin-top:12px">De saison en ${MONTHS[MONTH-1]} : ${esc(inSeason.join(", "))}.</p>`:""}
     <p class="muted small" style="margin:14px 0 10px" id="count">${countTxt(list)}, triées selon tes besoins${n.day?" et ton budget":""}</p>
     <div id="rlist">${listHTML(list)}</div>
-    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=assiette&utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, à titre d’illustration. Coûts estimés par portion.</p>`;
+    <p class="small muted" style="margin-top:18px">Photos fournies par <a href="https://unsplash.com/?utm_source=vitaeia&utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, à titre d’illustration. Coûts estimés par portion.</p>`;
 }
 
 /* ---- Produits ---- */
@@ -1282,7 +1308,7 @@ function vList(){
     <button class="btn wide dark" style="margin-top:10px" data-a="sharelist">Partager la liste</button>`;
 }
 function listText(){
-  const lines = ["Liste de courses (Assiette)"];
+  const lines = ["Liste de courses (Vitaeia)"];
   Object.keys(S.list).filter(id=>ING[id] && !S.checked.includes(id)).forEach(id=>{
     const pr = linked(id);
     lines.push(`- ${pr?`${pr.name}${pr.brand?" ("+pr.brand+")":""}`:ING[id][0]} : ${roundG(S.list[id])} g${pr&&pr.stores[0]?`, ${pr.stores[0]}`:""}`);
@@ -1317,7 +1343,7 @@ function vProfile(){
       <div class="row"><button class="btn ghost" data-a="export">Exporter</button><button class="btn ghost" data-a="import">Importer</button></div></div>
     <div class="section"><h2>Sources</h2><p class="small muted">Valeurs nutritionnelles : table Ciqual de l’ANSES (arrondies), sauf pour les produits de ton garde-manger. Prix : moyennes estimées, remplacées par tes prix ou ceux d’Open Prices. Protéine en poudre : valeur moyenne du marché.</p></div>
     <button class="btn ghost wide" style="margin-top:18px" data-a="reset">Effacer mes données</button>
-    <p class="small muted" style="margin-top:16px">Version 4.0</p>`;
+    <p class="small muted" style="margin-top:16px">Version 4.1</p>`;
 }
 
 /* ---- Fiches (recette, produit, scan) ---- */
@@ -1615,8 +1641,8 @@ document.addEventListener("click", e=>{
       if(navigator.share) navigator.share({title:"Liste de courses", text:t}).catch(()=>{});
       else if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast("Liste copiée."), ()=>toast("Copie impossible."));
       break; }
-    case "export": { const blob = new Blob([JSON.stringify({app:"assiette", version:3, date:new Date().toISOString(), data:S}, null, 2)], {type:"application/json"});
-      const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = `assiette-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
+    case "export": { const blob = new Blob([JSON.stringify({app:"vitaeia", version:4, date:new Date().toISOString(), data:S}, null, 2)], {type:"application/json"});
+      const u = URL.createObjectURL(blob), l = document.createElement("a"); l.href = u; l.download = `vitaeia-sauvegarde-${new Date().toISOString().slice(0,10)}.json`;
       document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(u), 1000); toast("Sauvegarde exportée."); break; }
     case "import": $("#importfile").click(); break;
     case "savekey": Pics.setKey($("#pkey").value); toast(Pics.key ? "Clé enregistrée." : "Clé supprimée."); keepScroll(render); break;
@@ -1666,7 +1692,7 @@ $("#importfile").addEventListener("change", e=>{
       const j = JSON.parse(rd.result), data = j && j.data ? j.data : j;
       if(!data || !data.profile) throw new Error("format");
       S = sane(data); persist(); UI.draft = JSON.parse(JSON.stringify(S.profile)); toast("Sauvegarde importée."); go("home");
-    }catch(err){ toast("Ce fichier n’est pas une sauvegarde Assiette."); }
+    }catch(err){ toast("Ce fichier n’est pas une sauvegarde Vitaeia."); }
     e.target.value = "";
   };
   rd.readAsText(file);
@@ -1677,6 +1703,14 @@ document.addEventListener("visibilitychange", ()=>{ if(document.hidden && UI.she
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
 render();
+/* Animation d’ouverture : une fois par lancement, touche l’écran pour la passer */
+(()=>{ const sp = $("#splash"); if(!sp) return;
+  if(document.documentElement.classList.contains("nosplash")){ sp.remove(); return; }
+  try{ sessionStorage.setItem("vitaeia.splash","1"); }catch(e){}
+  const done = ()=>{ if(sp.isConnected) sp.remove(); };
+  sp.addEventListener("click", ()=>{ sp.classList.add("skip"); setTimeout(done, 260); });
+  setTimeout(done, 2750);
+})();
 Pics.loadShared().then(()=>{ if(Pics.sharedCount() && UI.view!=="onboard") keepScroll(render); });
 Photos.loadAll().then(()=>{ if(Object.keys(Photos.urls).length && UI.view!=="onboard") keepScroll(render); });
 </script>

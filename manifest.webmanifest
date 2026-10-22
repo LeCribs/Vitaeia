@@ -1,7 +1,7 @@
 {
-  "name": "Assiette, recettes et macros",
-  "short_name": "Assiette",
-  "description": "Recettes adaptées à tes objectifs sportifs, avec les produits de tes magasins.",
+  "name": "Vitaeia",
+  "short_name": "Vitaeia",
+  "description": "Recettes adaptées à tes objectifs, à ton budget et à la saison, avec les produits de tes magasins.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,21 @@
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
